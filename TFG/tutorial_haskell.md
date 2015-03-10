@@ -164,7 +164,7 @@ este fallo se propaga de una a otra. Si todas tienen éxito, simplemente se enca
 
 El operador `(>>)` recibe una mónada de tipo `a` y otra de tipo `b` (**nota importante:** que haya dos
 variables de tipo no implica que deban enlazarse a tipos distintos, las mónadas de `(>>)` bien pueden ser
-del mismo tipo), y lo que hace es devolver la segunda mónada.
+del mismo tipo), y lo que hace es..TODO.
 
     (>>) :: (Monad m) => m a -> m b -> m b
     m >> n = m >>= \_ -> n
@@ -291,7 +291,7 @@ necesario introducir un nuevo nombre para cada nueva instrucción. Por ello, par
 muchas veces, no se necesita duplicar las órdenes. En vez de eso, las mismas órdenes se repiten.
 
 En los lenguajes imperativos, valores nuevos pueden ser asociados con el mismo nombre por medio de la 
-repetición de ordenes
+repetición de órdenes.
 
 ## Lenguajes funcionales: ##
 

@@ -90,7 +90,7 @@ es lo que pones en el intérprete lo que no te está aceptando
 
 Francisco Nebrera Perdomo
 
-compila pero se cree que son maybes
+compila pero se cree que son Maybes
 sin el layout
 probé 7.8.4 y 7.10.1 RC2
 
