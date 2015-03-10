@@ -1,0 +1,1 @@
+data Point = Point Float Float deriving (Show)

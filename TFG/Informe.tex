@@ -1,0 +1,203 @@
+\documentclass[preprint]{elsarticle}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[]{lineno}
+\usepackage{url}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\modulolinenumbers[5]
+
+\title{0-1 Knapsack Problem}
+
+\author{Kevin I. Robayna-Hern\'andez}
+\ead{krobayna@ull.es}
+\address{Universidad de La Laguna, Espa\~na}
+
+\begin{abstract}
+En este informe, voy a tratar de dar una aproximaci\'on al problema de la mochila 0-1 tratandolo de resolver de con distintos metodos y analizando los disintos resultados de los mismos.
+\end{abstract}
+
+\end{frontmatter}
+
+
+\section{Introducci\'on}
+En algoritmia, el problema de la mochila, com\'unmente abreviado por KP (del ingl\'es Knapsack problem) es un problema de optimizaci\'on combinatoria, es decir, que busca la mejor soluci\'on entre un conjunto de posibles soluciones a un problema. Modela una situación an\'aloga al llenar una mochila, incapaz de soportar m\'as de un peso determinado, con todo o parte de un conjunto de objetos, cada uno con un peso y valor espec\'ificos. Los objetos colocados en la mochila deben maximizar el valor total sin exceder el peso m\'aximo.
+
+\section{Definici\'on}
+El problema de la mochila 0-1 puede ser formulado como:
+
+Dado un conjunto de $n$ objetos, Desde $z_1$ a $z_n$ donde $z_i$ tiene como valor $v_i$ y peso $w_i$. $x_i$ es el n\'mero de copias de $z_i$, el cual, ha de ser cero o uno. El m\'aximo peso que podemos cargar en la mochila es $W$. Dado que los pesos no pueden ser valores negativos lo normal es considerar que todos los valores del problema son no negativos.
+
+\begin{equation}
+\begin{split}
+&\quad max:\sum_{i=1}^n v_ix_i \\
+&\quad s.a.\sum_{i=1}^n w_ix_i \leq W, x_i \in \{0,1\}
+\end{split}
+\end{equation}
+
+Maximizando la suma de valores de los elementos que estan en la mochila, dicha suma tiene que ser menor o igual a la capacidad de la propia mochila.
+
+\section{Implementaci\'on}
+\subsection{Algoritmo Voraz}
+Un algoritmo voraz es aquel que, para resolver un determinado problema, sigue una heur\'istica consistente en elegir la opci\'on \'optima en cada paso local con la esperanza de llegar a una soluci\'on general \'optima. Este esquema algor\'itmico es el que menos dificultades plantea a la hora de diseñar y comprobar su funcionamiento. Normalmente se aplica a los problemas de optimizaci\'on.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\REQUIRE Problema $P = \{Items, N, W\}$ no vac\'io.
+\STATE Ordenar $Items$ de mayor a menor por $v_i$/$w_i$
+\WHILE {$\{PesoActual \leq W\}$}
+\STATE A\~nadir $Item_i$ a la mochila
+\STATE Modificar $PesoActual$ de la mochila
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Programaci\'on Din\'amica}
+En inform\'atica, la programaci\'on din\'amica es un m\'etodo para reducir el tiempo de ejecuci\'on de un algoritmo mediante la utilizaci\'on de subproblemas superpuestos y subestructuras \'optimas, 
+\begin{algorithm}
+\begin{algorithmic}[1]
+\REQUIRE Problema $P = \{Items, N, W\}$ no vac\'io y $K$
+\FORALL {$\{i \leq N\}$}
+  \FORALL {$\{j \leq W\}$}
+    \IF{$\{i==0 || j==0\}$}
+      \STATE $K_{i,j}= 0$
+    \ELSIF{$\{w_i \leq j \}$}
+      \STATE $K_{i,j} = max \{K_{i-1,j}, K_{i-1, j-w_i} + v_i\}$
+    \ELSE
+      \STATE $K_{i,j} = K_{i-1,j}$
+    \ENDIF
+  \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\pagebreak
+
+\subsection{Algoritmo de Ramificaci\'on y Poda}
+El m\'etodo de dise\~no de algoritmos Ramificaci\'on y poda (tambi\'en llamado Ramificaci\'on y Acotaci\'on) es una variante del Backtracking mejorado sustancialmente. El t\'ermino (del ingl\'es, Branch and Bound) se aplica mayoritariamente para resolver cuestiones o problemas de optimizaci\'on.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\REQUIRE Problema $P = \{Items, N, W\}$ no vac\'io y $X$
+\STATE Ordenar $Items$ de mayor a menor por $v_i$/$w_i$
+\FOR {$\{pos \leq 1; pos++\}$}
+  \STATE $x_k = pos$;
+  \IF{$\{esFactible(x[],k)\}$}
+    \IF{$\{k==N\}$}
+      \IF{$\{valor(x[]) > MejorValor\}$}
+        \STATE $MejorSolucion = x$
+      \ENDIF
+    \ELSIF{$\{cota(x[], k) > MejorValor\}$}
+      \STATE $KP(x[],k+1)$
+      \COMMENT{llamada recursiva al m\'etodo}
+    \ENDIF
+  \ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+El algorimto de ramificaci\'on y poda hace uso de la siguiente formula para calcular la cota
+
+\begin{equation}
+Cota_k = \sum_{i=1}^{k} v_ix_i + \frac{W - \sum_{i=1}^{k} w_ix_i}{W_{k+1}}v_{k+1}
+\end{equation}
+
+\section{Implementaci\'on}
+El lenguaje de programaci\'on utilizado para estos m\'etodos es el bien conocido c++ ya que es de los lenguajes mas r\'apidos y comodos para programar a un nivel de abstracci\'on medianamente bajo.
+
+\pagebreak
+
+\section{Resultados}
+En las siguientes tablas se muestran la media de 10 ejecuciones para cada tama\~no. Los resultados de los algoritmos son de un MacBook Pro Early 2011 con un Procesador 2.3 GHz Intel Core i5 y una Memoria de 8GB 1333MHz DDR3.
+
+\subsection{Algoritmo Voraz}
+Como se puede apreciar este algoritmo es muy r\'apido, y las soluciones no distan mucho de las soluciones optimas que dan los siguientes algoritmos.
+
+\begin{table}[h]
+\begin{tabular}{lll}
+NombreFichero & Valor & Tiempo(s)\\
+KP-10-? & 491 & 0.000002\\
+KP-15-? & 693 & 0.000002\\
+KP-20-? & 887 & 0.000003\\
+KP-25-? & 1209 & 0.000004\\
+KP-30-? & 1415 & 0.000007\\
+KP-35-? & 1645 & 0.000007\\
+KP-40-? & 1829 & 0.000007\\
+KP-45-? & 2165 & 0.000007\\
+KP-50-? & 2239 & 0.000008\\
+KP-100-? & 4617 & 0.000018\\
+KP-500-? & 23223 & 0.000109\\ 
+KP-1000-? & 46989 & 0.000271\\
+KP-2000-? & 94216 & 0.000509\\ 
+KP-3000-? & 139785 & 0.000786\\
+KP-4000-? & 187592 & 0.000944\\
+KP-5000-? & 235073 & 0.001297\\
+KP-10000-? & 470159 & 0.002917\\
+KP-15000-? & 704635 & 0.004469\\
+KP-100000-? & 4700351 & 0.028075\\
+KP-1000000-? & 46986684 & 0.269026
+\end{tabular}
+\end{table}
+
+\pagebreak
+
+\subsection{Programaci\'on Din\'amica}
+Con este algoritmo, las soluiones son \'optimas y las calcula de forma bastante r\'apida pero la cantidad de memoria que consume es inmensa, lleg\'o a usar 20gb de Memoria por lo que uso el disco duro en ves de RAM y ralentizo el algoritmo.
+\begin{table}[h]
+\begin{tabular}{lll}
+NombreFichero & Valor & Tiempo(s)\\
+KP-10-? & 492 & 0.000133\\
+KP-15-? & 697 & 0.000311\\
+KP-20-? & 887 & 0.000524\\
+KP-25-? & 1217 & 0.001237\\
+KP-30-? & 1421 & 0.001106\\
+KP-35-? & 1648 & 0.001619\\
+KP-40-? & 1831 & 0.002706\\
+KP-45-? & 2169 & 0.002993\\
+KP-50-? & 2242 & 0.003556\\
+KP-100-? & 4619 & 0.014301\\
+KP-500-? & 23225 & 0.345120\\ 
+KP-1000-? & 46991 & 1.416179\\
+KP-2000-? & 94217 & 6.747119\\ 
+KP-3000-? & 139787 & 14.854247\\
+KP-4000-? & 187593 & 29.477399\\
+KP-5000-? & 235074 & 42.866972\\
+KP-10000-? & 470160 & 187.337062
+\end{tabular}
+\end{table}
+
+\subsection{Algoritmo de Ramificaci\'on y Poda}
+Este es el algoritmo que m\'as tarda con diferencia, pero consume bastante menos recursos que el de programaci\'on din\'amica. Aunque este algoritmo se puede mejorar bastante usando heuristicas como el la voraz u otras para empezar a resolver el problema desde una mejor soluci\'on inicial en lugar de 0.
+
+\begin{table}[h]
+\begin{tabular}{lll}
+NombreFichero & Valor & Tiempo(s)\\
+KP-10-? & 492 & 0.002484\\
+KP-15-? & 697 & 0.014156\\
+KP-20-? & 887 & 0.074501\\
+KP-25-? & 1217 & 0.488321\\
+KP-30-? & 1421 & 4.543149\\
+KP-35-? & 1648 & 16.696493\\
+KP-40-? & 1831 & 98.181993\\
+KP-45-? & 2169 & 461.733252\\
+KP-50-? & 2242 & 1608.053777
+\end{tabular}
+\end{table}
+
+\pagebreak
+\section{Referencias}
+  \begingroup
+  \renewcommand{\section}[2]{}
+  \begin{thebibliography}{9}
+    \bibitem{wikipedia} \url{http://en.wikipedia.org/wiki/Knapsack_problem}
+    \bibitem {paper} \url{http://cse.unl.edu/~goddard/Courses/CSCE310J/Lectures/Lecture8-DynamicProgramming.pdf}
+  \end{thebibliography}
+  \endgroup
+
+\end{document}

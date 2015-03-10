@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\usepackage{haskelllogo}
+
+\begin{document}
+The most basic form of the logo is this:
+
+\noindent
+\haskelllogo
+
+\noindent
+Variations are, of course, possible.
+Of course, the logo can be set in-line in running text, like this: \haskelllogo, but it would probably need some scaling, like this: \haskelllogo[scale=.125] which looks better.
+The scaling applied here is exactly 0.125, because the logo is defined in units of 1 ex and it is 12 units high and 17 units wide, so the best ratio for the in-line log is 1.5 times the ex hight.
+You may wonder why it's put in units of ex, well, I like it when it {\small \haskelllogo[scale=.125] scales \large \haskelllogo[scale=.125] with \huge \haskelllogo[scale=.125] the font}.
+
+If you really don't like it when your images change size when you can define a unit for these steps (but keep in mind that the height is $8\cdot u$ and the width is $17\cdot u$).
+You could set the unit to 0.2 mm and get \haskelllogo[unit=0.2mm], regardless of the {\large font size \haskelllogo[unit=0.2mm]}.
+The units for the width and the height can be independently changed, which changes the aspect ratio of the logo \haskelllogo[xunit=1mm,yunit=.2mm].
+
+Because some people prefer the lambda to be behind the second rangle of the bind operator (but still in front of the equals sign), you can tell the logo to appear that way and see:
+
+\noindent
+\haskelllogo[lambdabehind] as opposed to \haskelllogo
+
+For more light-weight applications, you may prefer to have only the outlines of the logo:
+
+\noindent
+\haskelllogo[outlines] or with the lambda behind \haskelllogo[outlines,lambdabehind]
+
+The individual parts of the logo can be given different colors:
+
+\noindent
+\haskelllogo[lambdabehind,
+	first  rangle color=green,
+	second rangle color=red,
+	lambda        color=yellow,
+	upper  equals color=black,
+	lower  equals color=blue
+]
+
+\noindent or the entire logo can be given the same color, or given a main color with some parts being different:
+
+\noindent
+\haskelllogo[logo color=red]
+\haskelllogo[logo color=red,upper equals color=blue]
+
+By default, there are three themes defined, with the names grayscale (default), seventies and commodore.
+
+\noindent
+\haskelllogo[grayscale]
+\haskelllogo[seventies]
+\haskelllogo[commodore]
+
+If you know your TikZ, well, you can just go nuts ;)
+
+\noindent
+\begin{center}
+\begin{tikzpicture}[x=1ex,y=1ex]
+\coordinate(hasklogoref) at (5,8);
+\foreach \i in {4,...,1} {
+	\pgfmathparse{(\i)^(-1.2)}
+	\edef\opac{\pgfmathresult}
+	\pgfmathparse{40 * \i}
+	\edef\angl{\pgfmathresult}
+	\haskelltikzlogo[rotate=\angl,opacity=\opac];
+	\haskelltikzlogo[rotate=-\angl,opacity=\opac];
+}
+\haskelltikzlogo[commodore];
+\end{tikzpicture}
+\end{center}
+\end{document}
+

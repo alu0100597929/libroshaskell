@@ -1,0 +1,23 @@
+\begin{thebibliography}{1}
+
+\bibitem{Bailey}
+D.~H. Bailey and P.~Swarztrauber.
+\newblock The fractional {F}ourier transform and applications.
+\newblock {\em SIAM Rev.}, 33(3):389--404, 1991.
+
+\bibitem{LYAH}
+Miran Lipovaca.
+\newblock {\em Learn You a Haskell for Great Good!: A Beginner's Guide}.
+\newblock No Starch Press, 2011.
+
+\bibitem{Ruiz:2004}
+Blas~C. Ruiz.
+\newblock {\em Razonando con Haskell. Un curso sobre programaci\'on funcional}.
+\newblock Thomson, 2004.
+
+\bibitem{CTFTS}
+David~D. Spivak.
+\newblock {\em Category Theory for the Sciences}.
+\newblock MIT Press, 2014.
+
+\end{thebibliography}
