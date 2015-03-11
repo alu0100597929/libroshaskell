@@ -3204,7 +3204,7 @@ Sabemos que debe producir un tipo concreto, porque se usa como el tipo de un val
 
 `Monad` es una clase como otra cualquiera (sí, aunque no te lo creas).
 
-Para que un tipo pueda ser instancia de `Monad` tiene que tener kind `* -> *`.
+**Nota:** para que un tipo pueda ser instancia de `Monad` tiene que tener kind `* -> *`. Este es un requisito **necesario, pero no suficiente**.
 
 * `Maybe :: * -> *`
 * `Maybe a :: *`    (ahora ya (Maybe a) no puede ser aplicado a ningún tipo más).
@@ -3287,15 +3287,15 @@ Ya que antes vimos que `Id :: a -> Id a`.
 
 Ahora definamos `(>>=)`:
 
-Su tipo general es: `(>==) :: M a -> (a -> M b) -> M b`.
+Su tipo general es: `(>>=) :: Monad m => m a -> (a -> m b) -> m b`.
 
 Su tipo concreto para el tipo `Id a` es:
 
-    (>==) :: Id a -> (a -> Id b) -> Id b
+    (>>=) :: Id a -> (a -> Id b) -> Id b
 
 Luego la propia definición nos programa a nosotros y nos dice qué tenemos que programar; como el primer argumento es de tipo `Id a`, tenemos que hacer reconocimiento de patrones (pattern matching):
 
-    (>==) :: Id a -> (a -> Id b) -> Id b
+    (>>=) :: Id a -> (a -> Id b) -> Id b
     (Id a) >>= f = f a
 
 Todo encaja. Mediante pattern matching hemos "sacado" el argumento tipo `a` de `Id a`, hemos aplicado `f` a dicho argumento y se procude al final un valor de tipo `Id b`, ¡luego hemos definido nuestra primera mónada!
