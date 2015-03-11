@@ -865,10 +865,10 @@ Si desarrollamos paso a paso sobre la lista `[True,False,True]` obtenemos:
     True && (False && (True && True))
 
 El último `True` es nuestro acumulador inicial, el resto viene de la lista de entrada. Si evaluamos esta 
-expresión, dará falso.
+expresión, dará `False`.
 
 ¿Qué ocurre si aplicamos esta función sobre una lista infinita, como puede ser `repeat False`, que tiene 
-infinitos elementos, todos ellos False?. Obtendríamos algo como:
+infinitos elementos, todos ellos `False`?. Obtendríamos algo como:
 
     False && (False && (False && False ...
 
@@ -885,14 +885,14 @@ devuelve `False`.
 Por tanto en nuestro ejemplo con valores sin fin en el que el primero es `False`, el segundo patrón se 
 cumple, retornando `False` sin que Haskell necesite evaluar el resto de la lista infinita.
 
-Por tanto, foldr funcionará sobre listas infinitas cuando la función binaria que le pasemos no necesite 
+Por tanto, `foldr` funcionará sobre listas infinitas cuando la función binaria que le pasemos no necesite 
 evaluar siempre su segundo parámetro para dar un resultado fijo. Por ejemplo, a `&&` no le importa el valor de su segundo parámetro si el valor del primer parámetro es `False`.
 
 # Unfolds
 
 # Scans
 
-Las funciones scanl y scanr son como foldl y foldr, excepto que devuelven todos los estados intermedios 
+Las funciones `scanl` y `scanr` son como `foldl` y `foldr`, excepto que devuelven todos los estados intermedios 
 del acumulador en forma de lista.
 
 Scanl deja el resultado final en el último elemento de la lista resultante.
@@ -925,11 +925,11 @@ La aplicación de funciones mediante un espacio es asociativa a izquierdas:
 
     f a b c es lo mismo que ((f a) b) c)
 
-La aplicación de funciones mediante el dólar ($) es asociativa a derechas:
+La aplicación de funciones mediante el dólar `($)` es asociativa a derechas:
 
     f $ g $ x es lo mismo que f $ (g $ x)
 
-Por tanto, podemos reescribir sum (filter (\> 10) (map (*2) [2..10])) como:
+Por tanto, podemos reescribir `sum (filter (\> 10) (map (*2) [2..10]))` como:
 
     sum $ filter (\> 10) $ map (*2) [2..10]
 
@@ -971,13 +971,13 @@ en la declaración de datos.
 Las clases de tipos son un tipo de interfaz que define ciertos comportamientos, y un tipo puede 
 hacerse instancia de una clase de tipos si soporta ese comportamiento.
 
-Por ejemplo el tipo Int es instancia de la clase de tipos `Eq` porque la clase de tipos `Eq` define 
+Por ejemplo el tipo `Int` es instancia de la clase de tipos `Eq` porque la clase de tipos `Eq` define 
 el comportamiento para las cosas de las cuales se puede comprobar si son iguales o distintas. Como es 
-posible comprobar si dos enteros son iguales, Int forma parte de la clase de tipos Eq.
+posible comprobar si dos enteros son iguales, `Int` forma parte de la clase de tipos `Eq`.
 
 La utilidad real de todo esto es que las funciones `==` y `/=` vienen definidas en la clase de tipos 
-Eq y por tanto podemos usarla en los Int y el resto de tipos dentro de la clase de tipos Eq. Debido a 
-esto, expresiones como `"freinn" == "guapo"` (true de toda la vida), ó `8 == 7` son aceptadas.
+`Eq` y por tanto podemos usarla en los `Int` y el resto de tipos dentro de la clase de tipos Eq. Debido a 
+esto, expresiones como `"freinn" == "guapo"` (`True` de toda la vida), ó `8 == 7` son aceptadas.
 
 Por tanto, las clases de tipos no tienen demasiado que ver con las clases de los lenguajes 
 imperativos orientados a objetos (C++, Ruby...).
@@ -988,7 +988,7 @@ En una declaración como esta:
 
     data Bool = False | True deriving (Ord)
 
-¿Qué constructor de valor da una instancia menor? La respuesta es sencilla, el que está definido primero, más a la izquierda (en este caso False).
+¿Qué constructor de valor da una instancia menor? La respuesta es sencilla, el que está definido primero, más a la izquierda (en este caso `False`).
 
     ghci> True `compare` False
     GT
@@ -1258,9 +1258,9 @@ constructo `<-`.
 <!-- fin de la lista -->
 
     main = do
-      foo <- putStrLn "Hello, what's your name?"
+      foo <- putStrLn "Hola, escribe tu nombre:"
       name <- getLine
-      putStrLn ("Hey " ++ name ++ ", you rock!")
+      putStrLn ("Me caes bien, " ++ nombre ++ "!")
 
 En este caso hemos ligado a `foo` el resultado producido por `putStrLn "Hello, what's your name?"` 
 mediante el constructo `<-`. ¿Tiene esto sentido? Bien poco, puesto que dicho resultado es la tupla vacía o unidad `()`.
@@ -1282,8 +1282,8 @@ Por tanto, las únicas cuatro maneras que tenemos de hacer acciones de E/S son:
 3. Se ejecutan los bloques que "caen" dentro de `main`, y un bloque puede
 contener otros definidos previamente.
 
-4. Ejecutándolas en una línea de GHCi. El propio GHCi aplica show al valor resultante, y después lo 
-imprime en la terminal mediante la acción putStrLn. 
+4. Ejecutándolas en una línea de GHCi. El propio GHCi aplica `show` al valor resultante, y después lo 
+imprime en la terminal mediante la acción `putStrLn`. 
 
 ## Let dentro de acciones E/S ##
 
@@ -1326,9 +1326,9 @@ Este programa no termina su ejecución hasta llegar a la última línea:
 
     main = do
       return ()
-      return "HAHAHA"
+      return "JAJAJA"
       line <- getLine
-      return "BLAH BLAH BLAH"
+      return "BLA BLA BLA"
       return 4
       putStrLn line
 
@@ -1465,11 +1465,11 @@ Si queremos transformar una lista de acciones E/S en una acción E/S, debemos se
 
 En GHCi, se muestran todos los resultados de las acciones...¿todos? te preguntarás, la respuesta es no. Se
 muestran todos los resultados distintos de (), la archiconocida unidad o tupla vacía. Debido a esto se 
-imprimió en el ejemplo anterior `[(),(),(),(),()]`, por ser distinto resultado de ().
+imprimió en el ejemplo anterior `[(),(),(),(),()]`, por ser distinto resultado de `()`.
 
-* Imprimir "hola", imprimirá hola y nada más, puesto que devuelve (), y () no se imprime.
+* Imprimir "hola", imprimirá hola y nada más, puesto que devuelve `()`, y `()` no se imprime.
 
-* La función `getLine`, se imprime su resultado, pues es una IO String, distinta de ().
+* La función `getLine`, se imprime su resultado, pues es una IO String, distinta de `()`.
 
 ### `mapM` ###
 
@@ -1509,7 +1509,7 @@ El siguiente programa pedirá entrada a un usuario y la devolverá pasada a may�
 
 ### `forM` ###
 
-Es básicamente lo mismo que mapM pero con el orden de los parámetros cambiados. Por ello, recibe una lista 
+Es básicamente lo mismo que `mapM` pero con el orden de los parámetros cambiados. Por ello, recibe una lista 
 y la función a mapear, que será luego secuenciada.
 
     import Control.Monad
@@ -1528,7 +1528,7 @@ color que hayamos elegido). La última acción del bloque `do` va a definir el t
 ello, se ha hecho un `return` color.
 
 Sin embargo, en este ejemplo esto no era necesario, puesto que `color <- getLine` simplemente "saca" el 
-resultado de getLine y lo liga a un nombre (en este caso color). Recordemos que el return va a devolver la 
+resultado de `getLine` y lo liga a un nombre (en este caso color). Recordemos que el `return` va a devolver la 
 acción que no hace nada y devuelve como resultado el tipo del parámetro que le pasemos. Por tanto el 
 programa anterior puede ser escrito de forma más cómoda:
 
@@ -1803,8 +1803,8 @@ Su primer parámetro es una acción E/S que adquiere un recurso, como un handle 
 parámetro es una función que libera ese recurso. Estas función es llamada incluso si ocurre una excepción. 
 El tercer parámetro es donde ocurre lo principal, como leer de un fichero o escribir en él.
 
-Como `bracket` va de adquirir un recurso, hacer algo con él, y asegurar que será liberado, implementar `
-withFile` es realmente sencillo:
+Como `bracket` va de adquirir un recurso, hacer algo con él, y asegurar que será liberado, implementar 
+`withFile` es realmente sencillo:
 
     withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
     withFile name mode f = bracket (openFile name mode)
@@ -1927,7 +1927,7 @@ ahora algo como esto:
 
 * Un nombre de plantilla para un fichero.
 
-Y abre un fichero temporal. Usamos "." como directorio porque en muchos sistemas denota el directorio 
+Y abre un fichero temporal. Usamos `.` como directorio porque en muchos sistemas denota el directorio 
 actual. La plantilla "temp" indica que el fichero temporal que se creará tendrá por nombre "temp" seguido 
 de algunos carácteres aleatorios. Devuelve una acción E/S que crea el fichero temporal, y cuyo resultado 
 será un par (tupla con dos elementos), que contiene: el nombre del fichero temporal y un handle.

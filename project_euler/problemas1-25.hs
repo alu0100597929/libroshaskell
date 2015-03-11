@@ -7,6 +7,8 @@ import System.Environment --getArgs
 import Control.Monad
 import qualified Data.Matrix as M --para el problema 11
 import qualified Data.Vector as V
+import qualified Data.Array as A
+import Data.Array.IO
 
 {-Problema 1-}
 
@@ -193,10 +195,12 @@ listaTriangulares' = scanl (+) 1 [2..]
 
 {-problema 13-}
 
+{-
 main = do
    args <- getArgs
    content <- readFile (args !! 0)
    print $ sum $ (leerInts . splitOn "\n") content
+-}
 
 -- normalmente se hace read "846195673" :: Int ó read "5232.488647" :: Float
 -- para pasar de un tipo a otro con un map usar una función con cabecera explícita
@@ -297,3 +301,34 @@ esNumeroAmigo n = n /= posibleAmigo && n == sumaDivisoresPropios posibleAmigo
     posibleAmigo = sumaDivisoresPropios n
 
 sol21 = sum [x | x <- [1..9999], esNumeroAmigo x]
+
+{-problema 23-}
+
+{-
+divisoresPropios n = filter (\x -> (n `mod` x) == 0) [1..n `div` 2]
+
+esAbundante = ap (<) (sum . divisoresPropios)
+
+noEscribible n = null [x | x <- todos, esAbundante (n-x)]
+  where
+    todos = filter esAbundante [12..n-12]
+
+solucion23 = sum $ filter (noEscribible) [1..20161]
+
+main = print solucion23
+-}
+
+solucion23 = print . sum $ filter (not . test) [1..28123]
+
+test n = or [(abundant A.! a) && (abundant A.! (n-a)) | a <- [1..div n 2]]
+
+abundant = A.listArray (0,max) $ map isAbundant [0..max] where max = 28123
+
+isAbundant n = n < (sum $ divisors n)
+
+divisors n = 1 : (nub $ facs ++ (map (div n) . reverse) facs)
+  where
+    facs = filter ((== 0) . mod n) [2..sqrt' n]
+    sqrt' n = (floor . sqrt . fromIntegral) n
+
+main = solucion23
