@@ -5,10 +5,21 @@
 - correo electrónico: freinn@gmail.com
 - fecha: Marzo 2015
 
+<!-- -->
+
 # Tutorial de Haskell
 
-![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haskell_negativo.png)  
-\  
+\
+\ 
+\
+\
+\
+\
+\
+\
+\
+\
+![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_negativo.png)\ ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_normal.png)
 \
 \
 \
@@ -18,13 +29,23 @@
 \
 \
 \
+\
+\
+
+*"Sábete, Sancho, que no es un hombre más que otro, si no hace más que otro"* - Don Quijote de la Mancha. Capítulo XVIII.
+
+\   
+\   
+\   
+\   
+
 Reacción típica de un programador al ver su primer fragmento de código Haskell:
 
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haydiomio.png)
 
 # Uso de GHCi:
 
-GHCi es el intérprete que viene con GHC (The Glorious Glasgow Haskell Compilation System). Nos permite evaluar expresiones en tiempo real, sin tener que compilar y ejecutar separadamente.
+GHCi es el intérprete que viene con GHC (The Glorious Glasgow Haskell Compilation System). Nos permite evaluar expresiones al vuelo, sin tener que compilar y ejecutar separadamente.
 
 ## Comandos de GHCi:
 
@@ -85,7 +106,7 @@ así que usamos eso para combinar la aplicación de dos funciones.
 
 ## exercism
 
-ARN
+### ARN
 
 Queremos resolver el siguiente problema: dada una cadena de ADN, queremos pasarlo a ARN. Para ello hay que 
 cambiar 'C' por 'G', 'G' por 'C', 'A' por 'U' y 'T' por 'A'.
@@ -242,7 +263,7 @@ En lenguajes imperativos, el mismo nombre puede ser asociado a diferentes valore
 Los lenguajes funcionales se basan en llamadas estructuradas a funciones. Un programa funcional es una
 expresión consistentente en una llamada a una función que llama a otras funciones.
 
-\<función1\>(\<función2\>(\<función3\>...)...))
+    \<función1\>(\<función2\>(\<función3\>...)...))
 
 Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce como
 composición o anidamiento de funciones.
@@ -349,7 +370,7 @@ programa en paralelo.
 
 # Composición de funciones
 
-El libro da unas restricciones de argumento s y valores de retorno muy buenas.
+El libro da unas restricciones de argumentos y valores de retorno muy buenas.
 La composición es asociativa a la derecha.
 
 **Truco:** para entender la notación de composición con poco riesgo de equivocarse, es muy útil hablar de
@@ -3732,3 +3753,46 @@ Esto se parece mucho a una comprensión de listas, por lo cual podríamos sospec
 
     *Main> pairs'' [1,2] [3,4]
     [(1,3),(1,4),(2,3),(2,4)]
+
+## La mónada escritora
+
+Esta sección necesita mejoras:
+
+Veamos ahora una mónada bastante interesante, que permite ir guardando la información histórica que queramos.
+
+    data Writer m a = Writer m a
+
+    class ForWriter t where
+      something :: t
+      combine :: t -> t -> t
+
+Hagamos las instancias por orden, para cumplir los requisitos de GHC 7.10, debemos hacer todas nuestras mónadas instancia de `Applicative`, pero para que algo sea instancia de `Applicative` primero debe ser instancia de `Functor`:
+
+**Recuerda:** `fmap :: Functor f => (a -> b) -> f a -> f b`.
+
+    instance Functor (Writer m) where
+      
+      fmap f (Writer m a) = Writer m (f a)
+ 
+**Recuerda:** `pure :: a -> f a`
+`(<*>) :: f (a -> b) -> f a -> f b`
+`(<*>) :: Writer m (a -> b) -> Writer m a -> Writer m b`
+
+    instance ForWriter m => Applicative (Writer m) where
+      
+      pure a = Writer something a
+
+      Writer m f <*> Writer m' a = Writer (combine m m') (f a)
+
+Finalmente, hagamos una mónada que compile:
+
+**Recuerda:** `return :: a -> m a`
+`(>>=) :: m a -> (a -> m b) -> m b`
+
+    instance ForWriter m => Monad (Writer m) where
+      
+      return a = Writer something a
+
+      Writer m a >>= f =
+        let Writer m' b = f a -- esto se puede hacer porque el tipo sólo tiene un constructor
+          in Writer (combine m m') b
