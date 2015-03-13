@@ -499,6 +499,22 @@ podemos pasárselas a otras funciones.
 
 <!--inicio de la parte más básica del tutorial-->
 
+# Rompiendo tus esquemas básicos
+
+En la programación funcional, lo principal (y en realidad, lo único) que haremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
+
+    ochenta :: Int
+
+Se puede leer como `ochenta` de tipo `Int`.
+
+A continuación, escribimos una definición:
+
+    ochenta = 80
+
+En Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida.
+
+Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
+
 # Listas
 
 Las listas son el tipo más importante para aprender programación funcional. Una lista de 
