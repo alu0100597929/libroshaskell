@@ -50,7 +50,7 @@ dosVeces = twice (\x -> x * x + 10) 5
 -- El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos.
 -- Los constructores de datos son funciones que producen valores del tipo dado.
 
---data Persona = CrearPersona String Int
+--data Persona = Persona String Int
 --     |         |
 --     |         Constructor de datos
 --     |
@@ -58,14 +58,62 @@ dosVeces = twice (\x -> x * x + 10) 5
 
 -- Si solo hay un constructor de datos, podemos llamarlo igual que
 -- el de tipo, ya que es imposible sustituirlos sintácticamente
-data Persona = Persona String Int
+--data Persona = Persona String Int
+data Persona a = PersonaConCosa String a | PersonaSinCosa String
+--           |                         |
+--           |                         podemos usarla aquí
+--           |
+--           Añadiendo una "variable de tipo" aquí
 
-fran :: Persona
-fran = Persona "Fran" 25
+franConEdad :: Persona Int
+franConEdad = PersonaConCosa "fran" 25
 
-getNombre :: Persona -> String
-getNombre (Persona nombre _) = nombre
+franSinEdad :: Persona Int
+franSinEdad = PersonaSinCosa "fran"
 
-getEdad :: Persona -> Int
-getEdad (Persona _ edad) = edad
+getNombre :: Persona Int -> String
+getNombre (PersonaConCosa nombre _) = nombre
+getNombre (PersonaSinCosa nombre)   = nombre
 
+getEdad :: Persona Int -> Maybe Int
+getEdad (PersonaConCosa _ edad) = Just edad
+getEdad (PersonaSinCosa _)      = Nothing
+
+-- Incluso en el caso en el cual no añadimos la edad, especificamos
+-- el tipo de aquello que no tenemos. Esa "a" podría ser cualquier tipo:
+
+franConCorreo :: Persona String
+franConCorreo = PersonaConCosa "fran" "freinn@gmail.com"
+
+franSinCorreo :: Persona String
+franSinCorreo = PersonaSinCosa "fran"
+
+dobleEdad :: Persona Int -> Maybe Int
+dobleEdad (PersonaConCosa _ edad) = Just (2 * edad)
+dobleEdad (PersonaSinCosa _)      = Nothing
+
+-- La gran utilidad de Maybe es pasar de funciones parciales a
+-- funciones totales.
+
+-- | Find the first element from the list for which the predicate function
+-- returns True. Return Nothing if there is no such element.
+find' :: (a -> Bool) -> [a] -> Maybe a
+find' _ [] = Nothing
+find' predicate (first:rest) =
+  if predicate first
+    then Just first
+    else find' predicate rest
+
+--
+-- Warning: this is a type error, not working code!
+--
+-- findUser :: UserId -> User
+-- findUser uid = find (matchesId uid) allUsers
+
+{-
+findUser :: UserId -> User
+findUser uid =
+  case find (matchesId uid) allUsers of
+    Just u -> u
+    Nothing -> -- what to do? error?
+-}
