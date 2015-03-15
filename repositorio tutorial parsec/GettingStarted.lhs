@@ -29,7 +29,7 @@ Here are the imports.
 
 Introduciendo este import funciona, si no, peta
 
-> import Text.ParserCombinators.Parsec
+> import Text.ParserCombinators.Parsec hiding (anyChar)
 
 = Getting started
 
