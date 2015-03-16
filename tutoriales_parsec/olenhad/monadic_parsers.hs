@@ -1,5 +1,8 @@
 -- http://olenhad.me/articles/monadic-parsers/
 
+import Control.Applicative
+import Control.Monad       (liftM, ap)
+
 data Parser a = Parser (String -> [(a, String)])
 
 item :: Parser Char
@@ -43,8 +46,15 @@ satisfies p = item `bind` \c ->
 instance Functor Parser where
   fmap f (Parser a) = Parser (\s -> map (\(a, s') -> (f a, s')) $ a s)
 
+-- pure :: a -> f a
+-- (<*>) :: f (a -> b) -> f a -> f b
+-- (<*>) :: Parser (a -> b) -> Parser a -> Parser b
+instance Applicative Parser where
+  pure a = Parser (\s -> [(a, s)])
+  (<*>) = ap -- TODO, hacer esto sin chetos
+
 instance Monad Parser where
-   return a = Parser (\s -> [(a,s)])
-   p >>= f = Parser (\s -> concat $
-                         map (\ (a, s') -> parse (f a) s')
-                             $ parse p s)
+  return a = Parser (\s -> [(a,s)])
+  p >>= f = Parser (\s -> concat $
+                       map (\ (a, s') -> parse (f a) s')
+                           $ parse p s)

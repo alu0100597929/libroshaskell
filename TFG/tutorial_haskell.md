@@ -786,6 +786,13 @@ Un ejemplo de `foldl` en acción; la siguiente función pasa una lista (cuyos el
 Como vemos, es una implementación muy concisa. Podemos pensar en `foldl` como una especie
 de bucle for en programación imperativa, que va acumulando el resultado paso a paso, y ejecutando la misma operación hasta que llega al final de la lista.
 
+## Código de foldr
+
+    foldr k z = go
+              where
+                go []     = z
+                go (y:ys) = y `k` go ys
+
 ## Desplegado generalizado de foldr: ##
 
 Sea `f` una función y `z` el acumulador:
