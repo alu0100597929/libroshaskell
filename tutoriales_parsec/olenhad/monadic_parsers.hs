@@ -26,6 +26,9 @@ satisfies p = item `bind` \c ->
 
 -- data Parser a = Parser (String -> [(a, String)])
 -- fmap :: Functor f => (a -> b) -> f a -> f b
+-- importante, el constructor de tipos va en las definiciones de tipos
+-- por tanto, debemos sustituir f en este caso por Parser, que tiene kind * -> *
+-- fmap :: (a -> b) -> Parser a -> Parser b
 
 {-
 /home/freinn/libroshaskell/tutoriales_parsec/olenhad/monadic_parsers.hs:31:31:
@@ -38,7 +41,7 @@ satisfies p = item `bind` \c ->
 
 -- como siempre, se trata de hacer que los tipos encajen
 instance Functor Parser where
-  fmap f (Parser a) = Parser (\ s -> map (\ (a, s') -> (f a, s') ) $ a s)
+  fmap f (Parser a) = Parser (\s -> map (\(a, s') -> (f a, s')) $ a s)
 
 instance Monad Parser where
    return a = Parser (\s -> [(a,s)])
