@@ -489,13 +489,13 @@ podemos pasárselas a otras funciones.
 
 Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar.
 
-Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC. En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a esta versión (por ejemplos las instancias de la clase `Monad` deben ser instancias de `Applicative` y por ello, también de `Functor`).
+Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC. En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a esta versión (por ejemplo las instancias de la clase `Monad` deben ser instancias de `Applicative` y por ello, también de `Functor`).
 
 Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso Kubuntu y Manjaro en la actualidad.
 
 Por ello, las instrucciones de instalación de GHC que daré serán válidas en distros derivadas de Debian y de Arch Linux.
 
-## Instalación en Manjaro/Arch Linux
+## Instalación en Arch Linux/Manjaro
 
 Las instrucciones para la instalación de todos los paquetes se pueden encontrar [aquí](https://wiki.archlinux.org/index.php/haskell).
 
@@ -527,7 +527,7 @@ Después de darle los 30€ que tu amigo se ha ganado, ya puedes limpiarte el su
 
 ## Jugando con GHCi
 
-Para inicial GHCi usaremos el comando `ghci` en la consola que tengamos, lo cual cargará el intérprete y podremos empezar a usarlo. Podemos compilar ficheros de texto o introducir al vuelo nuestras funciones creadas y evaluarlas. Veamos una sesión de ejemplo para ver qué se puede evaluar sin definir nada previamente:
+Para iniciar GHCi usaremos el comando `ghci` en la consola que tengamos, lo cual cargará el intérprete y podremos empezar a usarlo. Podemos compilar ficheros de texto o introducir al vuelo nuestras funciones creadas y evaluarlas. Veamos una sesión de ejemplo para ver qué se puede evaluar sin definir nada previamente:
 
     *Main> sqrt 56
     7.483314773547883
@@ -663,7 +663,7 @@ Las funciones `abs` y `signum` deben cumplir la siguiente ley:
     *Main> fromInteger 16 :: Rational 
     16 % 1
 
-En los números racionales de Haskell (`Rational`), el `%` indica la raya de fracción.
+**Nota:** En los números racionales de Haskell (`Rational`), el `%` indica la raya de fracción.
 
     *Main> sqrt (fromIntegral 16)
     4.0
@@ -707,6 +707,59 @@ Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 progra
 **Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
 **Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
+
+Definamos ahora una función `sumar` que reciba dos parámetros y los sume:
+
+    sumar :: Int -> Int -> Int
+    sumar a b = a + b
+
+La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una función `add` que tiene el mismo efecto. Asimismo, podríamos usar la función `(+)` (y de hecho ya la estamos utilizando en `sumar`, que sólo es un wrapper).
+
+    *Main> sumar 4 5
+    9
+    *Main> (+) 4 7
+    11
+    *Main> 4 + 7
+    11
+    *Main> 4 `sumar` 11
+    15
+
+Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
+
+## Comprensiones de Listas
+
+En la notación de conjuntos se usa una definición intensiva o por comprensión cuando se requiere que el lector (o el lenguaje de programación y por tanto, el ordenador) conozca las propiedades de los elementos de ese conjunto y los límites de generación.
+
+En Haskell hay una herramienta muy poderosa que nos permite crear conjuntos que cumplan todas las restricciones que notros queramos, por ejemplo para resolver problemas con restricciones.
+
+Por ejemplo, queremos saber cuáles son las longitudes de los lados de un subconjunto de los triángulos rectángulos cuya hipotenusa mida un máximo de 100 unidades métricas cualesquiera. Para ello escribimos una función:
+
+    comprension :: [(Int,Int,Int)]
+    comprension = [(a,b,c) | a <- [1..100], b <- [a + 1..100], c <- [b + 1..100], a^2 + b^2 == c^2]
+
+En esta función nos damos cuenta de las siguientes cosas:
+
+1. Su tipo retorno es una lista (entre corchetes) que contiene una tupla con tres `Int`. Estos tres `Int` son las longitudes de los tres lados de cada triángulo que entrará en la solución.
+
+2. La comprensión se define entre corchetes, y está dividida en tres partes. 1) (antes de la barra vertical) Tipo que contendrá la lista solución, en este caso `(a,b,c)` 2) Elementos que se generarán. Están compuestos de un nombre al cual se van enlazando valores de la lista que le pasemos. Los generadores se separan por comas. `a <- [1..100], b <- [a..100], c <- [b..100]` 3) condición o condiciones, separadas también por comas, en este caso `a^2 + b^2 == c^2`.
+
+Hemos usado un pequeño truco que es muy útil para estos casos y para la optimización de bucles en un lenguaje imperativo. Vemos que cuando b va a tomar un valor, su lista no empieza en `1`, sino en el actual valor de `a` incrementado en 1, y lo mismo ocurre para `c`, que empieza en el valor actual de `b` incrementado en 1. De este modo, no obtendremos repeticiones de triángulos en nuestra lista sin la necesidad de añadir condiciones adicionales.
+
+Para tener una idea del orden en que se van creando las tuplas o listas que queramos, veamos un ejemplo:
+
+    *Main> [(a,b,c) | a <- [1,2], b <- [3,4], c <- [5,6]]
+    [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
+
+Como vemos, primero se liga un valor al nombre `a`, después al `b` y por último, el que más cambia de una tupla a otra, será el `c`.
+
+Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos hacer una función que comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor en la lista de números desde `2` hasta `n-1`:
+
+    esPrimo :: Integer -> Bool
+    esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
+
+Aquí usamos otro pequeño truco, nos creamos una lista con todos los potenciales divisores del número, efectuamos la división, nos quedamos con el módulo y comprobamos si es cero (con lo cual sería divisible). Estos números irán a parar a la lista solución como `k`s, por tanto, desde que esa lista contenga un sólo elemento, ya el número no será primo.
+
+La función `null` recibe una lista, devolviendo `True` si está vacía (por lo tanto `n` es primo) y `False` en caso de que contenga al menos un elemento.
 
 # Listas
 

@@ -1,5 +1,6 @@
 import Data.List
 import Data.Char(toUpper)
+import Data.Numbers.Primes
 
 letraDNI :: Int -> Char
 letraDNI n = ['T','R','W','A','G','M','Y','F','P','D','X','B','N','J','Z','S','Q','V','H','L','C','K','E'] !! (n `mod` 23)
@@ -55,7 +56,8 @@ reverse' :: [a] -> [a]
 reverse' [] = []
 reverse' (x:xs) = reverse' xs ++ [x]
 
-compresion = [(a,b,c) | a <- [1..100], b <- [a..100], c <- [b..100], a^2 + b^2 == c^2]
+comprension :: [(Int,Int,Int)]
+comprension = [(a,b,c) | a <- [1..100], b <- [a + 1..100], c <- [b + 1..100], a^2 + b^2 == c^2]
 
 sumar :: Int -> Int -> Int
 sumar a b = a + b
@@ -79,3 +81,6 @@ posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> succ x
                                                             Nothing -> -1
   where
     alfabeto = ['A'..'M'] ++ ['Ñ'] ++ ['O'..'Z']
+
+esPrimo :: Integer -> Bool
+esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
