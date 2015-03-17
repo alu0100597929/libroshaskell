@@ -499,9 +499,19 @@ podemos pasárselas a otras funciones.
 
 <!--inicio de la parte más básica del tutorial-->
 
+# Primeros pasos
+
+Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar.
+
+Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC. En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a esta versión (por ejemplos las instancias de la clase `Monad` deben ser instancias de `Applicative` y por ello, también de `Functor`).
+
+Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso Kubuntu y Manjaro en la actualidad.
+
+Por ello, las instrucciones de instalación de GHC serán 
+
 # Rompiendo tus esquemas básicos
 
-En la programación funcional, lo principal (y en realidad, lo único) que haremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
+En la programación funcional, la principal actividad (y en realidad, lo único) que realizaremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
 
     ochenta :: Int
 
@@ -520,7 +530,7 @@ Esta propiedad es conocida como **transparencia referencial** y es y será ciert
 Las listas son el tipo más importante para aprender programación funcional. Una lista de 
 `Int` que contenga los valores 1,2,3 puede ser escrita como `1:2:3:[]`, o de una forma más azucarada 
 sintácticamente, `[1,2,3]`. La principal propiedad de las listas es que son *homogéneas*, es decir, 
-contienen ninguna, una o muchas (incluso infinitas) instancias del mismo tipo.
+contienen ninguna, una o muchas (incluso infinitas) instancias *del mismo tipo*.
 
 Por ello, puede haber listas de funciones, de enteros, de flotantes, de booleanos, y de todos los 
 tipos que se nos puedan ocurrir, incluso de listas (formando listas de listas).
