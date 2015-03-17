@@ -4,6 +4,9 @@ import Data.Char(toUpper)
 letraDNI :: Int -> Char
 letraDNI n = ['T','R','W','A','G','M','Y','F','P','D','X','B','N','J','Z','S','Q','V','H','L','C','K','E'] !! (n `mod` 23)
 
+fact 0 = 1
+fact n = n * fact (n-1)
+
 factorial :: Integer -> Integer
 factorial n
   | n < 0  = error "no existe el factorial para enteros negativos"

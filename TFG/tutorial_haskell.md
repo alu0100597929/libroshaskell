@@ -43,20 +43,6 @@ Reacción típica de un programador al ver su primer fragmento de código Haskel
 
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haydiomio.png)
 
-# Uso de GHCi:
-
-GHCi es el intérprete que viene con GHC (The Glorious Glasgow Haskell Compilation System). Nos permite evaluar expresiones al vuelo, sin tener que compilar y ejecutar separadamente.
-
-## Comandos de GHCi:
-
-* `Ctrl + L` es una combinación de teclas que **limpia cualquier consola en sistemas POSIX**, también funciona en GHCi. Es equivalente a `:! clear`.
-* `:l nombre_fichero` sirve para **compilar** (e interpretar luego las aplicaciones que queramos) el fichero dado.
-* `:r` sirve para **recompilar** al vuelo el último fichero compilado.
-* `:t expresión` nos permite **comprobar el tipo** de una expresión.
-* `:k expresión_de_tipo` nos permite **comprobar el kind** de un tipo.
-* `:i función` es una opción de GHCi que nos permite ver la **fijeza** (o asociatividad) de un operador.
-* `:q` sirve para **salir** limpiamente de GHCi.
-
 # Asociatividad de los elementos de Haskell
 
 Asocian **a izquierdas:**
@@ -507,23 +493,195 @@ Lo primero que debemos hacer es instalar un compilador. Para ello tenemos divers
 
 Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso Kubuntu y Manjaro en la actualidad.
 
-Por ello, las instrucciones de instalación de GHC serán 
+Por ello, las instrucciones de instalación de GHC que daré serán válidas en distros derivadas de Debian y de Arch Linux.
 
-# Rompiendo tus esquemas básicos
+## Instalación en Manjaro/Arch Linux
+
+Las instrucciones para la instalación de todos los paquetes se pueden encontrar [aquí](https://wiki.archlinux.org/index.php/haskell).
+
+Lo primero que debemos hacer es sincronizar la base de datos de los repositorios si no lo has hecho recientemente:
+
+    sudo pacman -Syyu
+
+Si esto falla, podemos intentar la solución típica:
+
+    sudo pacman-key --init
+    sudo pacman-key --populate archlinux
+    sudo pacman-key --populate manjaro
+    sudo pacman-key --refresh-keys
+    sudo pacman -Syyu
+
+Ahora procedemos a instalar los paquetes más importantes, de los repositorios oficiales:
+
+    sudo pacman -S ghc cabal-install
+
+Esto instala lo más importante, que es ghc (compilador), ghci (intérprete), runhaskell (permite ejecutar código "al vuelo" y hacer scripts de bash), entre otras cosas. Además instala cabal, que es un gestor de paquetes que nos permite instalar las librerías que queramos de los repositorios oficiales de Haskell, las cuales están muy bien optimizadas y suelen ser cómodas de usar.
+
+## Instalación en Debian/Ubuntu
+
+Es una instalación muy complicada, mejor llama a un hamijo juanker:
+
+    sudo apt-get install haskell-platform
+
+Después de darle los 30€ que tu amigo se ha ganado, ya puedes limpiarte el sudor de la frente y empezar a programar.
+
+## Jugando con GHCi
+
+Para inicial GHCi usaremos el comando `ghci` en la consola que tengamos, lo cual cargará el intérprete y podremos empezar a usarlo. Podemos compilar ficheros de texto o introducir al vuelo nuestras funciones creadas y evaluarlas. Veamos una sesión de ejemplo para ver qué se puede evaluar sin definir nada previamente:
+
+    *Main> sqrt 56
+    7.483314773547883
+    *Main> sqrt 45.798
+    6.767421961131137
+    *Main> 447 + 789798
+    790245
+    *Main> "hola"
+    "hola"
+    *Main> "ola" ++ " k " ++ "ase"
+    "ola k ase"
+    *Main> 2^100
+    1267650600228229401496703205376
+    *Main> 2^1000
+    10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069376
+
+Como vemos, Haskell soporta aritmética con enteros enormes (tanto como nuestra memoria principal nos permita), y hemos visto ejemplos de operaciones con números y cadenas. 
+
+Veamos ahora la función `div` que permite realizar divisiones enteras:
+
+    *Main> div 45 12
+    3
+
+Como vemos, recibe dos parámetros, el primero será el dividendo y el segundo el divisor.
+
+    *Main> 45 `div` 12
+    3
+
+Aquí estamos haciendo exactamente la misma operación, pero con la función `div` aplicada de modo infijo. Para ello tenemos que poner el primer argumento, el nombre de la función entre commillas hacia la izquierda y por último el segundo argumento.
+
+Veamos ahora la división con decimales, que se hace igual que en la mayoría de lenguajes, con `/`:
+
+    *Main> (/) 45 12
+    3.75
+    *Main> 45 / 12
+    3.75
+
+Como se trata de un operador, para llamarlo de modo prefijo como en la primera línea del ejemplo, debemos ponerlo entre paréntesis `(/)`. Para usarlo de modo infijo, como vemos, no hacen falta las comillas, de hecho, si las ponemos, obtendremos un error.
+
+    *Main> 45 `/` 12
+
+    <interactive>:18:5: parse error on input ‘/’
+
+Veamos algunos ejemplos más, y te invito a probar funciones y expresiones que veas por ahí:
+
+    *Main> 3 == 5
+    False
+    *Main> 3 == (6 `div` 2)
+    True
+    *Main> 3 == 3.0
+    True
+
+La función `compare` recibe dos parámetros y nos devuelve cómo es el primero respecto al segundo; mayor (`GT`), igual (`EQ`), menor (`LT`):
+
+    *Main> compare 3 3
+    EQ
+    *Main> compare 3 3.0
+    EQ
+    *Main> compare 4 3
+    GT
+    *Main> compare 4 8
+    LT
+
+Las funciones `succ` y `pred` devuelven, respectivamente, el sucesor y el predecesor de un número dado.
+
+    *Main> succ 78
+    79
+    *Main> pred 78
+    77
+    *Main> pred 0
+    -1
+
+La función unaria `negate` cambia el signo a un número:
+
+    *Main> negate 13
+    -13
+    *Main> negate (-13)
+    13
+    *Main> negate -13
+
+    <interactive>:35:1:
+        No instance for (Show (a0 -> a0)) arising from a use of ‘print’
+        In a stmt of an interactive GHCi command: print it
+
+Como vemos, la función `negate` es simétrica ya que cumple la propiedad:
+
+`negate x == negate (-x)` ó `negate (negate x) == x`
+
+La función `abs` devuelve el valor absoluto de un número:
+
+    *Main> abs 554.71
+    554.71
+    *Main> abs (-554.71)
+    554.71
+
+La función `signum` devuelve el signo de un número real expresado mediante un entero; -1 si el real es negativo, 0 si el real es 0, 1 si el real es positivo.
+
+Las funciones `abs` y `signum` deben cumplir la siguiente ley:
+
+    abs x * signum x == x
+
+`fromInteger` pasa de un entero al tipo que le especifiquemos:
+
+    *Main> fromInteger 1649725 :: Float
+    1649725.0
+    *Main> fromInteger 1649725 :: Rational 
+    1649725 % 1
+    *Main> fromInteger 16 :: Rational 
+    16 % 1
+
+En los números racionales de Haskell (`Rational`), el `%` indica la raya de fracción.
+
+    *Main> sqrt (fromIntegral 16)
+    4.0
+    *Main> sqrt 16
+    4.0
+
+En versiones de GHCi anteriores de 7.8.X la primera línea debía ser así obligatoriamente.
+Hoy en día hay una inferencia de tipos mejorada que nos permite programar más cómodamente.
+
+# Comandos de GHCi:
+
+* `Ctrl + L` es una combinación de teclas que **limpia cualquier consola en sistemas POSIX**, también funciona en GHCi. Es equivalente a `:! clear`.
+* `:l nombre_fichero` sirve para **compilar** (e interpretar luego las aplicaciones que queramos) el fichero dado con nombre `nombre_fichero`.
+* `:r` sirve para **recompilar** al vuelo el último fichero compilado.
+* `:t expresión` nos permite **comprobar el tipo** de una expresión.
+* `:k expresión_de_tipo` nos permite **comprobar el kind** de un tipo.
+* `:i función` es una opción de GHCi que nos permite ver la **fijeza** (o asociatividad) de un operador.
+* `:q` sirve para **salir** limpiamente de GHCi.
+
+# Definiendo nuestras primeras funciones
 
 En la programación funcional, la principal actividad (y en realidad, lo único) que realizaremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
 
     ochenta :: Int
 
-Se puede leer como `ochenta` de tipo `Int`.
+Las declaraciones de tipos suelen ser así:
 
-A continuación, escribimos una definición:
+    nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipo1N
+
+Donde la función recibe un número N parámetros. De momento, vamos a pensar que el último parámetro es el tipo de retorno, por tanto nuestra función `ochenta` no recibe nada (no hay ninguna flecha) sino que devuelve un valor de tipo `Int`.Se puede leer como `ochenta` de tipo `Int`.
+
+A continuación, escribimos la definición de `ochenta`:
 
     ochenta = 80
 
-En Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida.
+Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 programado duramente (sin calcularlo, simplemente escribiendo un inmediato). Veamos ahora la definición completa que nos permitirá ver la función con mayor claridad.
 
-Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
+    ochenta :: Int
+    ochenta = 80
+
+**Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
+
+En Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
 
 # Listas
 
