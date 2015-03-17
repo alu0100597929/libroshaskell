@@ -580,6 +580,31 @@ Veamos algunos ejemplos más, y te invito a probar funciones y expresiones que v
     *Main> 3 == 3.0
     True
 
+La función `mod`, como en otros muchos lenguajes, calcula el signo de la división entera:
+
+    Prelude> mod 12 5
+    2
+    Prelude> 12 `mod` 5
+    2
+
+La función `divMod` calcula simultáneamente el resultado de la división entera y el módulo, y los devuelve en forma de tupla (cociente, resto):
+
+    Prelude> divMod 12 5
+    (2,2)
+    Prelude>  12 `divMod` 3
+    (4,0)
+    Prelude>  12 `divMod` 2
+    (6,0)
+    Prelude>  13 `divMod` 2
+    (6,1)
+
+Hablaremos de las tuplas más adelante, pues son un tipo heterogéneo, y nos permite almacenar datos con un cierto orden, pero que no tienen por qué ser del mismo tipo, por ejemplo, podemos guardar el nombre y la edad de diversas personas (a cual más rocosa en este caso):
+
+    Prelude> ("Chuck Norris", 75)
+    ("Chuck Norris",75)
+    Prelude> ("Sylvester Stallone", 68)
+    ("Sylvester Stallone",68)
+
 La función `compare` recibe dos parámetros y nos devuelve cómo es el primero respecto al segundo; mayor (`GT`), igual (`EQ`), menor (`LT`):
 
     *Main> compare 3 3
@@ -646,7 +671,7 @@ En los números racionales de Haskell (`Rational`), el `%` indica la raya de fra
     4.0
 
 En versiones de GHCi anteriores de 7.8.X la primera línea debía ser así obligatoriamente.
-Hoy en día hay una inferencia de tipos mejorada que nos permite programar más cómodamente.
+Hoy en día hay una inferencia de tipos mejorada que nos permite programar más cómodamente, como en la segunda línea.
 
 # Comandos de GHCi:
 
@@ -681,7 +706,7 @@ Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 progra
 
 **Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
-En Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
+**Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
 
 # Listas
 
