@@ -84,3 +84,8 @@ posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> succ x
 
 esPrimo :: Integer -> Bool
 esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
+
+-- esto es una primitiva recursiva, por tanto sólo funciona para naturales
+sumaRec :: Int -> Int -> Int
+sumaRec n 0 = n
+sumaRec n a = sumaRec (n + 1) (a - 1)

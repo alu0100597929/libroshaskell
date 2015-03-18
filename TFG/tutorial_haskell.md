@@ -565,6 +565,8 @@ La función unaria `negate` cambia el signo a un número:
         No instance for (Show (a0 -> a0)) arising from a use of ‘print’
         In a stmt of an interactive GHCi command: print it
 
+En Haskell, intentar usar `-13` como expresión nos dará un error, y debemos ponerlo entre paréntesis para que sea aceptado y evaluado convenientemente.
+
 Como vemos, la función `negate` es simétrica ya que cumple la propiedad:
 
 `negate x == negate (-x)` ó `negate (negate x) == x`
