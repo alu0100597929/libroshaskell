@@ -86,10 +86,6 @@ curryficar ~= fijar
 
 Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
 
-El operador de composición de funciones, `(.)`, crea una función que aplica 
-su argumento derecho y luego pasa el resultado a su argumento izquierdo, 
-así que usamos eso para combinar la aplicación de dos funciones.
-
 ## exercism
 
 ### ARN
@@ -352,62 +348,7 @@ otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y o
 particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
 programa en paralelo.
 
-# "IDEAS IMPORTANTES: Razonando con Haskell"
-
-# Composición de funciones
-
-El libro da unas restricciones de argumentos y valores de retorno muy buenas.
-La composición es asociativa a la derecha.
-
-**Truco:** para entender la notación de composición con poco riesgo de equivocarse, es muy útil hablar de
-`f · g` como "`f` después de `g`".
-
-Si la solución a un problema consta de varias etapas, podemos definir cada una de ellas como funciones
-independientes y componer todas para solucionar el problema.
-
-En Haskell, la función composición es `(.)`, veamos un ejemplo.
-
-    ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
-    [-5,-3,-6,-7,-3,-2,-19,-24]
-
-La expresión `f (g (z x))` es equivalente a `(f . g . z) x`. Por tanto, podemos transformar algo un poco
-lioso, como esto:
-
-    ghci> map (\xs -> negate (sum (tail xs))) [[1..5],[3..6],[1..7]]
-    [-14,-15,-27]
-
-En una línea de código mucho más clara, casi autodescriptiva:
-
-    ghci> map (negate . sum . tail) [[1..5],[3..6],[1..7]]
-    [-14,-15,-27]
-
-Por tanto, lo primero que hace esta nueva función es el valor absoluto, `abs`, y después cambia el signo
-`negate`,dando como resultado una lista con todos los números iniciales pasados a negativo.
-
-Composición con múltiples parámetros:
-
-Para conseguir esto, tenemos que valernos de la aplicación parcial de funciones. Veámoslo con un ejemplo:
-
-    sum (replicate 5 (max 6.7 8.9))
-
-Puede ser transformada en:
-
-    (sum . replicate 5) max 6.7 8.9
-
-    sum . replicate 5 $ max 6.7 8.9
-
-Si queremos reescribir una expresión con un montón de paréntesis usando composición de funciones, podemos
-empezar escribiendo la función más interna y sus parámetros. Delante de ella escribimos `$` y componemos
-todas las funciones que venían antes escribiéndolas sin su último parámetro y poniendo puntos entre ellas. 
-Por ejemplo:
-
-    replicate 2 (product (map (*3) (zipWith max [1,2] [4,5])))
-
-Puede ser reescrito como:
-
-    replicate 2 . product . map (*3) $ zipWith max [1,2] [4,5]
-
-**Truco:** Una expresión con n paréntesis tendrá n-1 operadores de composición `(.)`.
+# "IDEAS IMPORTANTES: Razonando con Haskell
 
 ## Estilo de funciones con argumento declarado "point-wise": ##
 
@@ -422,19 +363,6 @@ estamos creando una función de orden superior.
 
     sum' :: (Num a) => [a] -> a
     sum' = foldl (+) 0
-
-## Ejemplo de paso de un estilo al otro ##
-
-    fn x = ceiling (negate (tan (cos (max 50 x))))
-
-Se convierte en:
-
-    fn = ceiling . negate . tan . cos . max 50
-
-En definitiva, la composición sirve de pegamento entre funciones simples para crear funciones más 
-complejas. Esto es en esencia positivo pues consigue un código legible y fácilmente entendible, pero no se 
-debe abusar de ello creando cadenas de composición demasiado largas, pues al final se podría perder 
-legibilidad y claridad.
 
 # Sistema de tipos
 
@@ -726,6 +654,36 @@ La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una
 
 Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
 
+# Listas
+
+Las listas son el tipo más importante para aprender programación funcional. Una lista de 
+`Int` que contenga los valores 1,2,3 puede ser escrita como `1:2:3:[]`, o de una forma más azucarada 
+sintácticamente, `[1,2,3]`. La principal propiedad de las listas es que son *homogéneas*, es decir, 
+contienen ninguna, una o muchas (incluso infinitas) instancias *del mismo tipo*.
+
+Por ello, puede haber listas de funciones, de enteros, de flotantes, de booleanos, y de todos los 
+tipos que se nos puedan ocurrir, incluso de listas (formando listas de listas).
+
+La lista vacía se representa con los corchetes sin nada en medio `[]`, y es el caso base típico de la 
+recursividad en listas.
+
+**Nota importante:**`[]` tiene dos significados en Haskell, puede ser o bien la lista vacía o bien el constructor de tipo lista. En otras palabras, el tipo `[a]` (lista de a) puede también ser escrito como `[] a`.
+
+Las listas tienen muchas funciones útiles definidas exportadas por el módulo `Data.List`. Pasamos a 
+ejemplificar algunas de ellas:
+
+    Prelude> head [1,2,3,4]
+    1
+    Prelude> tail [1,2,3,4]
+    [2,3,4]
+    Prelude> init [1,2,3,4]
+    [1,2,3]
+    Prelude> last [1,2,3,4]
+    4
+
+Como vemos, `head` y `last` devuelven elementos, mientras que `init` y `tail` devuelven listas. Las cuatro 
+funciones del ejemplo anterior generan una excepción si se ejecutan sobre la lista vacía.
+
 ## Comprensiones de Listas
 
 En la notación de conjuntos se usa una definición intensiva o por comprensión cuando se requiere que el lector (o el lenguaje de programación y por tanto, el ordenador) conozca las propiedades de los elementos de ese conjunto y los límites de generación.
@@ -760,36 +718,6 @@ Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos h
 Aquí usamos otro pequeño truco, nos creamos una lista con todos los potenciales divisores del número, efectuamos la división, nos quedamos con el módulo y comprobamos si es cero (con lo cual sería divisible). Estos números irán a parar a la lista solución como `k`s, por tanto, desde que esa lista contenga un sólo elemento, ya el número no será primo.
 
 La función `null` recibe una lista, devolviendo `True` si está vacía (por lo tanto `n` es primo) y `False` en caso de que contenga al menos un elemento.
-
-# Listas
-
-Las listas son el tipo más importante para aprender programación funcional. Una lista de 
-`Int` que contenga los valores 1,2,3 puede ser escrita como `1:2:3:[]`, o de una forma más azucarada 
-sintácticamente, `[1,2,3]`. La principal propiedad de las listas es que son *homogéneas*, es decir, 
-contienen ninguna, una o muchas (incluso infinitas) instancias *del mismo tipo*.
-
-Por ello, puede haber listas de funciones, de enteros, de flotantes, de booleanos, y de todos los 
-tipos que se nos puedan ocurrir, incluso de listas (formando listas de listas).
-
-La lista vacía se representa con los corchetes sin nada en medio `[]`, y es el caso base típico de la 
-recursividad en listas.
-
-**Nota importante:**`[]` tiene dos significados en Haskell, puede ser o bien la lista vacía o bien el constructor de tipo lista. En otras palabras, el tipo `[a]` (lista de a) puede también ser escrito como `[] a`.
-
-Las listas tienen muchas funciones útiles definidas exportadas por el módulo `Data.List`. Pasamos a 
-ejemplificar algunas de ellas:
-
-    Prelude> head [1,2,3,4]
-    1
-    Prelude> tail [1,2,3,4]
-    [2,3,4]
-    Prelude> init [1,2,3,4]
-    [1,2,3]
-    Prelude> last [1,2,3,4]
-    4
-
-Como vemos, `head` y `last` devuelven elementos, mientras que `init` y `tail` devuelven listas. Las cuatro 
-funciones del ejemplo anterior generan una excepción si se ejecutan sobre la lista vacía.
 
 ## elemIndex
 
@@ -886,6 +814,78 @@ Una versión que usa la función `reverse`:
 
     esPalindroma' :: (Eq a) => [a] -> Bool
     esPalindroma' xs = xs == reverse xs
+
+# Composición de funciones
+
+El operador de composición de funciones, `(.)`, crea una función que aplica 
+su argumento derecho y luego pasa el resultado a su argumento izquierdo, 
+así que usamos eso para combinar la aplicación de dos funciones.
+
+TODO. El libro da unas restricciones de argumentos y valores de retorno muy buenas.
+La composición es asociativa a la derecha.
+
+**Truco:** para entender la notación de composición con poco riesgo de equivocarse, es muy útil hablar de
+`f · g` como "`f` después de `g`".
+
+Si la solución a un problema consta de varias etapas, podemos definir cada una de ellas como funciones
+independientes y componer todas para solucionar el problema.
+
+En Haskell, la función composición es `(.)`, veamos un ejemplo.
+
+    ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
+    [-5,-3,-6,-7,-3,-2,-19,-24]
+
+La expresión `f (g (z x))` es equivalente a `(f . g . z) x`. Por tanto, podemos transformar algo un poco
+lioso, como esto:
+
+    ghci> map (\xs -> negate (sum (tail xs))) [[1..5],[3..6],[1..7]]
+    [-14,-15,-27]
+
+En una línea de código mucho más clara, casi autodescriptiva:
+
+    ghci> map (negate . sum . tail) [[1..5],[3..6],[1..7]]
+    [-14,-15,-27]
+
+Por tanto, lo primero que hace esta nueva función es el valor absoluto, `abs`, y después cambia el signo
+`negate`,dando como resultado una lista con todos los números iniciales pasados a negativo.
+
+Composición con múltiples parámetros:
+
+Para conseguir esto, tenemos que valernos de la aplicación parcial de funciones. Veámoslo con un ejemplo:
+
+    sum (replicate 5 (max 6.7 8.9))
+
+Puede ser transformada en:
+
+    (sum . replicate 5) max 6.7 8.9
+
+    sum . replicate 5 $ max 6.7 8.9
+
+Si queremos reescribir una expresión con un montón de paréntesis usando composición de funciones, podemos
+empezar escribiendo la función más interna y sus parámetros. Delante de ella escribimos `$` y componemos
+todas las funciones que venían antes escribiéndolas sin su último parámetro y poniendo puntos entre ellas. 
+Por ejemplo:
+
+    replicate 2 (product (map (*3) (zipWith max [1,2] [4,5])))
+
+Puede ser reescrito como:
+
+    replicate 2 . product . map (*3) $ zipWith max [1,2] [4,5]
+
+**Truco:** Una expresión con n paréntesis tendrá n-1 operadores de composición `(.)`.
+
+## Ejemplo de paso de un estilo al otro ##
+
+    fn x = ceiling (negate (tan (cos (max 50 x))))
+
+Se convierte en:
+
+    fn = ceiling . negate . tan . cos . max 50
+
+En definitiva, la composición sirve de pegamento entre funciones simples para crear funciones más 
+complejas. Esto es en esencia positivo pues consigue un código legible y fácilmente entendible, pero no se 
+debe abusar de ello creando cadenas de composición demasiado largas, pues al final se podría perder 
+legibilidad y claridad.
 
 Ahora pasamos a ver dos versiones de la función que elimina duplicados de una lista dada:
 
@@ -2984,13 +2984,13 @@ sucesivos `<*>`.
 `f <*> x` es lo mismo que `fmap f x`. Esta es una de las leyes aplicativas que veremos más adelante. Esto 
 se generaliza de modo que `pure f <*> x <*> y <*>...` es lo mismo que `fmap f x <*> y <*>...`.
 
-Por esto, el módulo `Control.Applicative` exporta una función llamada <\$>, que es simplemente `fmap` como 
+Por esto, el módulo `Control.Applicative` exporta una función llamada <$>, que es simplemente `fmap` como 
 operador infijo. Está definida así:
 
-    (<\$>) :: (Functor f) => (a -> b) -> f a -> f b
-    f <\$> x = fmap f x
+    (<$>) :: (Functor f) => (a -> b) -> f a -> f b
+    f <$> x = fmap f x
 
-Usando <\$> es como realmente se ve la potencia del estilo aplicativo ya que ahora:
+Usando <$> es como realmente se ve la potencia del estilo aplicativo ya que ahora:
 
 * si queremos aplicar una función sobre tres valores aplicativos escribiremos: `f <$> x <*> y <*> z`.
 
@@ -3076,7 +3076,7 @@ Veamos un ejemplo:
 
 <!-- fin lista -->
 
-    ghci> (++) <\$> ["ha","heh","hmm"] <*> ["?","!","."]
+    ghci> (++) <$> ["ha","heh","hmm"] <*> ["?","!","."]
     ["ha?","ha!","ha.","heh?","heh!","heh.","hmm?","hmm!","hmm."]
 
 El estilo aplicativo es muchas veces un buen reemplazo para compresiones de listas. Si quisiéramos obtener 
@@ -3087,7 +3087,7 @@ todos los productos posibles de los valores de dos listas, podríamos hacer:
 
 Si pasamos esto al estilo aplicativo:
 
-    ghci> (*) <\$> [2,5,10] <*> [8,10,11]
+    ghci> (*) <$> [2,5,10] <*> [8,10,11]
     [16,20,22,40,50,55,80,100,110]
 
 Esto es en cierto modo más claro, siempre que tengamos claro el estilo aplicativo.
@@ -3148,7 +3148,7 @@ concatenadas. Lo hemos conseguido mediante "pegar" dos acciones de E/S en otra q
 Recordemos que el tipo de `getLine` es `getLine :: IO String`. Cuando usamos `<*>` entre dos valores 
 aplicativos, el resultado es un valor aplicativo, luego todo tiene sentido.
 
-`getLine` es una "caja" que va al mundo real a traernos una cadena. LLamar a `(++) <\$> getLine <*> getLine
+`getLine` es una "caja" que va al mundo real a traernos una cadena. LLamar a `(++) <$> getLine <*> getLine
 ` produce una *nueva* acción de E/S que envía dos cajas al mundo real a traernos líneas del terminal y 
 luego nos da la concatenación de esas dos líneas como resultado.
 
@@ -3191,14 +3191,14 @@ Debido a que la aplicación de funciones es asociativa a izquierdas, podemos omi
 
     ghci> :t (+) <$> (+3) <*> (*100)
     (+) <$> (+3) <*> (*100) :: (Num a) => a -> a
-    ghci> (+) <\$> (+3) <*> (*100) $ 5
+    ghci> (+) <$> (+3) <*> (*100) $ 5
     508
 
 LLamar a `<*>` con dos valores aplicativos devuelve un valor aplicativo, así que si lo usamos sobre dos 
 funciones dará una función.
 
-Cuando hacemos `(+) <\$> (+3) <*> (*100)`, estamos creando una función que usará `+` en los resultados de 
-(+3) y (\*100) y devuelve el resultado de la suma. Con `(+) <\$> (+3) <*> (*100) $ 5`, `(+3)` y `(\*100)` 
+Cuando hacemos `(+) <$> (+3) <*> (*100)`, estamos creando una función que usará `+` en los resultados de 
+(+3) y (\*100) y devuelve el resultado de la suma. Con `(+) <$> (+3) <*> (*100) $ 5`, `(+3)` y `(\*100)` 
 son aplicados primero a `5`, dando como resultados `8` y `500`. Luego `+` es llamado con `8` y `500`, 
 dando como resultado `508`.
 
@@ -3236,7 +3236,7 @@ tendrá el largo de la más corta de las dos.
 Esto nos va a dar una pista de por qué se ha hecho que `pure x = ZipList (repeat x)`.
 
 **Recuerda:** `repeat` devuelve una lista infinita con todos sus elementos valiendo el valor que le 
-pasemmos a `repeat`.
+pasemos a `repeat`.
 
 Esto es así porque así se aplicará la función que queramos sobre *toda* la lista objetivo y no sólo sobre 
 el primer elemento. Esto satisface la ley que dice `pure f <*> xs` es igual a `fmap f xs`.
@@ -3415,7 +3415,7 @@ con una compresión de listas:
     ghci> [[x,y,z] | x <- [1,2], y <- [3,4], z <- [5,6]]
     [[1,3,5],[1,3,6],[1,4,5],[1,4,6],[2,3,5],[2,3,6],[2,4,5],[2,4,6]]
 
-`(+) <\$> [1,2] <*> [4,5,6]` da una computación no determinista `x + y`, donde `x` toma todos los valores 
+`(+) <$> [1,2] <*> [4,5,6]` da una computación no determinista `x + y`, donde `x` toma todos los valores 
 en `[1,2]` e `y` toma todos los valores en `[4,5,6]`. Representamos eso como una lista que contiene todos 
 los resultados posibles. De modo análogo, cuando hacemos `sequenceA [[1,2],[3,4],[5,6]]`, el resultado es 
 una computación no determinista `[x,y,z]`, donde `x` toma todos los valores en `[1,2]`, `y` toma todos los 
