@@ -3499,17 +3499,17 @@ Sabemos que debe producir un tipo concreto, porque se usa como el tipo de un val
 **Nota:** para que un tipo pueda ser instancia de `Monad` tiene que tener kind `* -> *`. Este es un requisito **necesario, pero no suficiente**.
 
 * `Maybe :: * -> *`
-* `Maybe a :: *`    (ahora ya (Maybe a) no puede ser aplicado a ningún tipo más).
+* `Maybe a :: *`    (ahora ya `Maybe a` no puede ser aplicado a ningún tipo más).
 * `Either :: * -> * -> *`
 * `Either String :: * -> *`
 
-El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parametro libre, digamos `Bool` no podría, `Either`tampoco, `Either Bool` sí.
+El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parámetro libre, digamos `Bool` no podría, `Either`tampoco, `Either Bool` sí.
 
 Lo mismo pasa con la clase `Functor`.
 
 Los métodos de `Monad` son:
 
-    (>>= ) :: m a -> (a -> m b) -> m b
+    (>>=) :: m a -> (a -> m b) -> m b
     return :: a -> m a
 
 donde `a`, `b` son cualquier cosa y `m` es la mónada que estamos instanciando, el tipo que estamos instanciando en la clase de tipos `Monad`.
@@ -3518,7 +3518,7 @@ Cuando escribes la instancia, como cuando escribes muchas funciones en Haskell, 
 
     data Id a = Id a
 
-En la práctica, dado un tipo `a`, los elementos que puedes construir en `a` y los que puedes construir en `Id a` son prácticamente los mismos por eso se llama identidad.
+En la práctica, dado un tipo `a`, los elementos que puedes construir en `a` y los que puedes construir en `Id a` son prácticamente los mismos, por eso se llama identidad.
 
 `Id` puede ser instanciado en la clase `Functor`.
 
@@ -3530,11 +3530,11 @@ donde `f` es el tipo que estamos instanciando, el resto es polimórfico.
       fmap :: (a -> b) -> f a -> f b
 
 Como se ve, en la definición aparece `Functor f`
-es en ese momento donde se especifica: en los métodos que voy a describir abajo, `f` es el tipo de cada instancia de esta clase entonces, para hacer una instancia la clase, hay que escribir una definición de cada método, sustituyendo el parámetro `f` (en este caso) con el que estamos instanciando.
+es en ese momento donde se especifica: en los métodos que voy a describir abajo, `f` es el tipo de cada instancia de esta clase, entonces, para hacer una instancia la clase, hay que escribir la definición de cada método, sustituyendo el parámetro `f` (en este caso) con el que estamos instanciando.
 
-El kind que hace falta lo calcula GHC a partir de la definición de la clase. En fmap se puede ver que `f` está siendo aplicado a un tipo. De ahí deduce que el kind tiene que ser `* -> *`.
+El kind que hace falta lo calcula GHC a partir de la definición de la clase. En `fmap` se puede ver que `f` está siendo aplicado a un tipo. De ahí deduce que el kind tiene que ser `* -> *`.
 
-Entonces, para hacer Id instancia de Functor
+Entonces, para hacer Id instancia de `Functor`
 necesitamos definir `fmap :: (a -> b) -> Id a -> Id b`. 
 
 **Importante:** el operador `(->)`, en ausencia de paréntesis, asocia a la derecha, osea que `(a -> b) -> Id a -> Id b` significa `(a -> b) -> (Id a -> Id b)` y NO `((a -> b) -> Id a) -> Id b`.
@@ -3604,8 +3604,7 @@ Así que es sólo para ahorrate la lambda que ignora su argumento.
 Digamos que `m :: m a`, para alguna instancia de `Monad m` la función de la derecha es constantemente `k` así que el valor en `m` realmente es ignorado 
 y devuelve `k`.
 
-Hace un bind, pero con una función constante
-que no depende de la `a` digamos.
+Hace un bind, pero con una función constante que no depende de la `a`.
 
 `(>>)` **no** es simplemente ignorar el primer argumento. Lo hacemos por definición:
 
@@ -3672,7 +3671,7 @@ Que se puede escribir de diversas maneras para comprenderlo mejor o aumentar la 
       Id 3 >>= (\y ->
         return x))
 
-Podríamos interpretarlo como que el valor 2 se ligó a la `x`, el valor 3 a la `y` y al final devolvimos el primero, el ligado a x.
+Podríamos interpretarlo como que el valor 2 se ligó a la `x`, el valor 3 a la `y` y al final devolvimos el primero, el ligado a `x`, en un contexto monádico, gracias a `return`.
 
 **Recuerda:** el constructo `<-` "saca" de un contexto monádico los valores contenidos en dicho contexto. Es decir, si tenemos una mónada `M a`, donde `a` puede ser cualquier tipo, `<-` sobre esa mónada nos devolverá el valor `a` tal cual, sin contexto.
 
@@ -3740,13 +3739,13 @@ Vamos a hacer `Maybe` instancia de `Functor`, en este caso, `fmap :: (a -> b) ->
     fmap _ Nothing  = Nothing
     fmap f (Just x) = Just (f x)
 
-Como tenemos dos constructores, nos han hecho falta dos ecuaciones (o una ecuación si hubiéramos usado case, pero bueno, dos pattern matchings en fin y al cabo).
+Como tenemos dos constructores, nos han hecho falta dos ecuaciones (o una ecuación si hubiéramos usado `case`, pero bueno, dos pattern matchings en fin y al cabo).
 
 Como sólo tenemos un argumento `Maybe`, hay que hacer una ecuación por constructor.
 
-Si hubieran dos argumentos `Maybe`, tendríamos que hacer 4. Siempre se pueden reducir los casos, y como mucho serían 4.
+Si hubiera dos argumentos `Maybe`, tendríamos que hacer 4. Siempre se pueden reducir los casos, y como mucho serían 4.
 
-Así que `fmap` en el tipo `Maybe`, aplica la función `f` a lo que tenga dentro si es que tiene...el `Nothing` lo deja tal cual aunque lo cambia un poquito, le cambia el tipo! lo pasa de `Nothing :: Maybe a` a `Nothing :: Maybe b`, osea que en realidad no son el mismo `Nothing`.
+Así que `fmap` en el tipo `Maybe`, aplica la función `f` a lo que tenga dentro si es que exite, el `Nothing` lo deja tal cual aunque lo cambia un poquito, ¡le cambia el tipo! lo pasa de `Nothing :: Maybe a` a `Nothing :: Maybe b`, osea que en realidad no son el mismo `Nothing`.
 
 Veamos si podemos hacer la instancia de `Monad`, empezamos con `return`, nuestras herramientas son:
 
@@ -3782,7 +3781,7 @@ Por tanto, si pasamos eso a nuestra futura mónada `Maybe`:
 
 Por tanto, nuestra mónada que era futura ahora es presente, !Ya tenemos otra mónada!
 
-Esta mónada es algo más interesante, porque si nos damos cuenta, si miramos la definición del bind para `Nothing` vemos que no importa la función que tenga a la derecha, siempre dará `Nothing`. Esto tendrá sus consecuencias.
+Esta mónada es algo más interesante, porque si miramos la definición del bind para `Nothing` vemos que no importa la función que tenga a la derecha, siempre dará `Nothing`. Esto tendrá sus consecuencias.
 
 Sabemos que, en general:
 
@@ -3794,7 +3793,7 @@ Pero, ¿cómo funciona `(>>)` en el caso del tipo `Maybe`? Sustituyamos ese `(>>
     (>>) :: Maybe a -> Maybe b -> Maybe b
     m >> k = m >>= \_ -> k
 
-Vayamos un poco más allá y veamos ahora qué pasa si sustituímos el operador bind:
+Vayamos un poco más allá y veamos qué pasa si sustituímos el operador bind:
 
     (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
     Nothing (>>=) _  = Nothing 

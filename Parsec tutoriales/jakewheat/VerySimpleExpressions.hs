@@ -54,3 +54,63 @@ parens = do
     entero <- many1 digit
     _ <- char ')'
     return $ Parentheses (read entero)
+
+data SingleAdd = SingleAdd Integer Integer deriving (Eq, Show)
+
+singleAddExamples :: [(String, SingleAdd)]
+singleAddExamples = [("1+2", SingleAdd 1 2)
+                    ,("101+202", SingleAdd 101 202)]
+
+add :: Parser SingleAdd
+add = do
+    sumando1 <- many1 digit
+    _ <- char '+'
+    sumando2 <- many1 digit
+    return $ SingleAdd (read sumando1) (read sumando2)
+
+-- estos dos parsers funcionan, pero a medias, pues al introducir espacios
+-- no son capaces de lidiar con ellos. Arreglémoslo.
+
+-- este parser siempre tiene éxito
+espaciosEnBlanco :: Parser ()
+espaciosEnBlanco = void $ many $ oneOf " \n\t"
+
+parensW :: Parser Parentheses
+parensW = do
+    espaciosEnBlanco
+    _ <- char '('
+    espaciosEnBlanco
+    entero <- many1 digit
+    espaciosEnBlanco
+    _ <- char ')'
+    espaciosEnBlanco
+    return $ Parentheses $ read entero
+
+lexeme :: Parser a -> Parser a
+lexeme p = do
+    x <- p
+    espaciosEnBlanco
+    return x
+
+{-
+parseConEspaciosEnBlanco :: Parser a -> String -> Either ParseError a
+parseConEspaciosEnBlanco p = parseWithEof wrapper
+  where
+    wrapper = do
+        espaciosEnBlanco
+        p
+-}
+
+parseConEspaciosEnBlanco :: Parser a -> String -> Either ParseError a
+parseConEspaciosEnBlanco p = parseWithEof (espaciosEnBlanco >> p)
+
+
+-- many --> * en regexp
+-- many1 --> + en regexp
+
+parensL :: Parser Parentheses
+parensL = do
+    _ <- lexeme $ char '('
+    entero <- lexeme $ many1 digit
+    _ <- lexeme $ char ')'
+    return (Parentheses (read entero))
