@@ -54,14 +54,14 @@ parseString = do
                 return $ String x
 -}
 
-
-
-
 {-
-Desafortunadamente, el resultado de many1 digit es realmente un Parser String, así que nuestra composición
-Number . read todavía no puede operar sobre él. Necesitamos una manera de decirle que simplemente opere con
-el valor dentro de la mónada, devolviéndonos un Parser LispVal. Eso es lo que hace liftM, así que aplicamos
-liftM a nuestra función Number . read y después aplicamos el resultado de eso a nuestro parser.
+Desafortunadamente, el resultado de many1 digit es realmente un
+Parser String, así que nuestra composición Number . read todavía no
+puede operar sobre él. Necesitamos una manera de decirle que
+simplemente opere con el valor dentro de la mónada, devolviéndonos
+un Parser LispVal. Eso es lo que hace liftM, así que aplicamos liftM
+a nuestra función Number . read y después aplicamos el resultado de
+eso a nuestro parser.
 
 No olvidemos import Control.Monad
 
@@ -70,17 +70,17 @@ parseNumber :: Parser LispVal
 parseNumber = liftM (Number . read) $ many1 digit
 -}
 
-{-El operador decisión: <|> intenta primero un parser y luego el otro, devolviendo el valor
+{-
+El operador decisión: <|> intenta primero un parser y luego el otro, devolviendo el valor
 del parser que tuvo éxito. El primer parser debe fallar antes de consumir entrada. Luego
 veremos cómo se implementa el backtracking
 first es un elemento
-rest es una lista, por ello usamos : (a parte de por la eficiencia)-}
+rest es una lista, por ello usamos (:) (a parte de por la eficiencia)-}
 parseAtom :: Parser LispVal
 parseAtom = do
           first <- letter <|> symbol
           rest <- many (letter <|> digit <|> symbol)
-          let atom = first:rest
-          return $ Atom atom
+          return $ Atom (first:rest)
 
 parseBool :: Parser LispVal
 parseBool = do
@@ -116,7 +116,7 @@ parseBinary = do char 'b'
                  (return . Number . bin2int) n
 
 bin2int :: String -> Integer
-bin2int s = sum $ map (\(i,x) -> i*(2^x)) $ zip [0..] $ map p (reverse s)
+bin2int s = sum $ map (\(i,x) -> x*(2^i)) $ zip [0..] $ map p (reverse s)
           where p '0' = 0
                 p '1' = 1
 
@@ -134,39 +134,9 @@ readWith f s = fst $ f s !! 0
 
 parseExpr :: Parser LispVal
 parseExpr = parseAtom 
-          <|> parseString 
-          <|> parseNumber
-          <|> parseBool
-
-{-
---modificación 1.1
-parseNumber :: Parser LispVal
-parseNumber = do
-                valorMonada <- many1 digit
-                return $ (Number . read) valorMonada
--}
-
-{-
-char '#'
-                c <- oneOf ['b', 'o', 'd', 'x']
--}
-
-{-
---modificación 1.2
-parseNumber :: Parser LispVal
-parseNumber = many1 digit >>= (\valorMonada ->
-                return $ (Number . read) valorMonada)
--}
-
---modificación 2
-{-
-parseString :: Parser LispVal
-parseString = do
-                char '"'
-                x <- (many (char '\"' <|> noneOf "\""))
-                char '"'
-                return $ String x
--}
+        <|> parseString 
+        <|> parseNumber
+        <|> parseBool
 
 --recuerda: \\ es la barra simple, sólo que se debe escapar
 parseString :: Parser LispVal
