@@ -1,0 +1,1909 @@
+Daniel Díaz
+
+hola
+acabo de llegar
+y he leído tu email
+
+Francisco Nebrera Perdomo
+
+eys
+qué tal niño?
+estaba leyéndome el pearls of functional programming design
+está curioso
+xd
+
+Daniel Díaz
+
+hola
+bien, bien
+
+Francisco Nebrera Perdomo
+
+las mónadas las tenía aparcadas
+xD
+
+Daniel Díaz
+
+bueno, como te dije, aunque ahora pienses lo contrario, es una clase como otra cualquiera
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+de momento, podríamos fijarnos en sus métodos
+y ver diferentes instancias
+y entender qué es la notación "do"
+no sé, siempre puedes preguntarme lo que quieras
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+tengo poca experiencia como profesor jaja
+
+Francisco Nebrera Perdomo
+
+xDDDDDDDDDDDd
+
+Daniel Díaz
+
+en cualquier caso... Monad tiene dos métodos clave...
+el famoso "bind"
+y el "return"
+
+Francisco Nebrera Perdomo
+
+ok
+eso "lo entiendo"
+xd
+
+Daniel Díaz
+
+¿has leído algo sobre kinds?
+
+Francisco Nebrera Perdomo
+
+un poco
+se que son cositas en plan
+* -> *
+en plan
+
+Daniel Díaz
+
+sí, exacto
+
+Francisco Nebrera Perdomo
+
+es una cosa que recibe una cosa, y da otra
+
+Daniel Díaz
+
+es importante saber que para que un tipo pueda ser instancia de Monad
+tiene que tener kind "* -> *"
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+claro, es como una función, pero de tipos
+por ejemplo
+Maybe es de kind * -> *
+porque dado un tipo "a"
+"Maybe a" es otro tipo
+no?
+
+Francisco Nebrera Perdomo
+
+no se
+maybe a ya estaría definido
+en cuanto se crea
+es decir, creo que maybe a
+
+Daniel Díaz
+
+quizás me expliqué mal
+Maybe :: * -> *
+Maybe a :: *
+ahora ya (Maybe a) no puede ser aplicado a ningún tipo más
+Either :: * -> * -> *
+Either String :: * -> *
+etc... creo que se ve
+
+Francisco Nebrera Perdomo
+
+sisi
+es curry
+algo parecido me estas enseñando
+
+Daniel Díaz
+
+telefono
+
+Francisco Nebrera Perdomo
+
+ko
+ok
+
+Daniel Díaz
+
+jazztel, muéranse
+
+Francisco Nebrera Perdomo
+
+jkaskjasjkaskjas
+xD
+me tienen negro a mí tb
+tú diles que estás currando
+y listo
+
+Daniel Díaz
+
+ok
+pues lo dicho, el tipo tiene que tener kind "* -> *" para poder ser instancia de Monad
+tener un parametro libre, digamos
+"Bool" no podría... "Either" tampoco... "Either Bool" sí...
+lo mismo pasa con la clase Functor
+
+Francisco Nebrera Perdomo
+
+eso te iba a decir
+eso sí que me lo estudié y me lo sabía
+pero en el trabajo me tienen haciendo otras cosas
+
+Daniel Díaz
+
+genial, yo no sé lo que sabes y lo que no, así que voy poco a poco
+
+Francisco Nebrera Perdomo
+
+perfecto
+en realidad ese conocimiento es necesario
+ví que en ghc 7.10, las mónadas están obligadas a ser Applicative
+
+Daniel Díaz
+
+gracias a Dios (GHC), por fin
+
+Francisco Nebrera Perdomo
+
+jajaja xD
+
+Daniel Díaz
+
+pero bueno, eso lo vemos más adelante
+si quieres
+
+Francisco Nebrera Perdomo
+
+sisi
+yo te dejo
+no te preocupes que si no entiendo algo me quejo
+xD
+
+Daniel Díaz
+
+los métodos de Monad son (>>= ) :: m a -> (a -> m b) -> m b
+y return :: a -> m a
+donde a, b son cualquier cosa
+y m es la mónada que estamos instanciando
+el tipo que estamos instanciando a las clase Monad
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+cuando escribes la instancia, como cuando escribes muchas funciones en Haskell, el tipo  te va a forzar a escribir lo único que tiene sentido escribir
+voy a definir un tipo que, aunque en apariencia inútil, tiene sus usos prácticos
+data Id a = Id a
+el tipo identidad
+en la práctica, dado un tipo "a", los elementos que puedes construir en "a" y los que puedes construir en "Id a" son prácticamente los mismos
+por eso se llama Identidad
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+Id puede ser instanciado en la clase Functor
+seguro que imaginas cómo
+
+Francisco Nebrera Perdomo
+
+instance Id Functor where
+id x = x
+algo así
+no se xD
+
+Daniel Díaz
+
+ok
+sólo hay un método en la clase Functor
+fmap :: (a -> b) -> f a -> f b
+donde "f" es el tipo que estamos instanciando, el resto es polimórfico
+voy a escribir la clase para aclarar algo...
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b
+como ves, en la definición aparece "Functor f"
+es en ese momento donde se especifica: en los métodos que vo ya describir abajo, "f" es el tipo de cada instancia de esta clase
+entonces, para hacer una instancia la clase, hay que escribir una definición de cada método, sustituyendo el parámetro "f" (en este caso) con el que estamos instanciando
+¿se entiende?
+
+Francisco Nebrera Perdomo
+
+un momento a ver
+si es decir
+que tu en
+fmap :: ...........
+cambias f por
+Id a
+
+Daniel Díaz
+
+mmmm, casi
+necesitamos un tipo de kind "* -> *"
+"Id a" tiene kind *
+
+Francisco Nebrera Perdomo
+
+ok
+pues por Id solo
+
+Daniel Díaz
+
+exacto
+
+Francisco Nebrera Perdomo
+
+okok xD
+
+Daniel Díaz
+
+el kind que hace falta lo calcula GHC a partir de la definición de la clase
+en fmap
+puede ver que "f" está siendo aplicado a un tipo
+de ahí deduce que el kind tiene que ser * -> *
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+vale
+entonces, para hacer Id instancia de Functor
+necesitamos definir fmap :: (a -> b) -> Id a -> Id b
+dicho esto, quiero apuntar algo
+el operador (->), en ausencia de paréntesis, asocia a la derecha
+osea que (a -> b) -> Id a -> Id b
+significa (a -> b) -> (Id a -> Id b)
+no ((a -> b) -> Id a) -> Id b
+
+Francisco Nebrera Perdomo
+
+sisi
+
+Daniel Díaz
+
+ten eso en cuenta
+
+Francisco Nebrera Perdomo
+
+eso es por la currificación
+
+Daniel Díaz
+
+bueno, es porque tiene que asociar para alguna parte
+si no cuál de las dos cosas significa?
+habría varias opciones...
+
+Francisco Nebrera Perdomo
+
+si xD
+me refiero a que la aplicación parcial
+
+Daniel Díaz
+
+esto lo hacen todos los lenguajes
+
+Francisco Nebrera Perdomo
+
+empieza por la izq
+por eso asocia a la derecha
+
+Daniel Díaz
+
+aha
+ok, sí
+sabiendo esto
+(a -> b) -> Id a -> Id b = (a -> b) -> (Id a -> Id b)
+es decir
+fmap coge una función
+y la "eleva" sobre el functor
+en este caso Id
+osea, toma una función, y la convierte en una que toma elementos en el funtor y los devuelve en el funtor también
+
+Francisco Nebrera Perdomo
+
+okok
+es verdad
+ciertísimo
+es asombroso lo claro que lo tienes todo xD
+
+Daniel Díaz
+
+genial, ese es el propósito de Functor
+
+Francisco Nebrera Perdomo
+
+pero sí, había leído eso en learn youa haskell
+que los aplicativos son lo mismo
+
+Daniel Díaz
+
+yo me dedico a esto...
+
+Francisco Nebrera Perdomo
+
+pero para hacer un lift en varios funtores
+si
+una cosa es que te dediques
+
+Daniel Díaz
+
+ya lo verás todo claro
+
+Francisco Nebrera Perdomo
+
+y otra cosa que te guste y sepas
+xD
+
+Daniel Díaz
+
+jaja en mi trabajo programo en Haskell, y en mi tiempo libre... también
+jaja
+
+Francisco Nebrera Perdomo
+
+ajskjaskjas
+
+Daniel Díaz
+
+bueno, seguimos
+
+Francisco Nebrera Perdomo
+
+en realidad es un vicio
+sisi te dejo
+k soy un palicoso
+
+Daniel Díaz
+
+ok, pues cuál es la instancia a Functor de Id?
+
+Francisco Nebrera Perdomo
+
+pues
+diría que es simplemente
+un fmap
+que recibe una funcion
+es decir
+fmap f x = f x
+algo así
+simplemente da la funcion aplicada
+el resultado
+
+Daniel Díaz
+
+sin embargo, los tipos tienen que encajar
+todo trata de encajar los tipos
+ese es el juego
+f :: a -> b
+x :: a
+luego... f x :: b
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+y quieres un resultado de tipo Id b
+
+Francisco Nebrera Perdomo
+
+fmap f x = Id (f x)
+
+Daniel Díaz
+
+bien, exacto
+
+Francisco Nebrera Perdomo
+
+asi lo mete
+en un contexto Id
+o algo así era
+xd
+
+Daniel Díaz
+
+bueno, Id :: a -> Id a
+con eso te vale
+la cuestión es saber el tipo de cada cosa
+
+Francisco Nebrera Perdomo
+
+okok
+vale
+
+Daniel Díaz
+
+y hacer que todas las piezas encajen
+pues vamos a Monad
+class Monad m where
+  (>>= ) :: m a -> (a -> m b) -> m b
+  return :: a -> m a
+esta vez tenemos dos métodos que definir
+empezemos por el que casi siempre es más fácil
+"return"
+te he dado el tipo de Id antes así que...
+yo diría que encaja bastante bien
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+return = Id
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+con eso estamos
+vamos al bind
+el primer argumento es de tipo "Id a"
+vamos a hacer "pattern matching"
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+Id a >>= f = ...
+el segundo es una función, así que pongo un "f" y listo
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+ahora, con los elementos que disponemos, sólo tenemos que pensar que puedo hacer para acabar con algo de tipo "Id b" a la derecha
+sabiendo que "a :: a"
+y "f :: a -> Id b"
+creo que es bastante obvio
+pero te dejo que me digas
+
+Francisco Nebrera Perdomo
+
+ok
+Id (f a)
+
+Daniel Díaz
+
+pues no era tan obvio
+a ver, calcula el tipo de esa expresión
+que acabas de poenr
+
+Francisco Nebrera Perdomo
+
+ops
+sorry
+f a
+lo da directamente en Id b
+
+Daniel Díaz
+
+sí, es una mera aplicación de f
+
+Francisco Nebrera Perdomo
+
+en eso siempre fallo
+me trabo en esa idiotez
+xD
+puta bida
+
+Daniel Díaz
+
+pues enhorabuena, acabas de definir una mónada
+
+Francisco Nebrera Perdomo
+
+xDDDDDDDDD
+okok, guay
+es decir ahora puedo
+
+Daniel Díaz
+
+todo es hacer encajar tipos
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+como en todo Haskell...
+claro que, cuanto más complejo sea el tipo
+más difícil es el juego de encajar los tipos
+ahora, qué carajos es la notación "do"
+
+Francisco Nebrera Perdomo
+
+pues
+es un azucar sintactico
+para unas lambdas raras con el bind
+
+Daniel Díaz
+
+pues, es una forma de escribir los operadores ">>=" y ">>" sin escribirlos...
+
+Francisco Nebrera Perdomo
+
+y luego usa >> también
+
+Daniel Díaz
+
+sí...
+por cierto
+(>>) :: m a -> m b -> m b
+por defecto
+se define como
+m >> k = m >>= \_ -> k
+así que es sólo para ahorrate la lambda
+que ignora su argumento
+
+Francisco Nebrera Perdomo
+
+ese operador me traba aún más que el bind
+estuve haciendo ciertas pruebas con los ejemplso de LYAH
+y lo único que hacía era pasar de todo lo anterior
+y dar un nuevo valor a la mónada
+eso es lo que entendí
+
+Daniel Díaz
+
+m >> k = m >>= \_ -> k
+ahí te dice lo que hace!
+digamos que m :: m a, para alguna instancia de Monad m
+la función de la derecha es constantemente k
+así que el valor en "m" realmente es ignorado 
+y devuelve "k"
+
+Francisco Nebrera Perdomo
+
+sí
+pero su tipo es
+(>>) :: m a -> m b -> m b
+recibe dos mónadas
+para devolver la segunda
+
+Daniel Díaz
+
+casi
+realmente no sólo hace eso
+te hace un bind, pero con una función constante
+que no depende de la "a" digamos
+
+Francisco Nebrera Perdomo
+
+si
+
+Daniel Díaz
+
+veamos con Id
+
+Francisco Nebrera Perdomo
+
+pero tu le pasaste dos mónadas
+de donde saca la función?
+
+Daniel Díaz
+
+veamos con Id cómo funciona
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+Id 2 >>= (Id . (+1)) ?
+
+Francisco Nebrera Perdomo
+
+a ver
+Id 3
+sería el resultado creo
+
+Daniel Díaz
+
+sí
+ok, en este caso (>>) va a hacer lo que dices... así que es mal ejemplo para hacerte ver que no es simplemente ignorar el primer argumento
+en cualquier caso lo hacemos
+por definición: m >> k = m >>= \_ -> k
+así que, si paso (Id 3 >> Id 4), qué hace?
+primero
+Id 3 >>= \_ -> Id 4
+lo transforma en un bind, ves?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+ahora, por nuestra definición de bind
+lo transforma en
+(\_ -> Id 4) 3
+
+Francisco Nebrera Perdomo
+
+joder
+así paso a paso sí que se entiende
+:D
+
+Daniel Díaz
+
+claro, ahora aplica esa función
+y te queda Id 4
+
+Francisco Nebrera Perdomo
+
+ciertísimo,
+
+Daniel Díaz
+
+si lo hicieras con "a" y "b"
+podrías demostrar que, en general, simplemente se queda con el segundo
+pero esta propiedad no la comparten todas las mónadas
+la siguiente que veríamos, Maybe, no, por ejemplo
+si tienes dudas, siempre está bien evaluar las expresiones a mano
+si no son muy grandes
+
+Francisco Nebrera Perdomo
+
+en eso tengo algunas dudas que ya te comentaré
+pero nada, te dejo seguir
+
+Daniel Díaz
+
+ok
+pues la notación "do" lo que hace es transformar
+"a <- m ; e"
+en "m >>= \a -> e"
+y "m ; n" en "m >> n"
+uso ";" porque alinear en este chat es imposible
+
+Francisco Nebrera Perdomo
+
+sisi
+eso se entendió
+estoy intentando comprender la conversión sintáctica
+
+Daniel Díaz
+
+ok, transforma una cosa en la otra, como máquina
+sin pensar
+ejemplo!
+x <- Id 3 ; return x
+esto entraría en la primera regla
+
+Francisco Nebrera Perdomo
+
+ld 3 >>= \x -> return x
+
+Daniel Díaz
+
+yesss
+si quieres seguir, puedes incluso sustituir el >>= con lo que definimos antes
+(\x -> return x) 3
+=>
+return 3
+=>
+Id 3
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+bien, pues así hace el compilador...
+otro ejemplo
+x <- Id 2 ; y <- Id 3 ; return x
+
+Francisco Nebrera Perdomo
+
+ld 2 >>= (\x -> ld 3 (\y -> return x))
+
+Daniel Díaz
+
+claro
+veo que esto te resulta fácil
+
+Francisco Nebrera Perdomo
+
+bueno
+si hubiera un task manager en mi cerebro
+cpu 101ç%
+xDDDDDDDDDDDDD
+
+Daniel Díaz
+
+jajajaja
+ok
+pero espero que estés empezando a ver que no hay nada mágico en Monad, salvo una sintaxis que te ahorra escribir unos operadores y unas lambdas explícitamente
+
+Francisco Nebrera Perdomo
+
+pues sí
+vas a tener razón
+
+Daniel Díaz
+
+el resultado de lo que has puesto sería Id 2
+
+Francisco Nebrera Perdomo
+
+lo que pasa es que no le termino de ver la utilidad :S
+no me pegues con los puños
+xD
+
+Daniel Díaz
+
+la mónada Id no es útil persé
+más uqe para entender lo más básico
+hacer una isntancia en un momento, y jugar con ella
+
+Francisco Nebrera Perdomo
+
+ok
+pero vamos a ver
+a la hora de evaluar el chorizo que me hiciste hacer
+
+Daniel Díaz
+
+una clase siempre trata de poner en común unas funciones para muchos tipos a la vez
+
+Francisco Nebrera Perdomo
+
+es mejor que vaya paso a paso no?
+
+Daniel Díaz
+
+sí, es mejor que vayas paso a paso
+pero fíajte en el resultado y en lo que empezaste...
+x <- Id 2, y <- Id 3 ; return x
+al final te ha devuelto Id 2
+mmm, podríamos interpretarlo como que el valor 2 fue a la x
+el valor 3 a la y
+y al final devolvimos el primero, la x
+
+Francisco Nebrera Perdomo
+
+sí
+abstrayéndonos sí
+es decir un bind
+solo guarda el contenido
+en una variable no?
+esa es mi duda, cómo se qué se bindea?
+
+Daniel Díaz
+
+¿te refieres a "<-"?
+
+Francisco Nebrera Perdomo
+
+sí
+joder es verdad
+<-
+
+Daniel Díaz
+
+sí, en general sí
+si ves, en la sustitución de la sintáxis
+es el nombre de la variable de la expresión lambda que se va a usar en el "bind"
+el cual, si lo que hay a la derecha de <- tiene tipo "m a"
+el argumento de la función a la derecha del bind tiene tipo "a"
+así que, de algún modo, hemos "sacado" un valor de tipo "a" de uno de tipo "m a"
+que ahora podemos usar en el resto de la expresión "do"
+no sé si soy claro
+
+Francisco Nebrera Perdomo
+
+sisi
+desde luego
+eso lo estudié en LYAH
+que es un constructo que extrae valores de contextos monádicos
+y los deja libres
+
+Daniel Díaz
+
+sí, aunque sólo usable dentro del "do"
+
+Francisco Nebrera Perdomo
+
+debe ser pattern matching
+lo que hace en realidad
+
+Daniel Díaz
+
+y hay una norma
+el último término de una expresión "do" en la mónada m
+debe tener tipo "m a", para algún tipo a
+aunque, esto lo fuerzan las únicas dos normas gramaticales que tenemos
+las dos acaban en un término de esa forma
+
+Francisco Nebrera Perdomo
+
+ok
+sí
+te refieres a >>= y >> que devuelven las dos M b no?
+
+Daniel Díaz
+
+me refiero a las nomras de sintaxis
+
+Francisco Nebrera Perdomo
+
+sí ok
+
+Daniel Díaz
+
+"a <- m ; e"
+en "m >>= \a -> e"
+y "m ; n" en "m >> n"
+tanto en "a <- m ; e"
+como en "m ; n"
+"e" y "n" son cosas de tipo "m ?"
+pongo ? para decir "algo" xD
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+así es, con esas dos únicas reglas, no podemos terminar la expresión en algo de otro tipo
+tiene que ser siempre "m ?"
+ok... vamos a ir con Maybe... si te parece
+¿dudas hasta ahora?
+
+Francisco Nebrera Perdomo
+
+ninguna realmente
+esto yo mañana lo medito
+con papel y boli y listo
+puede seguir usted
+xd
+
+Daniel Díaz
+
+jaja medita, medita
+
+Francisco Nebrera Perdomo
+
+xDD
+
+Daniel Díaz
+
+y escribe código
+ok, pues Maybe :: * -> *
+así que sospechamos que a lo mejor podemos hacerlo instancia de Functor y Monad...
+data Maybe a = Just a | Nothing
+esta es la definición del tipo Maybe
+es un tipo suma, pues puede tener valores de diferentes "formas"
+
+Francisco Nebrera Perdomo
+
+si
+constructores de valor
+
+Daniel Díaz
+
+Just 3 :: Maybe Int
+
+Francisco Nebrera Perdomo
+
+no?
+
+Daniel Díaz
+
+sí
+data constructors
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+tiene 2
+Just y Nothing
+Just :: a -> Maybe a
+Nothing :: Maybe a
+
+Francisco Nebrera Perdomo
+
+sí
+con esos he trabajado bastante
+
+Daniel Díaz
+
+algo interesante es que Nothing habita muchos tipos...
+
+Francisco Nebrera Perdomo
+
+y los he metido en cases
+
+Daniel Díaz
+
+Nothing :: Maybe Int
+Nothing :: Maybe Bool
+Nothing :: Maybe (Maybe Int)
+en fin, la lista es infinita
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+curiosidades a parte, vamos a hacerlo instancia de Functor
+en este caso
+fmap :: (a -> b) -> Maybe a -> Maybe b
+¿cómo definirías una función con ese tipo?
+
+Francisco Nebrera Perdomo
+
+ok
+Nothing `fmap` _ = Nothing
+no
+mal
+_ `fmap` Nothing = Nothing
+
+Daniel Díaz
+
+curioso que lo escribas infijo 
+pero sí, bien
+
+Francisco Nebrera Perdomo
+
+f `fmap` (Just x) = Just (f x)
+
+Daniel Díaz
+
+sí, lo has hecho ya antes parece
+
+Francisco Nebrera Perdomo
+
+sí
+ya te digo estas cosas me las estudié
+y más o menos me quedé con la copla
+xD
+
+Daniel Díaz
+
+claro bien
+pues te hago notar que te han hecho falta dos ecuaciones
+porque tienes dos constructores
+(o una ecuación si usas case, pero bueno, dos pattern matchings en fin y al cabo)
+esto pasa a menudo
+
+Francisco Nebrera Perdomo
+
+y eso siempre es así?
+o crece exponencialmente?
+es decir, 3 constructores == 3 ecuaciones?
+o tienes que mirar todas las posibles o hacer cosas extrañas?
+
+Daniel Díaz
+
+depende de la función, aquí aparece sólo 1 argumento
+es decir, sólo hay un Maybe que matchear
+así que haces uno por constructor
+si hubieran dos argumentos Maybe, te tocaría hacer 4
+pero claro, siempre se pueden reducir casos
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+pero, como mucho, serían 4
+
+Francisco Nebrera Perdomo
+
+guay
+
+Daniel Díaz
+
+en fin
+que fmap en el tipo Maybe, aplica la función f a lo que tenga dentro
+si es que tiene...
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+el Nothing lo deja tal cual
+aunque 
+lo cambia un poquito
+le cambia el tipo!
+
+Francisco Nebrera Perdomo
+
+si
+xD
+lo deja inservible al pobre
+
+Daniel Díaz
+
+lo pasa de Nothing :: Maybe a
+a Nothing :: Maybe b
+osea que en realidad no son el mismo Nothing
+
+Francisco Nebrera Perdomo
+
+joder pues es verdad
+no había caído
+
+Daniel Díaz
+
+pues sí, es un detalle a tener en cuenta
+ahora veamos si podemos hacer la instancia a Monad
+de nuevo, empezamos con return
+nuestras herramientas son
+Just :: a -> Maybe a
+Nothing :: Maybe a
+y el pattern matching
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+return = ?
+
+Francisco Nebrera Perdomo
+
+un momento
+
+Daniel Díaz
+
+k
+
+Francisco Nebrera Perdomo
+
+uf
+me encuentro pescando
+
+Daniel Díaz
+
+¿pescando?
+
+Francisco Nebrera Perdomo
+
+si, aqui eso se dice
+cuando no te enteras
+xDDDDDDDDDDDd
+dame 1 min a ver
+
+Daniel Díaz
+
+recuerda que, en este caso, return :: a -> Maybe a
+
+Francisco Nebrera Perdomo
+
+yo te diría
+return = Just
+
+Daniel Díaz
+
+claro
+
+Francisco Nebrera Perdomo
+
+pero no se qué pasaría con nothing
+
+Daniel Díaz
+
+los tipos encajan, no? pues ya está
+no hay ningún argumento de tipo Maybe, no hay que hacer pattern matching
+
+Francisco Nebrera Perdomo
+
+joder es verdad
+okok
+menudo noob
+xD
+
+Daniel Díaz
+
+no te preocupes
+concéntrate en hacer encajar los tipos
+con las cosas que tienes
+lo demás sale solo
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+vamos al >>=, que es el que da trabajo
+
+Francisco Nebrera Perdomo
+
+vale
+a ver
+
+Daniel Díaz
+
+te recuerdo la instancia
+(>>= ) :: Maybe a -> (a -> Maybe b) -> Maybe b
+tienes que hacer una función con ese tipo
+
+Francisco Nebrera Perdomo
+
+sí
+Nothing >>= f = Nothing
+
+Daniel Díaz
+
+ok, eso me vale, no tengo a qué aplicar f, así que no te queda otro remedio que devolver Nothing
+no hay opciones
+
+Francisco Nebrera Perdomo
+
+(Just x) >>= f = Just (f x)
+
+Daniel Díaz
+
+calcula el tipo de la expresión a la derecha
+
+Francisco Nebrera Perdomo
+
+cierto
+vuelvo a tropezar con la misma piedra
+(Just x) >>= f = f x
+
+Daniel Díaz
+
+sí
+es igual que antes
+sólo hemos añadido el Nothing
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+pues ya tienes otra mónaa!
+*mónada
+
+Francisco Nebrera Perdomo
+
+pues sí
+xD
+
+Daniel Díaz
+
+esta es más interesante...
+si ves en la definición del bind para Nothing
+no importa lo que haya a la derecha del bind, el resultado es Nothing
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+esto tendrá sus consecuencias
+vamos a ver un ejercicio
+sabemos que 
+en general
+m >> k = m >>= \_ -> k
+pero, ¿cómo funciona (>>) en el caso del tipo Maybe?
+sustituye ese (>>= ) por el de la instancia Maybe para averiguarlo
+
+Francisco Nebrera Perdomo
+
+ok
+pues no se
+a ver
+quedaría
+
+Daniel Díaz
+
+pista: case m of ...
+
+Francisco Nebrera Perdomo
+
+ok
+case m of Nothing -> Nothing
+case m of (Just x) -> Just (k x)
+creo que está mal
+
+Daniel Díaz
+
+el tipo no me encaja en absoluto
+k :: m b, y lo estás aplicando a x
+a ver, no te pido creatividad, es meramente evaluar con (>>= ) siendo el que hemos definido antes
+a veces cuesta ser una máquina 
+
+Francisco Nebrera Perdomo
+
+ya te digo
+
+Daniel Díaz
+
+pero es todo lo que necesitas ser en este caso
+
+Francisco Nebrera Perdomo
+
+otros lenguakes me entran fácil
+pero este se resiste un poco
+espera k pille editor de texto o algo
+pa tener todo a mano
+
+Daniel Díaz
+
+claro que sí
+y aquí: http://downloads.haskell.org/~ghc/latest/docs/html/libraries
+si buscas "Prelude"
+puedes consultar las definiciones todas las clases y tal
+
+Francisco Nebrera Perdomo
+
+case m of Nothing -> Nothing
+Just x -> k
+
+Daniel Díaz
+
+bien!
+osea...
+te simplifico algo
+case m of Nothing -> Nothing ; _ -> k
+sólo para enfatizar cuán ignorado es el primer argumento en caso de que NO sea Nothing
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+entonces, ¿qué hace (>>) para Maybe?
+pues mira si el de la izquierda es Nothing, si lo es, devuelve Nothing, si no, devuelve el segundo argumento
+es una lógica diferente a la que presentaste al principio de (>>) devolver simplemente el segundo argumento
+
+Francisco Nebrera Perdomo
+
+sí
+es más condicional
+
+Daniel Díaz
+
+digamos que depende de cómo sea el primero...
+en algo sí que interviene
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+bueno, antes de que veamos algo divertido del tipo Maybe, vamos a hacer algo que estoy seguro ya has hecho
+la función "div" divide un "número" entre otro
+div 4 2  = 2
+div 6 2 = 3
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+pero tiene un defecto...
+div 8 0 = ERROR DESTRUCCION
+
+Francisco Nebrera Perdomo
+
+veo que no te gusta lo infijo
+xD
+jkasjkasjksajkas
+sí
+
+Daniel Díaz
+
+ok, el problema de div reside en su tipo
+div :: Integral a => a -> a -> a
+ignorando lo "Integral", que puede ser Int, Integer, etc
+para el caso Int, por ejemplo
+div :: Int -> Int -> Int
+osea, que por su tipo, está obligado a tener como resultado un Int
+de modo que se queda sin opciones para el caso "div 8 0: 
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+un tipo más realista para "div" sería
+div :: Int -> Int -> Maybe Int
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+estoy seguro de que has hecho esto
+
+Francisco Nebrera Perdomo
+
+pero eso te obliga a crearte un case
+
+Daniel Díaz
+
+sí
+pero te evita un CRASH EN TODA LA CARA
+
+Francisco Nebrera Perdomo
+
+xDDDDDDDDDDDDDD
+
+Daniel Díaz
+
+que, en un programa de miles de líneas
+un "error divided by zero"
+te tiras de los pelos
+
+Francisco Nebrera Perdomo
+
+xDDD
+sisi
+
+Daniel Díaz
+
+entonces, para evitar estos problemas
+lo ideal es  que las funciones siempre puedan devolver algo
+darles tipos más realistas
+como comentas, esto tiene un peso
+pattern matching aquí y allá
+pero... ¿y si escondemos ese pattern matching?
+vamos a ver...
+definamos
+gooddiv _ 0 = Nothing
+gooddiv n m = Just (div n m)
+por supuesto, gooddiv :: Int -> Int -> Maybe Int
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+ahora estamos interesados en hacer un par de divisiones, y devolver la suma de los resultados si ambas divisiones han tenido éxito...
+con el antiguo div haríamos
+myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+ese es mi propósito... pero no quiero crashes...
+
+Francisco Nebrera Perdomo
+
+claro
+
+Daniel Díaz
+
+así que voy a usar gooddiv
+el problema es que no puedo usar (+) con el tipo Maybe de por medio
+myop a1 b1 a2 b2 = gooddiv a1 b1 + gooddiv a2 b2
+TYPE ERROR MALO
+
+Francisco Nebrera Perdomo
+
+sí
+xD
+
+Daniel Díaz
+
+habría que hacer pattern matching en los resultados...
+case gooddiv a1 b1 of Nothing -> Nothing
+Just c1 -> case a2 b2 of Nothing -> Nothing
+Just c2 -> Just (c1 + c2)
+...
+no sé si se ve bien en el chat lo que hice
+
+Francisco Nebrera Perdomo
+
+si
+
+Daniel Díaz
+
+y me falta un "gooddiv"
+sabrás donde
+
+Francisco Nebrera Perdomo
+
+de hecho en el tutorial
+hacen algo muy parecido
+
+Daniel Díaz
+
+claro, es muy estándar esto
+pero, muy rollo tanto "case", no?
+
+Francisco Nebrera Perdomo
+
+demasiado
+xd
+
+Daniel Díaz
+
+pero ah, uh, espera... Maybe es instancia de Monad... ¿qué pasa si hago...?
+do c1 <- gooddiv a1 b1 ; c2 <- gooddiv a2 b2 ; return (c1 + c2)
+ejercicio: evalúa eso...
+
+Francisco Nebrera Perdomo
+
+ok
+traduciré pues
+
+Daniel Díaz
+
+para que no sea muy lioso
+
+Francisco Nebrera Perdomo
+
+tengo que coger la chuleta
+
+Daniel Díaz
+
+pon números concretos
+
+Francisco Nebrera Perdomo
+
+xD
+
+Daniel Díaz
+
+usa números para a1,b1,a2,b2...
+4,2,6,2, por ejemplo
+y luego con
+4,0,6,2
+
+Francisco Nebrera Perdomo
+
+gooddiv a1 b1 >>= (\c1 -> gooddiv a2 b2 >>= (\c2 -> return (c1 + c2)))
+
+Daniel Díaz
+
+aha, ok, vamos con eso entonces
+qué pasa con >>=
+?
+coge esa expresión, y simplemente mete la definición de (>>😃 para Maybe
+(>>= )
+
+Francisco Nebrera Perdomo
+
+pues parece que
+si pilla un Nothing no importa lo demás
+porque lo irá trasladando
+no se si me explico
+es decir
+si alguno de los dos es Nothing
+nunca se va a ejecutar ese return (c1+c2)
+
+Daniel Díaz
+
+sí
+realmente, si te pones a sustituir todo
+te va a salir exactamente la definición que te he hecho antes
+con los cases
+magia!
+
+Francisco Nebrera Perdomo
+
+joder
+pues todo empieza a cobrar sentido
+es curioso
+
+Daniel Díaz
+
+me alegro de que así sea
+
+Francisco Nebrera Perdomo
+
+xD
+
+Daniel Díaz
+
+cuando tienes más cosas, no sólo dos divisiones
+es genial, te ahorras mucho pattern matching
+simplemente lo manejas como si todo funcionara
+ese es el propósito de tener la instancia Monad para Maybe
+haces todas las operaciones, devuelvan Nothing o no, y ya se encarga el bind de ir haciendo pattern match y descartando resultados devolviendo Nothing cuando sea oportuno
+
+Francisco Nebrera Perdomo
+
+es decir, el bind ese ahorra un montón de evaluación si hay Nothings al principio
+
+Daniel Díaz
+
+sí
+descarta todo a partir del primer Nothing
+
+Francisco Nebrera Perdomo
+
+vale
+pues está guapo
+pero joder, tendré que acostumbrarme a usarlas
+y ver cuándo puedo usarlas también
+
+Daniel Díaz
+
+eso ya es experiencia
+ya sabes para qué sirve Maybe
+
+Francisco Nebrera Perdomo
+
+si joder
+
+Daniel Díaz
+
+y te he dado un caso de uso
+
+Francisco Nebrera Perdomo
+
+interesante
+
+Daniel Díaz
+
+cuando haces varias operaciones que pueden "fallar"
+y quieres usar sus resultados
+es un momento perfecto para hacerl oasí
+
+Francisco Nebrera Perdomo
+
+okok, guay
+
+Daniel Díaz
+
+por cierto, por añadir un detalle
+si importas Control.Monad 
+la función liftM2
+tiene tipo Monad m => (a -> b -> c) -> m a -> m b -> m c
+es como fmap, pero con dos argumentos
+¿ves?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+bien
+pues recordemos como definimos la función de las divisiones al principio
+myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+esto es lo mismo que...
+myop a1 b1 a2 b2 = (+) (div a1 b1) (div a2 b2)
+haciendo el operador prefijo (ahora verás por qué
+)
+¿me sigues hasta ahí?
+
+Francisco Nebrera Perdomo
+
+claro
+
+Daniel Díaz
+
+pues ahora defino
+mygoodop a1 b1 a2 b2 = liftM2 (+) (gooddiv a1 b1) (gooddiv a2 b2)
+y si miras los tipos, todo encaja
+tenemos casi la misma función, pero sin posibilidad de crash
+
+Francisco Nebrera Perdomo
+
+joder
+es todo puro cálculo lambda
+puras sustituciones aquí y allá
+y al final todo sale
+xD
+
+Daniel Díaz
+
+sí, Haskell es sólo sustituir
+es lo fácil y difícil que tiene
+una vez te acostumbras a sustituir, ya lo tienes todo manejado
+
+Francisco Nebrera Perdomo
+
+no se, a mí me dejó loco en verdad
+
+Daniel Díaz
+
+bueno, no todo, pero lo más importante
+
+Francisco Nebrera Perdomo
+
+porque es increíble que hayan modos tan "raros" y a la vez tan bellos
+xD
+de hacer las cosas
+
+Daniel Díaz
+
+y realmente, hemos escrito una función que maneja posibilidad de fallos y tal en una sólo línea
+una vez que te manejas es práctica
+*práctico
+
+Francisco Nebrera Perdomo
+
+sisi
+al principio mi código haskell eran churros
+ahora ya uso composiciones
+meto algún fmap
+lambdas
+foldr y demas
+va siendo todo más "de libro"
+xD
+
+Daniel Díaz
+
+entiendo
+
+Francisco Nebrera Perdomo
+
+tu como aprendiste todo?
+
+Daniel Díaz
+
+lo primario me lo enseñó José Enrique Gallardo
+luego ya me puse por mi cuenta, aunque si tenía alguna duda acudía a él
+hasta que ya no me podía resolver más dudas, entonces ya todo por mi cuenta
+
+Francisco Nebrera Perdomo
+
+es decir que tú fuiste alumno de la universidad de malaga no?
+
+Daniel Díaz
+
+sí
+
+Francisco Nebrera Perdomo
+
+okok
+pues joder
+allí si que aprenden cosas wapas
+aquí estan con el apestoso java
+
+Daniel Díaz
+
+: (
+
+Francisco Nebrera Perdomo
+
+lo unico bueno que se da es C++
+
+Daniel Díaz
+
+yo en realidad estudié Matemáticas
+
+Francisco Nebrera Perdomo
+
+eso lo explica todo xD
+así te manejas con todo eso al momento
+xD
+entonces razonando con haskell
+es más para matemáticos que para ing. informáticos no?
+
+Daniel Díaz
+
+no
+dan Haskell para los informáticos también
+y usan ese libro
+
+Francisco Nebrera Perdomo
+
+okok
+es que el libro tiene mucha demostración e historias duras
+
+Daniel Díaz
+
+claro, es que a sus autores les gusta eso
+
+Francisco Nebrera Perdomo
+
+esta increible todo eso
+yo lo que pasa es que tengo lagunas en algunas partes
+
+Daniel Díaz
+
+(a mi también)
+
+Francisco Nebrera Perdomo
+
+pero eso na, eso es tiempo
+sí sí, a mi también xD
+todo eso mola
+yo creo que todo va a ir por funcional
+todo no
+
+Daniel Díaz
+
+aaaah, creo que necesitas digerir un poco todo esto?
+
+Francisco Nebrera Perdomo
+
+no
+lo que estoy cenando
+xD
+xq tengo que ir a la farmacia
+a comprar medicamentos pa mi padre
+xD
+y ceno mientras chateo
+multicore
+
+Daniel Díaz
+
+entiendo
+
+Francisco Nebrera Perdomo
+
+me ibas a explicar mas no?
+
+Daniel Díaz
+
+bueno, verás
+esto no tiene fin...
+
+Francisco Nebrera Perdomo
+
+eso ya lo veo
+pero de calle además
+
+Daniel Díaz
+
+y yo también tengo cosas que hacer
+
+Francisco Nebrera Perdomo
+
+ah vale
+joder
+pues muchas gracias señor
+si otra vez tienes un hueco
+
+Daniel Díaz
+
+pero sí es cierto que faltan cosas que a lo mejor te interesaría que te explicara
+
+Francisco Nebrera Perdomo
+
+yo te contacto si tal
+tú me dices mas o menos cuando y listo
+pa que no te sea tanta molestia
+
+Daniel Díaz
+
+no es molestia
+yo disfruto compartiendo lo que sé
+
+Francisco Nebrera Perdomo
+
+xDDDD okok
+pues guay
+ya te digo muchas gracias
+
+Daniel Díaz
+
+pero tengo responsabilidades que cumplir
+
+Francisco Nebrera Perdomo
+
+si que me aclaraste dudas
+
+Daniel Díaz
+
+genial
+
+Francisco Nebrera Perdomo
+
+y nada otro día cuando los dos podamos pues hablaremos sobre esto
+
+Daniel Díaz
+
+¿alguna duda de todo esto antes de que me ponga a trabajar?
+
+Francisco Nebrera Perdomo
+
+trabajaré bastante
+no no, lo que me explicaste va fetén
+eso es meditarlo como te dije
+
+Daniel Díaz
+
+¿fetén?
+
+Francisco Nebrera Perdomo
+
+lápiz y papel
+sí
+es "castellano antiguo"
+xD
+ya no se usa ya
+x
+d
+
+Daniel Díaz
+
+teclado y ghc?
+
+Francisco Nebrera Perdomo
+
+k va
+yo prefiero papel
+xD
+aunque ghc y teclado están muy bien
+
+Daniel Díaz
+
+curioso
+es un intérprete algo más lento
+
+Francisco Nebrera Perdomo
+
+como mi cerebro
+xDDDDDDDDDDD
+
+Daniel Díaz
+
+jaja ok
+pues voy al lío
+
+Francisco Nebrera Perdomo
+
+okok
+pues nada señor encantado y gracias
+k vaya bien
+
+Daniel Díaz
+
+el fin de semana lo paso en Madrid, pero la semana que viene ya vemos
+
+Francisco Nebrera Perdomo
+
+okok guay, venga
+
+Daniel Díaz
+
+a partir del lunes me va bien
+chao
