@@ -57,9 +57,9 @@ Asocian **a derechas:**
 
 * La aplicación de funciones con `$`.
 
-* La composición de funciones con `.`.
+* La composición de funciones con `(.)`.
 
-* El constructor (:) (en inglés `Cons`).
+* El constructor `(:)` (en inglés `Cons`).
 
 # Errores comunes
 
@@ -85,44 +85,6 @@ curryficar ~= fijar
 `Data.Numbers.Primes` exporta la función `primeFactors`, la cual está bastante optimizada.
 
 Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
-
-## exercism
-
-### ARN
-
-Queremos resolver el siguiente problema: dada una cadena de ADN, queremos pasarlo a ARN. Para ello hay que 
-cambiar 'C' por 'G', 'G' por 'C', 'A' por 'U' y 'T' por 'A'.
-
-Usar reconocimiento de patrones para este tipo de cosas es mejor que usar guardianes, los guardianes se 
-ejecutan en orden y no dan tanta información al compilador.
-
-Dos opciones:
-
-    transcribir 'G' = 'C'
-    transcribir 'C' = 'G'
-    …
-    transcribir _ = error "…"
-
-O, un poco mejor:
-
-    transcribir c = case c of
-      'G' -> 'C'
-      'C' -> 'G'
-      …
-      _ -> error "…"
-
-    aARN :: String -> String
-    aARN xs = map transcribir xs
-      where
-        transcribir c = case c of
-                         'C' -> 'G'
-                         'G' -> 'C'
-                         'A' -> 'U'
-                         'T' -> 'A'
-                         _   -> error "secuencia de ADN inválida"
-
-Prefiero la segunda, ya que es más concisa. También es más a bajo nivel, todas las formas de 
-reconocimiento de patrones se traducen a expresiones `case` en el núcleo de GHC.
 
 ## Razonando con Haskell
 
@@ -348,7 +310,7 @@ otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y o
 particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
 programa en paralelo.
 
-# "IDEAS IMPORTANTES: Razonando con Haskell
+# Ideas Razonando con Haskell
 
 ## Estilo de funciones con argumento declarado "point-wise": ##
 
@@ -691,6 +653,42 @@ Los patrones se pueden anidar con profundidad arbitraria, con el casamiento ejec
 
 Las ecuaciones de una definición de función se intentan en orden textual (de arriba a abajo), hasta que uno de los patrones case.
 
+## Guardianes vs reconocimiento de patrones vs expresiones case
+
+Queremos resolver el siguiente problema: dada una cadena de ADN, queremos pasarlo a ARN. Para ello hay que 
+cambiar 'C' por 'G', 'G' por 'C', 'A' por 'U' y 'T' por 'A'.
+
+Usar reconocimiento de patrones para este tipo de cosas es mejor que usar guardianes, los guardianes se 
+ejecutan en orden y no dan tanta información al compilador.
+
+Dos opciones:
+
+    transcribir 'G' = 'C'
+    transcribir 'C' = 'G'
+    …
+    transcribir _ = error "…"
+
+O, un poco mejor:
+
+    transcribir c = case c of
+      'G' -> 'C'
+      'C' -> 'G'
+      …
+      _ -> error "…"
+
+    aARN :: String -> String
+    aARN xs = map transcribir xs
+      where
+        transcribir c = case c of
+                         'C' -> 'G'
+                         'G' -> 'C'
+                         'A' -> 'U'
+                         'T' -> 'A'
+                         _   -> error "secuencia de ADN inválida"
+
+Prefiero la segunda, ya que es más concisa. También es más a bajo nivel, todas las formas de 
+reconocimiento de patrones se traducen a expresiones `case` en el núcleo de GHC.
+
 # Listas
 
 Las listas son el tipo más importante para aprender programación funcional. Una lista de 
@@ -704,7 +702,9 @@ tipos que se nos puedan ocurrir, incluso de listas (formando listas de listas).
 La lista vacía se representa con los corchetes sin nada en medio `[]`, y es el caso base típico de la 
 recursividad en listas.
 
-**Nota importante:**`[]` tiene dos significados en Haskell, puede ser o bien la lista vacía o bien el constructor de tipo lista. En otras palabras, el tipo `[a]` (lista de a) puede también ser escrito como `[] a`.
+**Nota importante:**`[]` tiene dos significados en Haskell, puede ser o bien la lista vacía o bien el 
+constructor de tipo lista. En otras palabras, el tipo `[a]` (lista de a) puede también ser escrito como
+`[] a`.
 
 Las listas tienen muchas funciones útiles definidas exportadas por el módulo `Data.List`. Pasamos a 
 ejemplificar algunas de ellas:
@@ -723,42 +723,49 @@ funciones del ejemplo anterior generan una excepción si se ejecutan sobre la li
 
 ## Comprensiones de Listas
 
-En la notación de conjuntos se usa una definición intensiva o por comprensión cuando se requiere que el lector (o el lenguaje de programación y por tanto, el ordenador) conozca las propiedades de los elementos de ese conjunto y los límites de generación.
+En la notación de conjuntos se usa una definición intensiva o por comprensión cuando se requiere que el 
+lector (o el lenguaje de programación y por tanto, el ordenador) conozca las propiedades de los 
+elementos de ese conjunto y los límites de generación.
 
-En Haskell hay una herramienta muy poderosa que nos permite crear conjuntos que cumplan todas las restricciones que notros queramos, por ejemplo para resolver problemas con restricciones.
+En Haskell hay una herramienta muy poderosa que nos permite crear conjuntos que cumplan todas las 
+restricciones que notros queramos, por ejemplo para resolver problemas con restricciones.
 
-Por ejemplo, queremos saber cuáles son las longitudes de los lados de un subconjunto de los triángulos rectángulos cuya hipotenusa mida un máximo de 100 unidades métricas cualesquiera. Para ello escribimos una función:
+Por ejemplo, queremos saber cuáles son las longitudes de los lados de un subconjunto de los triángulos 
+rectángulos cuya hipotenusa mida un máximo de 100 unidades métricas cualesquiera. Para ello escribimos 
+una función:
 
     comprension :: [(Int,Int,Int)]
     comprension = [(a,b,c) | a <- [1..100], b <- [a + 1..100], c <- [b + 1..100], a^2 + b^2 == c^2]
 
 En esta función nos damos cuenta de las siguientes cosas:
 
-1. Su tipo retorno es una lista (entre corchetes) que contiene una tupla con tres `Int`. Estos tres `Int` son las longitudes de los tres lados de cada triángulo que entrará en la solución.
+1. Su tipo retorno es una lista (entre corchetes) que contiene una tupla con tres `Int`. Estos tres `Int`
+ son las longitudes de los tres lados de cada triángulo que entrará en la solución.
 
-2. La comprensión se define entre corchetes, y está dividida en tres partes. 1) (antes de la barra vertical) Tipo que contendrá la lista solución, en este caso `(a,b,c)` 2) Elementos que se generarán. Están compuestos de un nombre al cual se van enlazando valores de la lista que le pasemos. Los generadores se separan por comas. `a <- [1..100], b <- [a..100], c <- [b..100]` 3) condición o condiciones, separadas también por comas, en este caso `a^2 + b^2 == c^2`.
+2. La comprensión se define entre corchetes, y está dividida en tres partes. 1) (antes de la barra 
+vertical) Tipo que contendrá la lista solución, en este caso `(a,b,c)` 2) Elementos que se generarán. 
+Están compuestos de un nombre al cual se van enlazando valores de la lista que le pasemos. Los 
+generadores se separan por comas. `a <- [1..100], b <- [a..100], c <- [b..100]` 3) condición o 
+condiciones, separadas también por comas, en este caso `a^2 + b^2 == c^2`.
 
-Hemos usado un pequeño truco que es muy útil para estos casos y para la optimización de bucles en un lenguaje imperativo. Vemos que cuando b va a tomar un valor, su lista no empieza en `1`, sino en el actual valor de `a` incrementado en 1, y lo mismo ocurre para `c`, que empieza en el valor actual de `b` incrementado en 1. De este modo, no obtendremos repeticiones de triángulos en nuestra lista sin la necesidad de añadir condiciones adicionales.
+Hemos usado un pequeño truco que es muy útil para estos casos y para la optimización de bucles en un 
+lenguaje imperativo. Vemos que cuando b va a tomar un valor, su lista no empieza en `1`, sino en el 
+actual valor de `a` incrementado en 1, y lo mismo ocurre para `c`, que empieza en el valor actual de `b` 
+incrementado en 1. De este modo, no obtendremos repeticiones de triángulos en nuestra lista sin la 
+necesidad de añadir condiciones adicionales.
 
 Para tener una idea del orden en que se van creando las tuplas o listas que queramos, veamos un ejemplo:
 
     *Main> [(a,b,c) | a <- [1,2], b <- [3,4], c <- [5,6]]
     [(1,3,5),(1,3,6),(1,4,5),(1,4,6),(2,3,5),(2,3,6),(2,4,5),(2,4,6)]
 
-Como vemos, primero se liga un valor al nombre `a`, después al `b` y por último, el que más cambia de una tupla a otra, será el `c`.
-
-Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos hacer una función que comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor en la lista de números desde `2` hasta `n-1`:
-
-    esPrimo :: Integer -> Bool
-    esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
-
-Aquí usamos otro pequeño truco, nos creamos una lista con todos los potenciales divisores del número, efectuamos la división, nos quedamos con el módulo y comprobamos si es cero (con lo cual sería divisible). Estos números irán a parar a la lista solución como `k`s, por tanto, desde que esa lista contenga un sólo elemento, ya el número no será primo.
-
-La función `null` recibe una lista, devolviendo `True` si está vacía (por lo tanto `n` es primo) y `False` en caso de que contenga al menos un elemento.
+Como vemos, primero se liga un valor al nombre `a`, después al `b` y por último, el que más cambia de 
+una tupla a otra, será el `c`.
 
 ## elemIndex
 
-La función `elemIndex` nos permite obtener el índice de la lista (recuerda que la cabeza tiene índice 0) que coincide con el valor del primer parámetro. El tipo de `elemIndex` es:
+La función `elemIndex` nos permite obtener el índice de la lista (recuerda que la cabeza tiene índice 0) 
+que coincide con el valor del primer parámetro. El tipo de `elemIndex` es:
 
     elemIndex :: Eq a => a -> [a] -> Maybe Int
 
@@ -920,11 +927,11 @@ Se convierte en:
     fn = ceiling . negate . tan . cos . max 50
 
 En definitiva, la composición sirve de pegamento entre funciones simples para crear funciones más 
-complejas. Esto es en esencia positivo pues consigue un código legible y fácilmente entendible, pero no se 
-debe abusar de ello creando cadenas de composición demasiado largas, pues al final se podría perder 
+complejas. Esto es en esencia positivo pues consigue un código legible y fácilmente entendible, pero no 
+se debe abusar de ello creando cadenas de composición demasiado largas, pues al final se podría perder 
 legibilidad y claridad.
 
-Ahora pasamos a ver dos versiones de la función que elimina duplicados de una lista dada:
+Ahora pasamos a ver dos versiones de la función `quitarDuplicados`, que elimina duplicados de una lista dada:
 
 Versión recursiva que sólo usa reconocimiento de patrones y el constructor `Cons`, también llamado `(:)`:
 
@@ -940,28 +947,66 @@ Una versión más corta, no recursiva, que hace uso de funciones predefinidas:
     quitarDuplicados :: (Ord a) => [a] -> [a]
     quitarDuplicados = map head . group . sort
 
-## Vagancia
+Esta versión de `quitarDuplicados` tiene la ventaja de ser muy concisa y casi autoexplicativa.
 
-Las personas tendemos a la procrastinación con facilidad. Como Haskell fue (y sigue siendo) hecho por personas, Haskell también es vago. A Haskell no le gusta trabajar por gusto, y esto permite que ciertas computaciones terminen sobre estructuras de datos teóricamente infinitas.
+## Pereza
 
-El ejemplo más típico de lista infinita es aquella generada por `[1..]`, que genera una lista infinita de números naturales en orden creciente empezando en el 1.
+Se dice que la pereza es el mejor de los 7 pecados capitales, pues no nos permite cometer los otros 6.
+Las personas tendemos a la procrastinación con facilidad. Como Haskell fue (y sigue siendo) hecho por 
+personas, Haskell también es vago. A Haskell no le gusta trabajar por gusto, y esto permite que ciertas 
+computaciones terminen sobre estructuras de datos teóricamente infinitas.
+
+El ejemplo más típico de lista infinita es aquella generada por `[1..]`, que genera una lista infinita 
+de números naturales en orden creciente empezando en el 1.
 
     Prelude> [1..]
     [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21Interrupted.
 
-Pero nosotros podemos parar la computación cuando lo necesitamos, por ejemplo mediante funciones que sólo necesiten cierta cantidad de elementos, como `take`:
+Pero nosotros podemos parar la computación cuando lo necesitamos, por ejemplo mediante funciones que 
+sólo necesiten cierta cantidad de elementos, como `take`:
 
     Prelude> take 21 [1..]
     [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
 
-A su vez, existen funciones condicionales que paran en cuanto cierta condición se cumple o se deja de cumplir, como `takeWhile` y `find`. El siguiente ejemplo añade elementos a la lista resultado hasta que encuentre algún número impar, en cuyo caso, termina:
+A su vez, existen funciones condicionales que paran en cuanto cierta condición se cumple o se deja de 
+cumplir, como `takeWhile` y `find`. El siguiente ejemplo añade elementos a la lista resultado hasta que 
+encuentre algún número impar, en cuyo caso, termina:
 
     Prelude> takeWhile even [1..]
     []
     Prelude> takeWhile even ([2,4..20] ++ [21..])
     [2,4,6,8,10,12,14,16,18,20]
 
-Como vemos, podemos hacer de este modo un cierto filtrado de listas infinitas, o al menos, de su parte inicial.
+Como vemos, podemos hacer de este modo un cierto filtrado de listas infinitas, o al menos, de su parte 
+inicial.
+
+Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos hacer una función que 
+comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor en la lista 
+de números desde `2` hasta `n-1`:
+
+    esPrimo :: Integer -> Bool
+    esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
+
+Aquí usamos otro pequeño truco, nos creamos una lista con todos los potenciales divisores del número, 
+efectuamos la división, nos quedamos con el módulo y comprobamos si es cero (sería divisible). Estos 
+números irán a parar a la lista solución como `k`s, que serán los divisores, por tanto, desde que esa 
+lista contenga un sólo elemento, ya el número no será primo. Haskell es *perezoso*, y nos aprovecharemos 
+de ello; veamos la función `null` definida en el módulo `Prelude`:
+
+    null :: [a] -> Bool
+    null []    =  True
+    null (_:_) =  False
+
+La función `null` recibe una lista, devolviendo `True` si se reconoce el patrón lista vacía (`[]`) y
+`False` en caso de que contenga al menos un elemento. Desde que la comprensión de listas tenga algún 
+resultado, `null` entrará en acción, pues `(_:_)` casa con listas de un sólo elemento, donde el primer 
+patrón subrayado casaría con la cabeza y el segundo patrón subrayado casaría con la lista vacía `[]`. Si 
+esto ocurre, `null` devolverá `False` directamente, sin generar más `k` de esa lista.
+
+En conclusión, hemos usado la cualidad de *perezoso* para conseguir una condición de parada que optimice 
+nuestra función `esPrimo`.
+
+## El tipo Maybe
 
 La función `find` devuelve el primer elemento que cumple un predicado que le pasamos como primer 
 parámetro, si éste existe, si no, devuelve `Nothing`. Notar que el tipo de `find` es 
@@ -998,7 +1043,7 @@ posición ('A') como posición 1:
     -1
     *Main> posAlfabeto 'Ñ'
     14
-     map posAlfabeto "España"
+    *Main> map posAlfabeto "España"
     [5,19,16,1,14,1]
 
 ## cycle

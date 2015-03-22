@@ -1,7 +1,8 @@
 module Main where
 import System.Environment
 import Text.ParserCombinators.Parsec hiding (spaces)
-import Numeric (readOct, readHex)
+import Numeric (readOct, readHex, readFloat)
+import Data.Char (toLower)
 
 main :: IO ()
 main = do
@@ -14,6 +15,23 @@ data LispVal = Atom String
              | Number Integer
              | String String
              | Bool Bool
+             | Char Char
+             | Float Float
+
+parseFloat :: Parser LispVal
+parseFloat = do char '#'
+                entera <- many digit
+                char '.'
+                decimal <- many1 (digit <|> oneOf "SFDLEsfdle")
+                return $ (Float . readWith readFloat) (entera ++ "." ++ decimal)
+
+parseChar :: Parser LispVal
+parseChar = do string "#\\"
+               cadena <- many1 letter
+               return $ case (map toLower cadena) of
+                          "space" -> Char ' '
+                          "newline" -> Char '\n'
+                          [x] -> Char x
 
 parseString :: Parser LispVal
 parseString = do
@@ -94,7 +112,8 @@ readWith :: (t -> [(a, b)]) -> t -> a
 readWith f s = fst $ f s !! 0
 
 parseExpr :: Parser LispVal
-parseExpr = parseAtom
+parseExpr = parseChar
+        <|> parseAtom
         <|> parseBool
         <|> parseString
         <|> parseNumber
