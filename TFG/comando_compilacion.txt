@@ -1,3 +1,0 @@
-ghc -o hola --make hola.hs
-
-pandoc -o Tutorial_de_Haskell.pdf --latex-engine=xelatex tutorial_haskell.md

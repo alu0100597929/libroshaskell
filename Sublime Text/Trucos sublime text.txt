@@ -1,6 +1,0 @@
-Trucos sublime text:
-
-Ctrl + Inicio = ir al principio del documento.
-Ctrl + Fin = ir al final del documento.
-
-Ctrl + Shift = coje la línea/párrafo actual y permite cambiarla/o de sitio con las flechas de dirección.
