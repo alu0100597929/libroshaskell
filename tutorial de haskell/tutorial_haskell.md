@@ -656,6 +656,41 @@ La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una
 
 Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
 
+# Reconocimiento de patrones
+
+Para entender qué es el reconocimiento de patrones primero debemos saber qué es *"casar"*. Para ello, el diccionario de la Real Academia es nuestro hamijo:
+
+* Dicho de dos o más cosas: Corresponder, conformarse, cuadrar.
+* Unir, juntar o hacer coincidir algo con otra cosa. Casar la oferta con la demanda.
+* Disponer y ordenar algo de suerte que haga juego con otra cosa o tengan correspondencia entre sí. 
+
+<!-- fin de lista -->
+
+Es un término que se usa bastante en las expresiones regulares, para ver si una expresión casa con un texto dado, y en qué lugar. Veamos un ejemplo de reconocimiento de patrones:
+
+    dime :: Int -> String
+    dime 1 = "¡Uno!"
+    dime 2 = "¡Dos!"
+    dime 3 = "¡Tres!"
+    dime 4 = "¡Cuatro!"
+    dime 5 = "¡Cinco!"
+    dime x = "No está entre 1 y 5"
+
+La función `dime` hace reconocimiento de patrones con su primer argumento, de tipo `Int`, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea `dime x = "No está entre 1 y 5"` al principio, nuestra función siempre devolvería `"No está entre 1 y 5"`, aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
+
+El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus compoenntes correspondientes.
+
+**Nota:** el reconocimiento de patrones es en realidad reconocimiento de constructores.
+
+## Orden de ejecución del reconocimiento de patrones
+
+Los patrones se pueden anidar con profundidad arbitraria, con el casamiento ejecutándose en el siguiente orden:
+
+* dentro -> fuera
+* izquierda -> derecha
+
+Las ecuaciones de una definición de función se intentan en orden textual (de arriba a abajo), hasta que uno de los patrones case.
+
 # Listas
 
 Las listas son el tipo más importante para aprender programación funcional. Una lista de 
@@ -728,7 +763,7 @@ La función `elemIndex` nos permite obtener el índice de la lista (recuerda que
     elemIndex :: Eq a => a -> [a] -> Maybe Int
 
 Lo que significa que debemos usar la función sobre listas de tipos a los que se pueda aplicar la 
-función (==) para comprobar si son iguales. Le pasamos un elemento de tipo `a` y una lista con 
+función `(==)` para comprobar si son iguales. Le pasamos un elemento de tipo `a` y una lista con 
 elementos de tipo `a` (`[a]`) y nos devuelve la posición en la que se encuentra el elemento...si es 
 que se encuentra en esa lista. Vemos un palabro extraño, ¿`Maybe`, quizá?, sí. `Maybe` es un 
 constructor de tipos, no entraremos aún en ello, nos basta con saber que si `elemIndex` encuentra el 

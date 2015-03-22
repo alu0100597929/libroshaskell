@@ -49,7 +49,7 @@ Código fuente de este tutorial, que está en [haskell fast and hard](https://ww
 
 Códigos fuente de la web del libro del mismo nombre, adaptados por mí.
 
-## Maybe Haskell
+## maybe Haskell
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
@@ -57,7 +57,7 @@ Códigos fuente del libro del mismo nombre, adaptados por mí.
 
 Contiene los fuentes LaTeX que componen la memoria de mi Trabajo Fin de Grado.
 
-## Monadas
+## monadas
 
 Explicaciones sobre mónadas que me ha dado Daniel Díaz e instancias de la clase Monad que me he ido montando.
 
@@ -77,26 +77,26 @@ Códigos fuente que resuelven, usando Haskell, algunos problemas de [Project Eul
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
-## Sublime Text
+## sublime Text
 
 Trucos, consejos y ficheros de respaldo para Sublime Text 3.
 
-## TFG
-
-Contiene el código fuente del programa principal de mi TFG.
-
-## The Haskell Road to Logic, Maths and Programming
+## the Haskell road to logic, maths and programming
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
-## Tutorial de Haskell
+## tutorial de haskell
 
 Mi tutorial de Haskell, en markdown y pdf.
 
-## Tutoriales Parsec
+## tutoriales parsec
 
 Código fuente de los tutoriales de Parsec que voy siguiendo, incluyendo un repositorio completo de uno de ellos, el cual luego estoy adaptando yo.
 
-## Typeclassopedia
+## typeclassopedia
 
 Código fuente de los ejercicios de la [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia).
+
+## write yourself a scheme in 48 hours
+
+Contiene el código fuente del tutorial [Write Yourself a Scheme in 48 hours](http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours).
