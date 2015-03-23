@@ -43,60 +43,21 @@ Reacción típica de un programador al ver su primer fragmento de código Haskel
 
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haydiomio.png)
 
-# Asociatividad de los elementos de Haskell
+# Introducción
 
-Asocian **a izquierdas:**
+En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a dicha versión. Todo el código de este tutorial ha sido testeado. De todas formas, si he cometido algún error, ruego que me lo comuniques a [la sección "Issues" del repositorio del tutorial](https://github.com/freinn/libroshaskell/issues).
 
-* La aplicación de funciones, a consecuencia de la curryficación.
-
-* `<$>` y `<*>` de la clase de tipos `Applicative` (ambos `infixl 4`).
-
-Asocian **a derechas:**
-
-* Los parámetros de las funciones, a consecuencia de la curryficación.
-
-* La aplicación de funciones con `$`.
-
-* La composición de funciones con `(.)`.
-
-* El constructor `(:)` (en inglés `Cons`).
-
-# Errores comunes
-
-Es fácil deducir cuál es la cabeza de esta lista de listas:
-
-    ghci> head [[1,2,3],[4,5,6]]
-    [1,2,3]
-
-Pero yo mismo haciendo una traza en papel deduje que la cola de `[[1,2,3],[4,5,6]]` era `[4,5,6]`. Craso 
-error:
-    
-    ghci> tail [[1,2,3],[4,5,6]]
-    [[4,5,6]]
-
-# Optimizaciones de Project Euler
-
-Explicar el problema 47 y alguno más.
+Si quieres empezar a usar Haskell y su compilador e intérprete, puedes saltarte la primera sección e ir directamente a leer "Primeros Pasos". La única consecuencia es que cada vez que alguien hace esto, Dios mata un gatito.
 
 # Ideas sueltas
 
-curryficar ~= fijar
-
-`Data.Numbers.Primes` exporta la función `primeFactors`, la cual está bastante optimizada.
-
 Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
-
-## Razonando con Haskell
 
 La aplicación de funciones tiene la máxima prioridad, 10.
 
 La evaluación perezosa significa: haz sólo lo que te pida un patrón a la izquierda de una ecuación o cualificador (`where` o `let`).
 
-## LYAH
-
 Todo lo que puede hacer una función en Haskell es recibir ciertos parámetros y devolver cierto valor.
-
-Todas las funciones en Haskell realmente reciben un único parámetro. Por tanto una función `a -> b -> c` recibe un único parámetro de tipo `a` y devuelve una función `b -> c`, que recibe un parámetro y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los parámetros que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
 
 Las cosas pueden actuar más como computaciones que como cajas: (`IO` y `(->) r`) pueden ser funtores.
 
@@ -124,7 +85,7 @@ En una expresión `do`, todo lo que no sea un `let` es un valor monádico.
 
 Por ello, los funtores aplicativos como mucho pueden ser parámetros de funciones usando el estilo aplicativo.
 
-Las mónadas son superiores y nos permiten encadenar computaciones que podrían fallar, y en caso de fallo 
+Las mónadas son superiores y nos permiten encadenar computaciones que podrían fallar, entre otras cosas, y en caso de fallo 
 este fallo se propaga de una a otra. Si todas tienen éxito, simplemente se encadenan de izquierda a derecha.
 
 El operador `(>>)` recibe una mónada de tipo `a` y otra de tipo `b` (**nota importante:** que haya dos
@@ -140,7 +101,7 @@ De hecho, las compresiones de listas son sólo azúcar sintáctico para usar lis
 compresiones de listas y las listas en notación `do` se traducen a usar >>= en computaciones no 
 deterministas.
 
-El filtrado en las compresiones de listas se resume a usar la función guard con esa condición.
+El filtrado en las compresiones de listas se resume a usar la función `guard` con esa condición.
 
 Es mucho mejor empezar las funciones por su cabecera, debido al fuerte sistema de tipos de Haskell.
 
@@ -357,7 +318,20 @@ El anidamiento de varias concatenaciones a la derecha tiene complejidad lineal.
 
 LYAH:
 
-La flecha de las definiciones del tipo de las funciones es asociativa a la derecha.
+# Funciones de orden superior
+
+Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry. Él inventó la técnica conocida como currificación.
+
+Currificar equivale a fijar parámetros, dando lugar a nuevas funciones.
+
+Todas las funciones en Haskell realmente reciben un único parámetro. Por tanto una función `a -> b -> c` recibe un único parámetro de tipo `a` y devuelve una función `b -> c`, que recibe un parámetro y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los parámetros que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
+
+¿Cómo nos beneficia esto a nosotros? Si llamamos a una función pasándole menos parámetros de los que 
+acepta, obtendremos una función parcialmente aplicada, la cual es una función que recibe tantos parámetros 
+como dejamos sin "rellenar". Por tanto, este es un buen método para crear funciones "al vuelo", y después 
+podemos pasárselas a otras funciones.
+
+**Importante:** La flecha de las definiciones del tipo de las funciones es asociativa a la derecha.
 
 Cuando tengamos una declaración de tipos de función con la flecha '-\>', eso significa que es una función 
 que recibe aquello
@@ -365,13 +339,8 @@ a la izquierda de la flecha y devuelve un valor cuyo tipo se indica en el lado d
 
 Cuando tenemos algo como a -\> (a -\> a) en realidad se trata de una función que recibiendo un parámetro, 
 nos
-devuelve otra función que recibe otro parámetro de tipo a, y al hacer su cálculo devuelve otro también del 
-tipo a.
-
-¿Cómo nos beneficia esto a nosotros? Si llamamos a una función pasándole menos parámetros de los que 
-acepta, obtendremos una función parcialmente aplicada, la cual es una función que recibe tantos parámetros 
-como dejamos sin "rellenar". Por tanto, este es un buen método para crear funciones "al vuelo", y después 
-podemos pasárselas a otras funciones.
+devuelve otra función que recibe otro parámetro de tipo `a`, y al hacer su cálculo devuelve otro también del 
+tipo `a`.
 
 <!--inicio de la parte más básica del tutorial-->
 
@@ -379,9 +348,9 @@ podemos pasárselas a otras funciones.
 
 Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar.
 
-Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC. En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a esta versión (por ejemplo las instancias de la clase `Monad` deben ser instancias de `Applicative` y por ello, también de `Functor`).
+Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC.
 
-Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso Kubuntu y Manjaro en la actualidad.
+Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso las distros Kubuntu y Manjaro en la actualidad.
 
 Por ello, las instrucciones de instalación de GHC que daré serán válidas en distros derivadas de Debian y de Arch Linux.
 
@@ -826,7 +795,7 @@ elementos son iguales para afirmar igualdad o desigualdad.
 Su tipo es `[a] -> Bool`, por tanto, dada una lista nos devolverá un valor de tipo `Bool` que indicará si
 es, o no, palíndroma.
 
-La primera línea del cuerpo es el nombre de la función, `esPalindroma` separada por un espacio de xs.
+La primera línea del cuerpo es el nombre de la función, `esPalindroma` separada por un espacio de `xs`.
 Luego, vemos que hay una cierta indentación (todas las `|` están a la misma altura), y esto son 
 **guardianes**.
 
@@ -1053,6 +1022,30 @@ La función `cycle` crea una lista infinita circular a partir de una lista dada:
     *Main> take 10 (cycle [1,2,3])
     [1,2,3,1,2,3,1,2,3,1]
 
+# Uso de librerías (biblotecas) externas
+
+Las bibliotecas son conjuntos de funciones que fueron definidas por otras personas que han decidido compartir su código. En muchas ocasiones se trata de código muy probado y sencillo de usar, y el que veremos a continuación además nos da muy buen rendimiento.
+
+Para instalar las últimas versiones de las librerías que utilicemos, usaremos el comando `cabal`, el cual es un gestor de paquetes para Haskell.
+
+Lo primero que tenemos que hacer es mandar a `cabal` a actualizarse, lo cual se hace con el comando:
+
+    cabal update
+
+Esto hará que se descargue la lista de paquetes más actuales y los registre.
+
+A continuación, procederemos a instalar paquetes. `cabal` descarga los ficheros fuente, los compila y configura. Instalaremos el paquete `primes` que tiene utilidades muy eficientes para trabajar con números primos.
+
+Para usar este paquete, deberemos añadir en la cabecera de nuestro programa la sentencia:
+
+    import Data.Numbers.Primes
+
+una vez hecho esto, podemos usar todas [éstas](https://hackage.haskell.org/package/primes-0.2.1.0/docs/Data-Numbers-Primes.html) funciones como si las tuviéramos definidas.
+
+Para ver todos los paquetes disponibles, podemos consultar la [página oficial](https://hackage.haskell.org/packages/).
+
+`Data.Numbers.Primes` exporta la función `primeFactors`, la cual se puede mejorar.
+
 # Programación Origami: plegado/desplegado de listas:
 
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_folds_vater_billete.png)
@@ -1140,7 +1133,7 @@ parámetro de la función binaria), y en el **foldl** (plegado a la **izquierda*
 parámetro **izquierdo** (primer parámetro de la función binaria).
 
 **Estilo funcional:** Generalmente, si tenemos una función del tipo `foo a = bar b a`, se podría reescribir
-como `foo = bar b` a causa de la "curryficicación".
+como `foo = bar b` a causa de la currificicación.
 
 **Rendimiento:** La función `(++)` (tiempo cuadrático) es mucho más lenta que `(:)` (tiempo lineal), así que 
 normalmente se usa foldr cuando estamos construyendo una nueva lista a partir de otra.
@@ -2421,7 +2414,7 @@ Ejemplos de ejecución del programa que haremos:
 
 Definamos la función dispatch, que recibirá una `String` y una lista de `String` y devolverá la acción de
 E/S adecuada ejecutándose sobre la lista de `String` que fue su segundo argumento. Esta acción producirá 
-como resultado la tupla vacía unidad `()`. Remarcar que esta función está "curryficada". Lo mejor que 
+como resultado la tupla vacía unidad `()`. Remarcar que esta función está currificada. Lo mejor que 
 tiene es que es muy sencillo añadirle funcionalidades al programa. Bastaría con definir una función y un 
 "comando" en la función dispatch que la ejecute.
 
@@ -3006,7 +2999,7 @@ Vemos que `f` juega el rol del funtor aplicativo, y debe recibir un tipo concret
 escribimos `instance Applicative Maybe where` en vez de `instance Applicative (Maybe a) where`.
 
 Después, tenemos `pure`. Recuerda que se supone que recibe algo y lo "envuelve" en un valor aplicativo. Se 
-ha usado curryficación (ya que el constructor de valor `Just` es como una función normal)así que da lo 
+ha usado currificación (ya que el constructor de valor `Just` es como una función normal)así que da lo 
 mismo escribir eso que `pure x = Just x`.
 
 La definición de `<*>` es muy descriptiva; en el caso de `Nothing` no hay ninguna función que obtener, y 
@@ -3052,7 +3045,7 @@ en varios valores aplicativos en vez de en uno.
 Primero la función `+` se pone en un valor aplicativo (en este caso un valor `Maybe` que contiene la 
 función). Así que tenemos `pure (+)` lo cual es `Just (+)`.
 
-Después, se aplica la función `Just (+) <*> Just 3`, que da `Just (3+)`, a causa de la curryficación, si a 
+Después, se aplica la función `Just (+) <*> Just 3`, que da `Just (3+)`, a causa de la currificación, si a 
 la función `+` sólo le aplicamos un `3` va a darnos una función que recibe un parámetro y le suma 3 a 
 dicho parámetro.
 
@@ -3253,7 +3246,7 @@ Otra instancia de `Applicative` es `(->) r`, o funciones.
       pure x = (\_ -> x)
       f <*> g = \x -> f x (g x)
 
-**Recuerda:** a consecuencia de la curryficación, la aplicación de funciones se asocia a izquierdas.
+**Recuerda:** a consecuencia de la currificación, la aplicación de funciones se asocia a izquierdas.
 
 Cuando envolvemos un valor en un valor aplicativo con `pure`, el resultado que produce debe ser ese valor. 
 Un contexto mínimo debe producir ese valor, por ello devolvemos una función (lambda) que ignorará su 
@@ -3543,7 +3536,7 @@ Este kind nos dice que el constructor de tipos `Maybe` recibe un tipo concreto (
     Prelude> :k Maybe Bool
     Maybe Bool :: *
 
-Un paralelismo es que, aunque kinds y tipos son dos cosas diferentes, se comportan de manera parecida, ya que usan la curryficación; por ejemplo: `:t isUpper` y `:t isUpper 'A'`. La función `isUpper` tiene tipo `a -> Bool`, mientras que `:t isUpper 'A'` tiene tipo `Bool`. Sin embargo, si atendemos a los kinds de estos tipos:
+Un paralelismo es que, aunque kinds y tipos son dos cosas diferentes, se comportan de manera parecida, ya que usan la currificación; por ejemplo: `:t isUpper` y `:t isUpper 'A'`. La función `isUpper` tiene tipo `a -> Bool`, mientras que `:t isUpper 'A'` tiene tipo `Bool`. Sin embargo, si atendemos a los kinds de estos tipos:
 
     Prelude Data.Char> :k Char -> Bool
     Char -> Bool :: *
@@ -3556,7 +3549,7 @@ Veamos ahora el tipo de `Either`:
     Either :: * -> * -> *
 
 Esto nos dice que `Either` recibe dos tipos concretos como parámetros de tipo para producir un tipo concreto.
-También parece la declaración de tipos de una función que recibe dos valores y devuelve algo. Los constructores de tipos están curryficados (como las funciones), así que podemos aplicarlos parcialmente:
+También parece la declaración de tipos de una función que recibe dos valores y devuelve algo. Los constructores de tipos están currificados (como las funciones), así que podemos aplicarlos parcialmente:
 
     Prelude> :k Either String
     Either String :: * -> *
@@ -4146,3 +4139,38 @@ Finalmente, hagamos una mónada que compile:
       Writer m a >>= f =
         let Writer m' b = f a -- esto se puede hacer porque el tipo sólo tiene un constructor
           in Writer (combine m m') b
+
+# Asociatividad de los elementos de Haskell
+
+Asocian **a izquierdas:**
+
+* La aplicación de funciones, a consecuencia de la currificación.
+
+* `<$>` y `<*>` de la clase de tipos `Applicative` (ambos `infixl 4`).
+
+Asocian **a derechas:**
+
+* Los parámetros de las funciones, a consecuencia de la currificación.
+
+* La aplicación de funciones con `$`.
+
+* La composición de funciones con `(.)`.
+
+* El constructor `(:)` (en inglés `Cons`).
+
+# Errores comunes
+
+Es fácil deducir cuál es la cabeza de esta lista de listas:
+
+    ghci> head [[1,2,3],[4,5,6]]
+    [1,2,3]
+
+Pero yo mismo haciendo una traza en papel deduje que la cola de `[[1,2,3],[4,5,6]]` era `[4,5,6]`. Craso 
+error:
+    
+    ghci> tail [[1,2,3],[4,5,6]]
+    [[4,5,6]]
+
+# Optimizaciones de Project Euler
+
+Explicar el problema 47 y alguno más.
