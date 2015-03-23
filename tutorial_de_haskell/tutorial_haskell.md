@@ -112,8 +112,8 @@ suficiente al compilador acerca de qué tipo queremos:
     leerInts ::[String] -> [Int]
     leerInts = map read
 
-Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". Una
-compresión de listas equivale a un "para todo x" en matemáticas.
+Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". 
+Una compresión de listas equivale a un "para todo x" en matemáticas.
 
 **Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
 
@@ -129,7 +129,8 @@ conclusión de que no existe solución a ese problema.
 Se le indica al ordenador qué es cada cosa, y por ello las funciones no tienen permitido tener efectos
 laterales.
 
-Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* estructuras de datos que de manera "innata" tienen las modificaciones que queríamos hacer ya hechas.
+Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* estructuras de 
+datos que de manera "innata" tienen las modificaciones que queríamos hacer ya hechas.
 
 El hecho de que las funciones no puedan cambiar el estado - como por ejemplo, actualizar variables
 globales - es bueno porque nos ayuda a razonar sobre nuestros programas. Sim embargo, esto crea 
@@ -142,14 +143,16 @@ Las ventajas que brinda esta separación son dos:
 
 * podemos seguir razonando sobre nuestro programa puro
 
-* seguimos aprovechando las virtudes de la pureza - como evaluación perezosa, robustez, uso de composición - mientras nos comunicamos fácilmente con el mundo exterior.
+* seguimos aprovechando las virtudes de la pureza - como evaluación perezosa, robustez, uso de 
+composición - mientras nos comunicamos fácilmente con el mundo exterior.
 
 # Variables
 
 ## Lenguajes imperativos: ##
 
 Variable en programación imperativa: trozo de memoria mutable con un nombre variable en Haskell,
-simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir que es algo permanente.
+simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir que es 
+algo permanente.
 
 * Variables: asociaciones cambiables entre nombres y valores.
 
@@ -159,7 +162,9 @@ simplemente un nombre que usaremos para la sustitución el valor en Haskell es u
 referir a otras variables que pueden haber sido cambiadas por órdenes anteriores. Esto permite que los
 valores pasen de orden a orden.
 
-* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una orden anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes durante la ejecución de un programa.
+* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una orden 
+anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes durante la 
+ejecución de un programa.
 
 En lenguajes imperativos, el mismo nombre puede ser asociado a diferentes valores.
 
@@ -173,7 +178,8 @@ expresión consistentente en una llamada a una función que llama a otras funcio
 Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce como
 composición o anidamiento de funciones.
 
-En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede cambiar a lo largo de la ejecución.
+En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede 
+cambiar a lo largo de la ejecución.
 
 Los nombres sólo se introducen como los parámetros formales de las funciones... Cuando un parámetro 
 formal se asocia con un valor de parámetro real, luego no hay manera de asocialo a un nuevo valor. No 
@@ -278,9 +284,9 @@ programa en paralelo.
     sum :: (Num a) => [a] -> a
     sum xs = foldl (+) 0 xs
 
-El xs está lo más a la derecha posible a los dos lados del signo igual. A causa de la currificación,
-podemos omitir xs en ambos lados, ya que `fold (+) 0` crea una función que recibe una lista. De este modo,
-estamos creando una función de orden superior.
+El `xs` está lo más a la derecha posible a los dos lados del signo igual. A causa de la currificación,
+podemos omitir `xs` en ambos lados, ya que `fold (+) 0` crea una función que recibe una lista. De este 
+modo, estamos creando una función de orden superior.
 
 ## Estilo de funciones sin argumento declarado "point-free": ##
 
@@ -293,14 +299,14 @@ Gracias al sistema de tipos, se puede inferir el tipo más general de una funci�
 ecuaciones.
 
 Todas las apariciones de una variable de tipos deben ser reemplazadas por el mismo tipo.
-Si tenemos una función con una variable de tipos a, e intentamos que esa a se corresponda con dos tipos 
-diferentes, obtendremos un error.
+Si tenemos una función con una variable de tipos `a`, e intentamos que esa a se corresponda con dos 
+tipos diferentes, obtendremos un error.
 
 Un tipo polimórfico tiene muchos tipos. Un tipo polimórfico es una plantilla (un esquema de tipos) que 
 puede ser usada para crear tipos específicos.
 
-Una expresión en la que intervienen funciones polimórficas es correcta desde el punto de vista de su tipo 
-si se pueden encontrar sustituciones consistentes para las variables de tipo.
+Una expresión en la que intervienen funciones polimórficas es correcta desde el punto de vista de su 
+tipo si se pueden encontrar sustituciones consistentes para las variables de tipo.
 
 Capítulo 4:
 
@@ -333,14 +339,11 @@ podemos pasárselas a otras funciones.
 
 **Importante:** La flecha de las definiciones del tipo de las funciones es asociativa a la derecha.
 
-Cuando tengamos una declaración de tipos de función con la flecha '-\>', eso significa que es una función 
+Cuando tengamos una declaración de tipos de función con la flecha `->`, eso significa que es una función 
 que recibe aquello
 a la izquierda de la flecha y devuelve un valor cuyo tipo se indica en el lado derecho de la flecha.
 
-Cuando tenemos algo como a -\> (a -\> a) en realidad se trata de una función que recibiendo un parámetro, 
-nos
-devuelve otra función que recibe otro parámetro de tipo `a`, y al hacer su cálculo devuelve otro también del 
-tipo `a`.
+Cuando tenemos algo como `a -> (a -> a)` en realidad se trata de una función que recibiendo un parámetro, nos devuelve otra función que recibe otro parámetro de tipo `a`, y al hacer su cálculo devuelve otro también del tipo `a`.
 
 <!--inicio de la parte más básica del tutorial-->
 
@@ -400,8 +403,8 @@ Para iniciar GHCi usaremos el comando `ghci` en la consola que tengamos, lo cual
     "ola k ase"
     *Main> 2^100
     1267650600228229401496703205376
-    *Main> 2^1000
-    10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652624386837205668069376
+    *Main> 2^200
+    1606938044258990275541962092341162602522202993782792835301376
 
 Como vemos, Haskell soporta aritmética con enteros enormes (tanto como nuestra memoria principal nos permita), y hemos visto ejemplos de operaciones con números y cadenas. 
 
@@ -589,7 +592,7 @@ Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear 
 
 # Reconocimiento de patrones
 
-Para entender qué es el reconocimiento de patrones primero debemos saber qué es *"casar"*. Para ello, el diccionario de la Real Academia es nuestro hamijo:
+Para entender qué es el reconocimiento de patrones primero debemos saber qué es *casar*. Para ello, el diccionario de la Real Academia es nuestro hamijo:
 
 * Dicho de dos o más cosas: Corresponder, conformarse, cuadrar.
 * Unir, juntar o hacer coincidir algo con otra cosa. Casar la oferta con la demanda.
@@ -1032,7 +1035,7 @@ Lo primero que tenemos que hacer es mandar a `cabal` a actualizarse, lo cual se 
 
     cabal update
 
-Esto hará que se descargue la lista de paquetes más actuales y los registre.
+Esto hará que se descargue la lista de paquetes más actuales desde [hackage](https://hackage.haskell.org).
 
 A continuación, procederemos a instalar paquetes. `cabal` descarga los ficheros fuente, los compila y configura. Instalaremos el paquete `primes` que tiene utilidades muy eficientes para trabajar con números primos.
 
