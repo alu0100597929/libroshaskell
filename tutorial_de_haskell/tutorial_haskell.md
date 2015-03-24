@@ -4019,7 +4019,7 @@ Asocian **a izquierdas:**
 
 Asocian **a derechas:**
 
-* Los parámetros de las funciones, a consecuencia de la currificación.
+* En las declaraciones de tipos, `(->)`.
 
 * La aplicación de funciones con `$`.
 
