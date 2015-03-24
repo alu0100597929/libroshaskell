@@ -32,3 +32,23 @@ whenJust _ Nothing = Nothing
 --  fmap f (Just x) = Just (f x)
 --  fmap _ Nothing = Nothing
 
+f :: Int -> Int
+f = (+2)
+
+g :: Int -> Int
+g = (*3)
+
+h :: Int -> Int
+h = f . g
+
+fh :: Maybe Int -> Maybe Int
+fh = fmap f . fmap g
+
+findUser :: UserId -> Maybe User
+findUser = undefined
+
+add :: Int -> (Int -> Int)
+add x = \y -> x + y
+
+f :: [Int]
+f = map (add 5) [1,2,3]

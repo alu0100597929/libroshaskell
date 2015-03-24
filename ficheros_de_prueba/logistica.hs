@@ -89,3 +89,5 @@ esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
 sumaRec :: Int -> Int -> Int
 sumaRec n 0 = n
 sumaRec n a = sumaRec (n + 1) (a - 1)
+
+sumaPrimos = sum (takeWhile (< 2000000) primes)

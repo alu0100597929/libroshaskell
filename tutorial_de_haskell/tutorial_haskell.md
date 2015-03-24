@@ -45,9 +45,7 @@ Reacción típica de un programador al ver su primer fragmento de código Haskel
 
 # Introducción
 
-En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a dicha versión. Todo el código de este tutorial ha sido testeado. De todas formas, si he cometido algún error, ruego que me lo comuniques a [la sección "Issues" del repositorio del tutorial](https://github.com/freinn/libroshaskell/issues).
-
-Si quieres empezar a usar Haskell y su compilador e intérprete, puedes saltarte la primera sección e ir directamente a leer "Primeros Pasos". La única consecuencia es que cada vez que alguien hace esto, Dios mata un gatito.
+En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a dicha versión. Todo el código de este tutorial ha sido testeado. De todas formas, si he cometido algún error, ruego que me lo comuniques a la sección [Issues](https://github.com/freinn/libroshaskell/issues) del repositorio del tutorial.
 
 # Ideas sueltas
 
@@ -117,166 +115,6 @@ Una compresión de listas equivale a un "para todo x" en matemáticas.
 
 **Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
 
-# Idea del paradigma:
-
-## Lenguajes imperativos: ##
-
-Se trata de darle al ordenador una serie de pasos que debe seguir hasta llegar a una solución o a la
-conclusión de que no existe solución a ese problema.
-
-## Lenguajes funcionales: ##
-
-Se le indica al ordenador qué es cada cosa, y por ello las funciones no tienen permitido tener efectos
-laterales.
-
-Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* estructuras de 
-datos que de manera "innata" tienen las modificaciones que queríamos hacer ya hechas.
-
-El hecho de que las funciones no puedan cambiar el estado - como por ejemplo, actualizar variables
-globales - es bueno porque nos ayuda a razonar sobre nuestros programas. Sim embargo, esto crea 
-algunos problemas: Si una función no puede cambiar nada, ¿cómo se supone que nos devolverá el 
-resultado que calculó?
-
-Haskell cuenta con un buen sistema para tratar con funciones que tienen efectos laterales. Se trata de
-separar la parte pura de nuestro programa de la parte impura (que se ocupa de la E/S, por ejemplo). 
-Las ventajas que brinda esta separación son dos:
-
-* podemos seguir razonando sobre nuestro programa puro
-
-* seguimos aprovechando las virtudes de la pureza - como evaluación perezosa, robustez, uso de 
-composición - mientras nos comunicamos fácilmente con el mundo exterior.
-
-# Variables
-
-## Lenguajes imperativos: ##
-
-Variable en programación imperativa: trozo de memoria mutable con un nombre variable en Haskell,
-simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir que es 
-algo permanente.
-
-* Variables: asociaciones cambiables entre nombres y valores.
-
-* Se llaman imperativos porque consisten en secuencias de órdenes.
-
-* Asignaciones: asocian a una variable el resultado de una expresión. Cada expresión de orden puede
-referir a otras variables que pueden haber sido cambiadas por órdenes anteriores. Esto permite que los
-valores pasen de orden a orden.
-
-* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una orden 
-anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes durante la 
-ejecución de un programa.
-
-En lenguajes imperativos, el mismo nombre puede ser asociado a diferentes valores.
-
-## Lenguajes funcionales: ##
-
-Los lenguajes funcionales se basan en llamadas estructuradas a funciones. Un programa funcional es una
-expresión consistentente en una llamada a una función que llama a otras funciones.
-
-    \<función1\>(\<función2\>(\<función3\>...)...))
-
-Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce como
-composición o anidamiento de funciones.
-
-En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede 
-cambiar a lo largo de la ejecución.
-
-Los nombres sólo se introducen como los parámetros formales de las funciones... Cuando un parámetro 
-formal se asocia con un valor de parámetro real, luego no hay manera de asocialo a un nuevo valor. No 
-hay concepto de orden que cambie el valor asociado a través de asignación. Por tanto, no hay concepto 
-de secuencia de instrucciones o repetición de órdenes para activar cambios sucesivos a valores 
-asociados con nombres.
-
-En los lenguajes funcionales, un nombre solo se asocia una vez a un valor.
-
-# Orden de ejecución:
-
-## Lenguajes imperativos: ##
-
-Es crucial el orden de ejecución porque los valores se pasan de instrucción a instrucción mediante
-referencias a variables comunes, y una orden puede alterar un valor antes de ser usado por otra 
-orden. Un cambio en el orden de ejecución podría alterar el comportamiento del programa.
-
-En los lenguajes imperativos, el orden de ejecución es fijo.
-
-## Lenguajes funcionales: ##
-
-En los lenguajes funcionales, las llamadas a funciones no pueden cambiar los valores asociados con 
-nombres comunes. Por lo tanto, el orden en el cual se ejecutan las llamadas anidadas a funciones no 
-importa, porque las llamadas a funciones no pueden interactuar unas con otras.
-
-F (A(D), B(D), C(D)), el orden en el cual A(D), B(D) y C(D) se ejecutan no importa porque las 
-funciones A, B y C no pueden cambiar su parámetro real común D.
-
-En los lenguajes funcionales, no hay orden de ejecución necesario.
-
-Por todo lo expuesto más arriba, el orden de ejecución no afecta el resultado final en los lenguajes 
-funcionales. La independencia en el orden de ejecución es una de las mayores fortalezas de los 
-lenguajes funcionales.
-
-# Repetición:
-
-## Lenguajes imperativos: ##
-
-Como las órdenes podrían cambiar los valoes asociados a nombres de órdenes anteriores, de modo que no es 
-necesario introducir un nuevo nombre para cada nueva instrucción. Por ello, para realizar muchos comandos 
-muchas veces, no se necesita duplicar las órdenes. En vez de eso, las mismas órdenes se repiten.
-
-En los lenguajes imperativos, valores nuevos pueden ser asociados con el mismo nombre por medio de la 
-repetición de órdenes.
-
-## Lenguajes funcionales: ##
-
-Como no se pueden reusar nombres con valores diferentes, las funciones anidadas se usan para crear nuevas 
-versiones de los nombres para nuevos valores. Como no se puede usar la repetición de órdenes, se usan 
-llamadas recursivas para crear repetidamente nuevas versiones de nombres asociados a nuevos valores. Aquí, 
-una función se llama a sí misma para crear nuevas versiones de sus parámetros formales los cuales estarán 
-"ligados" a nuevos valores reales de parámetros.
-
-# Estructuras de datos en lenguajes funcionales:
-
-En los lenguajes imperativos, los elementos de los vectores (arreglos, arrays, matrices) y estructuras (
-records en Pascal, structs en C/C++) se cambian mediante asignaciones sucesivas. En los lenguajes 
-funcionales, como no hay asignación, las sub-estructuras de las estructuras de datos no pueden ser 
-cambiadas una por una. En lugar de esto, es necesario reescribir la estructura completa con cambios 
-explícitos a la sub-estructura adecuada.
-
-Los lenguajes funcionales proporcionan representación explícita para las estructuras de datos.
-
-En vez de arrays se usan listas, ya que reescribir arrays es computacionalmente muy costoso. Se basan en 
-notación recursiva.
-
-La capacidad de represnetar estructuras de datos enteras tiene ventajas. Por ejemplo, se usan formatos 
-estándar para mostrar, almacenar y modificar estas estructuras de datos.
-
-No existen las estructuras globales en los lenguajes funcionales. No se pueden cambiar las sub-estructuras 
-independientemente. En lugar de ello, las estructuras de datos enteras son pasadas explícitamente como 
-parámetros reales a funciones para cambiar la sub-estructura, y luego devueltas a la función llamadora. 
-Por tanto, las llamadas a funciones en los lenguajes funcionales son más grandes que sus equivalentes en 
-lenguajes imperativos por esos parámetros adicionales. Sin embargo, tiene la ventaja de asegurar que la 
-manipulación de estructuras mediante funciones es simpre explícita en la definición de la función y sus 
-llamadas. Esto hace más fácil seguir el flujo de los datos en los programas.
-
-# Funciones como valores:
-
-En muchos lenguajes imperativos, los subprogramas pueden ser pasados como parámetros reales a otros 
-subprogramas pero es raro para un lenguaje imperativo permitir a los subprogramas ser pasados como 
-resultados.
-
-En los lenguajes funcionales, las funciones pueden construir nuevas funciones y pasárselas a otras 
-funciones.
-
-Los lenguajes funcionales permiten a las funciones ser tratadas como valores. Esto da a los lenguajes 
-funcionales un gran poder y flexibilidad.
-
-Lambda-cálculo = aplicación estructurada de funciones.
-
-En lambda-cálculo, si varios órdenes de evaluación diferentes terminan, los resultados serán idénticos. 
-También se ha demostrado que un orden de evaluación particular conduce más a la terminación que cualquier 
-otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y otras partes en otro. En 
-particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
-programa en paralelo.
-
 # Ideas Razonando con Haskell
 
 ## Estilo de funciones con argumento declarado "point-wise": ##
@@ -322,36 +160,13 @@ Capítulo 7:
 El anidamiento de varias concatenaciones a la izquierda tiene complejidad cuadrática.
 El anidamiento de varias concatenaciones a la derecha tiene complejidad lineal.
 
-LYAH:
-
-# Funciones de orden superior
-
-Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry. Él inventó la técnica conocida como currificación.
-
-Currificar equivale a fijar parámetros, dando lugar a nuevas funciones.
-
-Todas las funciones en Haskell realmente reciben un único parámetro. Por tanto una función `a -> b -> c` recibe un único parámetro de tipo `a` y devuelve una función `b -> c`, que recibe un parámetro y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los parámetros que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
-
-¿Cómo nos beneficia esto a nosotros? Si llamamos a una función pasándole menos parámetros de los que 
-acepta, obtendremos una función parcialmente aplicada, la cual es una función que recibe tantos parámetros 
-como dejamos sin "rellenar". Por tanto, este es un buen método para crear funciones "al vuelo", y después 
-podemos pasárselas a otras funciones.
-
-**Importante:** La flecha de las definiciones del tipo de las funciones es asociativa a la derecha.
-
-Cuando tengamos una declaración de tipos de función con la flecha `->`, eso significa que es una función 
-que recibe aquello
-a la izquierda de la flecha y devuelve un valor cuyo tipo se indica en el lado derecho de la flecha.
-
-Cuando tenemos algo como `a -> (a -> a)` en realidad se trata de una función que recibiendo un parámetro, nos devuelve otra función que recibe otro parámetro de tipo `a`, y al hacer su cálculo devuelve otro también del tipo `a`.
-
 <!--inicio de la parte más básica del tutorial-->
 
 # Primeros pasos
 
 Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar.
 
-Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, GHC.
+Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, [GHC](https://www.haskell.org/ghc/).
 
 Mi sistema favorito para programar en Haskell es GNU/Linux, y en concreto uso las distros Kubuntu y Manjaro en la actualidad.
 
@@ -570,7 +385,7 @@ Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 progra
 
 **Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
-**Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea.
+**Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea. A parte de ello, la transparencia referencial nos permite conmutar aplicaciones de funciones por su definición, con la desventaja de necesitar paréntesis explícitos casi siempre.
 
 Definamos ahora una función `sumar` que reciba dos parámetros y los sume:
 
@@ -833,20 +648,39 @@ Una versión que usa la función `reverse`:
 
 # Composición de funciones
 
-El operador de composición de funciones, `(.)`, crea una función que aplica 
-su argumento derecho y luego pasa el resultado a su argumento izquierdo, 
-así que usamos eso para combinar la aplicación de dos funciones.
-
-TODO. El libro da unas restricciones de argumentos y valores de retorno muy buenas.
-La composición es asociativa a la derecha.
+La función composición, `(.)`, crea una función que recibe como argumentos dos funciones, `f` y
+`g` y devuelve una **nueva función**, `h`, que se puede notar `h = f . g`. 
 
 **Truco:** para entender la notación de composición con poco riesgo de equivocarse, es muy útil hablar de
-`f · g` como "`f` después de `g`".
+`f . g` como "`f` después de `g`".
+
+Veamos la definición de la función `(.)` para aclarar conceptos:
+
+    (.) :: (b -> c) -> (a -> b) -> a -> c
+    (f . g) x = f (g x)
+
+Veamos un sencillo ejemplo aclaratorio:
+
+    f :: Int -> Int
+    f = (+13)
+
+    g :: Int -> Int
+    g = (*7)
+
+    h :: Int -> Int
+    h = f . g
+
+Veamos un ejemplo en acción:
+
+    *Main> h 10
+    83
+
+TODO. El libro da unas restricciones de argumentos y valores de retorno muy buenas.
+
+**Importante:** la composición es asociativa a la derecha.
 
 Si la solución a un problema consta de varias etapas, podemos definir cada una de ellas como funciones
-independientes y componer todas para solucionar el problema.
-
-En Haskell, la función composición es `(.)`, veamos un ejemplo.
+independientes y componer todas para solucionar el problema, veamos un ejemplo.
 
     ghci> map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
     [-5,-3,-6,-7,-3,-2,-19,-24]
@@ -920,6 +754,27 @@ Una versión más corta, no recursiva, que hace uso de funciones predefinidas:
     quitarDuplicados = map head . group . sort
 
 Esta versión de `quitarDuplicados` tiene la ventaja de ser muy concisa y casi autoexplicativa.
+
+# Funciones de orden superior
+
+Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry. Él inventó la técnica conocida como currificación.
+
+Currificar equivale a fijar parámetros, dando lugar a nuevas funciones.
+
+Todas las funciones en Haskell están currificadas, es decir, realmente reciben un único argumento. Por tanto una función `a -> b -> c` recibe un único argumento de tipo `a` y devuelve una función `b -> c`, que recibe un argumento y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los argumentos que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
+
+¿Cómo nos beneficia esto a nosotros? Si llamamos a una función pasándole menos argumentos de los que 
+acepta, obtendremos una función parcialmente aplicada, la cual es una función que recibe tantos argumentos 
+como dejamos sin "rellenar". Por tanto, este es un buen método para crear funciones "al vuelo", y después 
+podemos pasárselas a otras funciones.
+
+**Importante:** La flecha de las definiciones del tipo de las funciones es asociativa a la derecha.
+
+Cuando tengamos una declaración de tipos de función con la flecha `->`, eso significa que es una función 
+que recibe aquello
+a la izquierda de la flecha y devuelve un valor cuyo tipo se indica en el lado derecho de la flecha.
+
+Cuando tenemos algo como `a -> (a -> a)` en realidad se trata de una función que recibiendo un argumento, nos devuelve otra función que recibe otro argumento de tipo `a`, y al hacer su cálculo devuelve otro también del tipo `a`.
 
 ## Pereza
 
@@ -1037,7 +892,9 @@ Lo primero que tenemos que hacer es mandar a `cabal` a actualizarse, lo cual se 
 
 Esto hará que se descargue la lista de paquetes más actuales desde [hackage](https://hackage.haskell.org).
 
-A continuación, procederemos a instalar paquetes. `cabal` descarga los ficheros fuente, los compila y configura. Instalaremos el paquete `primes` que tiene utilidades muy eficientes para trabajar con números primos.
+A continuación, procederemos a instalar paquetes. `cabal` descarga los ficheros fuente, los compila y configura. Instalaremos el paquete `primes` que tiene utilidades muy eficientes para trabajar con números primos:
+
+    cabal install primes
 
 Para usar este paquete, deberemos añadir en la cabecera de nuestro programa la sentencia:
 
@@ -1047,7 +904,14 @@ una vez hecho esto, podemos usar todas [éstas](https://hackage.haskell.org/pack
 
 Para ver todos los paquetes disponibles, podemos consultar la [página oficial](https://hackage.haskell.org/packages/).
 
-`Data.Numbers.Primes` exporta la función `primeFactors`, la cual se puede mejorar.
+`Data.Numbers.Primes` para resolver el problema 10 de [Project Euler](https://projecteuler.net/problem=10), a continuación el programa completo:
+
+    import Data.List (takeWhile)
+    import Data.Numbers.Primes (primes)
+
+    sumaPrimos = sum (takeWhile (< 2000000) primes)
+
+Como se aprecia, después de los `import` de los módulos, entre paréntesis especifico qué función quiero (en este caso sólo una, si hubiera más, irían separadas por comas). De este modo, en vez de cargar el módulo completo, cargo sólo lo que me interesa.
 
 # Programación Origami: plegado/desplegado de listas:
 
@@ -2545,6 +2409,8 @@ La transparencia referencial nos permite:
 * Razonar sobre los programas.
 
 * Diferir la evaluación hasta que realmente sea necesaria.
+
+A consecuencia de que Haskell goza de transparencia referencial, podemos reemplazar funciones con sus implementaciones de manera gratuita. Quizá requiera paréntesis explícitos aquí y allá, pero el código siempre dará la misma salida.
 
 Como hemos comentado, necesitamos E/S para traer aleatoriedad desde fuera a a nuestro programa.
 
@@ -4177,3 +4043,163 @@ error:
 # Optimizaciones de Project Euler
 
 Explicar el problema 47 y alguno más.
+
+# Idea del paradigma:
+
+## Lenguajes imperativos: ##
+
+Se trata de darle al ordenador una serie de pasos que debe seguir hasta llegar a una solución o a la
+conclusión de que no existe solución a ese problema.
+
+## Lenguajes funcionales: ##
+
+Se le indica al ordenador qué es cada cosa, y por ello las funciones no tienen permitido tener efectos
+laterales.
+
+Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* estructuras de 
+datos que de manera "innata" tienen las modificaciones que queríamos hacer ya hechas.
+
+El hecho de que las funciones no puedan cambiar el estado - como por ejemplo, actualizar variables
+globales - es bueno porque nos ayuda a razonar sobre nuestros programas. Sim embargo, esto crea 
+algunos problemas: Si una función no puede cambiar nada, ¿cómo se supone que nos devolverá el 
+resultado que calculó?
+
+Haskell cuenta con un buen sistema para tratar con funciones que tienen efectos laterales. Se trata de
+separar la parte pura de nuestro programa de la parte impura (que se ocupa de la E/S, por ejemplo). 
+Las ventajas que brinda esta separación son dos:
+
+* podemos seguir razonando sobre nuestro programa puro
+
+* seguimos aprovechando las virtudes de la pureza - como evaluación perezosa, robustez, uso de 
+composición - mientras nos comunicamos fácilmente con el mundo exterior.
+
+# Variables
+
+## Lenguajes imperativos: ##
+
+Variable en programación imperativa: trozo de memoria mutable con un nombre variable en Haskell,
+simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir que es 
+algo permanente.
+
+* Variables: asociaciones cambiables entre nombres y valores.
+
+* Se llaman imperativos porque consisten en secuencias de órdenes.
+
+* Asignaciones: asocian a una variable el resultado de una expresión. Cada expresión de orden puede
+referir a otras variables que pueden haber sido cambiadas por órdenes anteriores. Esto permite que los
+valores pasen de orden a orden.
+
+* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una orden 
+anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes durante la 
+ejecución de un programa.
+
+En lenguajes imperativos, el mismo nombre puede ser asociado a diferentes valores.
+
+## Lenguajes funcionales: ##
+
+Los lenguajes funcionales se basan en llamadas estructuradas a funciones. Un programa funcional es una
+expresión consistentente en una llamada a una función que llama a otras funciones.
+
+    \<función1\>(\<función2\>(\<función3\>...)...))
+
+Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce como
+composición o anidamiento de funciones.
+
+En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede 
+cambiar a lo largo de la ejecución.
+
+Los nombres sólo se introducen como los parámetros formales de las funciones... Cuando un parámetro 
+formal se asocia con un valor de parámetro real, luego no hay manera de asocialo a un nuevo valor. No 
+hay concepto de orden que cambie el valor asociado a través de asignación. Por tanto, no hay concepto 
+de secuencia de instrucciones o repetición de órdenes para activar cambios sucesivos a valores 
+asociados con nombres.
+
+En los lenguajes funcionales, un nombre solo se asocia una vez a un valor.
+
+# Orden de ejecución:
+
+## Lenguajes imperativos: ##
+
+Es crucial el orden de ejecución porque los valores se pasan de instrucción a instrucción mediante
+referencias a variables comunes, y una orden puede alterar un valor antes de ser usado por otra 
+orden. Un cambio en el orden de ejecución podría alterar el comportamiento del programa.
+
+En los lenguajes imperativos, el orden de ejecución es fijo.
+
+## Lenguajes funcionales: ##
+
+En los lenguajes funcionales, las llamadas a funciones no pueden cambiar los valores asociados con 
+nombres comunes. Por lo tanto, el orden en el cual se ejecutan las llamadas anidadas a funciones no 
+importa, porque las llamadas a funciones no pueden interactuar unas con otras.
+
+F (A(D), B(D), C(D)), el orden en el cual A(D), B(D) y C(D) se ejecutan no importa porque las 
+funciones A, B y C no pueden cambiar su parámetro real común D.
+
+En los lenguajes funcionales, no hay orden de ejecución necesario.
+
+Por todo lo expuesto más arriba, el orden de ejecución no afecta el resultado final en los lenguajes 
+funcionales. La independencia en el orden de ejecución es una de las mayores fortalezas de los 
+lenguajes funcionales.
+
+# Repetición:
+
+## Lenguajes imperativos: ##
+
+Como las órdenes podrían cambiar los valoes asociados a nombres de órdenes anteriores, de modo que no es 
+necesario introducir un nuevo nombre para cada nueva instrucción. Por ello, para realizar muchos comandos 
+muchas veces, no se necesita duplicar las órdenes. En vez de eso, las mismas órdenes se repiten.
+
+En los lenguajes imperativos, valores nuevos pueden ser asociados con el mismo nombre por medio de la 
+repetición de órdenes.
+
+## Lenguajes funcionales: ##
+
+Como no se pueden reusar nombres con valores diferentes, las funciones anidadas se usan para crear nuevas 
+versiones de los nombres para nuevos valores. Como no se puede usar la repetición de órdenes, se usan 
+llamadas recursivas para crear repetidamente nuevas versiones de nombres asociados a nuevos valores. Aquí, 
+una función se llama a sí misma para crear nuevas versiones de sus parámetros formales los cuales estarán 
+"ligados" a nuevos valores reales de parámetros.
+
+# Estructuras de datos en lenguajes funcionales:
+
+En los lenguajes imperativos, los elementos de los vectores (arreglos, arrays, matrices) y estructuras (
+records en Pascal, structs en C/C++) se cambian mediante asignaciones sucesivas. En los lenguajes 
+funcionales, como no hay asignación, las sub-estructuras de las estructuras de datos no pueden ser 
+cambiadas una por una. En lugar de esto, es necesario reescribir la estructura completa con cambios 
+explícitos a la sub-estructura adecuada.
+
+Los lenguajes funcionales proporcionan representación explícita para las estructuras de datos.
+
+En vez de arrays se usan listas, ya que reescribir arrays es computacionalmente muy costoso. Se basan en 
+notación recursiva.
+
+La capacidad de represnetar estructuras de datos enteras tiene ventajas. Por ejemplo, se usan formatos 
+estándar para mostrar, almacenar y modificar estas estructuras de datos.
+
+No existen las estructuras globales en los lenguajes funcionales. No se pueden cambiar las sub-estructuras 
+independientemente. En lugar de ello, las estructuras de datos enteras son pasadas explícitamente como 
+parámetros reales a funciones para cambiar la sub-estructura, y luego devueltas a la función llamadora. 
+Por tanto, las llamadas a funciones en los lenguajes funcionales son más grandes que sus equivalentes en 
+lenguajes imperativos por esos parámetros adicionales. Sin embargo, tiene la ventaja de asegurar que la 
+manipulación de estructuras mediante funciones es simpre explícita en la definición de la función y sus 
+llamadas. Esto hace más fácil seguir el flujo de los datos en los programas.
+
+# Funciones como valores:
+
+En muchos lenguajes imperativos, los subprogramas pueden ser pasados como parámetros reales a otros 
+subprogramas pero es raro para un lenguaje imperativo permitir a los subprogramas ser pasados como 
+resultados.
+
+En los lenguajes funcionales, las funciones pueden construir nuevas funciones y pasárselas a otras 
+funciones.
+
+Los lenguajes funcionales permiten a las funciones ser tratadas como valores. Esto da a los lenguajes 
+funcionales un gran poder y flexibilidad.
+
+Lambda-cálculo = aplicación estructurada de funciones.
+
+En lambda-cálculo, si varios órdenes de evaluación diferentes terminan, los resultados serán idénticos. 
+También se ha demostrado que un orden de evaluación particular conduce más a la terminación que cualquier 
+otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y otras partes en otro. En 
+particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
+programa en paralelo.
