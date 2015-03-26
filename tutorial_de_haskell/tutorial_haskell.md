@@ -3225,7 +3225,7 @@ La primera (vista anteriormente) es la más importante, aunque las otras tienen 
 
 * `u <*> pure y` = `pure ($ y) <*> u`
 
-## Funciones útiles para Applicatives ##
+## Funciones útiles para funtores aplicativos ##
 
 `Control.Applicative` define una función llamada `liftA2`, la cual tiene el tipo:
 
@@ -3383,6 +3383,12 @@ una acción E/S sin llevarla a cabo.
 
 Como hemos visto, simplemente usando `<$>` y `<*>`, podemos emplear funciones normales para operar 
 uniformemente en cualquier número de funtores aplicativos y aprovechar las ventajas de cada uno.
+
+## Otros operadores sobre funtores aplicativos
+
+**Truco:** si hay un mayor que '>' o menor que '<', el resultado al lado al que apunte este signo deberá ser usado.
+
+Por ejemplo, `*>` devuelve el resultado a su derecha; `<*>` devuelve los resultados de ambos lados; y `<*` devuelve el resultado a su izquierda.
 
 # Kinds
 

@@ -8,7 +8,7 @@ el operador <- liga a un nombre lo que hay dentro de la mónada sobre la cual op
 
 * char...devolverá un Char
 
-* try...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir.
+* try...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de <|>, es decir, si queremos encadenar varios 'try', deben estar a la izquierda de la cadena de <|>. try es como un lookahead, y en 
 
 - noneOf no consume aquella entrada que no debe, dicha entrada es una condición de parada.
 
@@ -17,3 +17,9 @@ el operador <- liga a un nombre lo que hay dentro de la mónada sobre la cual op
 1. intenta el parser de la izquierda, en caso de que no consuma entrada...
 
 2. intenta el parser de la derecha.
+
+char consume entrada, si puede.
+
+>> lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre.
+
+type CharParser st a = GenParser Char st a
