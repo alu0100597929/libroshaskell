@@ -29,6 +29,10 @@ Código fuente de este tutorial, que está en [CIS 194](http://www.seas.upenn.ed
 
 Código fuente de este tutorial, que está en [CSE 230 Winter 2012](https://cseweb.ucsd.edu/classes/wi12/cse230-a/lectures.html) 
 
+## codewars
+
+Código fuente de las katas que voy resolviendo en [Code Wars](https://www.codewars.com/)
+
 ## Erik Meijer
 
 Fuentes funcionales (en ambos sentidos) de los tutoriales en vídeo que hace Erik Meijer.
@@ -76,6 +80,10 @@ Códigos fuente que resuelven, usando Haskell, algunos problemas de [Project Eul
 ## razonando_con_haskell
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
+
+## real world haskell
+
+Códigos fuente del libro del mismo nombre, adaptados por mí. [Real World Haskell](http://book.realworldhaskell.org/read/)
 
 ## sublime Text
 

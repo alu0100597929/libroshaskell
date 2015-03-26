@@ -1,0 +1,19 @@
+####### Notas sobre Parsec #######
+
+Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los nombres adecuados).
+
+el operador <- liga a un nombre lo que hay dentro de la mónada sobre la cual opera (GenParser). Por tanto, si opera sobre:
+
+* many, many1, string...devolverá una String
+
+* char...devolverá un Char
+
+* try...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir.
+
+- noneOf no consume aquella entrada que no debe, dicha entrada es una condición de parada.
+
+<|> es el operador de elección. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
+
+1. intenta el parser de la izquierda, en caso de que no consuma entrada...
+
+2. intenta el parser de la derecha.
