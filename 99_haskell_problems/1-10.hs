@@ -13,17 +13,25 @@ myLength = foldr (\x n -> n + 1) 0
 myReverse :: [a] -> [a]
 myReverse = foldr (\x xs -> xs ++ [x]) []
 
-{-TODO
+
 data NestedList a = Elem a | List [NestedList a]
 
-flatten (List []) = []
-flatten (Elem x) = [x]
-flatten (List (x:xs)) = flatten x ++ flatten xs
--}
+{-flatten :: NestedList a -> [a]
+flatten (Elem a   )   = [a]
+flatten (List (x:xs)) = flatten x ++ flatten (List xs)
+flatten (List [])     = []-}
 
+flatten :: NestedList a -> [a]
+flatten (Elem x) = return x
+flatten (List x) = x >>= flatten
+
+-- problem 8
 quitarDuplicados :: (Eq a) => [a] -> [a]
 quitarDuplicados [] = []
 quitarDuplicados [x] = [x]
 quitarDuplicados (x:y:ys) = if x == y
                                then quitarDuplicados (y:ys)
                                else x : (quitarDuplicados (y:ys))
+
+pack :: (Eq a) => [a] -> [[a]]
+pack = group
