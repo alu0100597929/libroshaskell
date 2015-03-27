@@ -49,6 +49,15 @@ En el momento de la escritura de este tutorial, se ha usado una versión beta de
 
 # Ideas sueltas
 
+`(<*>)` es el ya conocido `($)` elevado a funtores aplicativos, y `ap` es lo mismo pero elevado a mónadas.
+
+    ghci> :type ($)
+    ($) :: (a -> b) -> a -> b
+    ghci> :type (<*>)
+    (<*>) :: (Applicative f) => f (a -> b) -> f a -> f b
+    ghci> :type ap
+    ap :: (Monad m) => m (a -> b) -> m a -> m b
+
 Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
 
 La aplicación de funciones tiene la máxima prioridad, 10.
@@ -3386,9 +3395,7 @@ uniformemente en cualquier número de funtores aplicativos y aprovechar las vent
 
 ## Otros operadores sobre funtores aplicativos
 
-**Truco:** si hay un mayor que '>' o menor que '<', el resultado al lado al que apunte este signo deberá ser usado.
-
-Por ejemplo, `*>` devuelve el resultado a su derecha; `<*>` devuelve los resultados de ambos lados; y `<*` devuelve el resultado a su izquierda.
+**Truco:** si hay un mayor que '>' o menor que '<', el resultado al lado al que apunte este signo deberá ser usado. Por ejemplo, `*>` devuelve el resultado a su derecha; `<*>` devuelve los resultados de ambos lados; y `<*` devuelve el resultado a su izquierda. Además, el uso de estos operadores no cambia el orden en que las acciones a la izquierda y derecha de los mismos, que siempre será de izquierda a derecha. Por ejemplo; `(parser <* spaces)` ejecutará `parser` primero y luego `spaces`, quedándose con el resultado de `parser`.
 
 # Kinds
 

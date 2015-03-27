@@ -1,4 +1,4 @@
--- file: ch16/FormParse.hs
+-- file: FormParse.hs
 import Text.ParserCombinators.Parsec
 import Control.Monad (liftM2)
 import Numeric (readHex)

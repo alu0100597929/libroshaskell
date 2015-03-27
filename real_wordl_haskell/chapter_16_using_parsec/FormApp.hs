@@ -1,3 +1,4 @@
+-- file: FormApp.hs
 import Text.ParserCombinators.Parsec
 import Control.Applicative hiding (many,optional,(<|>))
 import Numeric
@@ -12,9 +13,16 @@ Input: toEnum 35::Char
 Output: #
 -}
 
+{-
+p_char :: CharParser () Char
+p_char = oneOf urlBaseChars
+     <|> (char '+' >> return ' ')
+     <|> p_hex
+-}
+
 a_char :: CharParser () Char
 a_char = oneOf urlBaseChars
-     <|> (' ' <$ char '+')
+     <|> (' ' <$ char '+') -- el combinador (<$) usa el valor a la izquierda si el parser a la derecha tiene éxito.
      <|> a_hex
 
 a_pair_app1 =
@@ -26,3 +34,5 @@ a_query = a_pair_app1 `sepBy` char '&'
 urlBaseChars = ['a'..'z']++['A'..'Z']++['0'..'9']++"$-_.!*'(),"
 
 testFA = parseTest a_query "foo=bar&a%21=b+c"
+
+testFA2 = parseTest a_query "foo&a%23=d+e"

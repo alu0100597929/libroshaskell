@@ -1,4 +1,4 @@
--- file: ch16/csv5.hs
+-- file: csv5.hs
 import Text.ParserCombinators.Parsec
 
 eol = 

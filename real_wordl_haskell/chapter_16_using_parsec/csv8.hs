@@ -1,4 +1,4 @@
--- file: ch16/csv8.hs
+-- file: csv8.hs
 import Text.ParserCombinators.Parsec
 
 csvFile = endBy line eol

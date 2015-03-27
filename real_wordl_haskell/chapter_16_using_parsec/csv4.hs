@@ -1,4 +1,4 @@
--- file: ch16/csv4.hs
+-- file: csv4.hs
 import Text.ParserCombinators.Parsec
 
 -- This function is not correct!
