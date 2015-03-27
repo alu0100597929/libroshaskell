@@ -2,6 +2,7 @@ module Main where
 
 import Data.Char (toLower)
 import Control.Monad (liftM)
+import Data.Array (Array (..), listArray)
 import Data.Ratio (Rational (..), (%))
 import Data.Complex (Complex (..))
 import Numeric (readOct, readHex)
@@ -18,17 +19,22 @@ data LispVal = Atom String
              | String String
              | Char Char
              | Bool Bool
-               deriving (Show)
+             | Vector (Array Int LispVal)
+
+-- nuevo: hacemos LispVal instancia de Show
+
+instance Show LispVal where
+    show = showVal
 
 main :: IO ()
-main = do
-     args <- getArgs
-     putStrLn (readExpr (args !! 0))
+main = getArgs >>= print . eval . readExpr . head
 
-readExpr :: String -> String
+readExpr :: String -> LispVal
 readExpr input = case parse parseExpr "lisp" input of
-         Left err -> "No match: " ++ show err
-         Right val -> "Found value: " ++ show val
+    Left err -> String $ "No match: " ++ show err
+    Right val -> val
+
+-- fin nuevo
 
 --
 -- LispVal Parsers
@@ -164,6 +170,64 @@ parseUnquoteSplicing = do string ",@"
                           expr <- parseExpr
                           return $ List [Atom "unquote-splicing", expr]
 
+parseVector :: Parser LispVal
+parseVector = do string "#("
+                 elems <- sepBy parseExpr spaces
+                 char ')'
+                 return $ Vector (listArray (0, (length elems)-1) elems)
+
+-- Lo nuevo aquí
+
+showVal :: LispVal -> String
+showVal (String contents) = "\"" ++ contents ++ "\""
+showVal (Atom name) = name
+showVal (Number contents) = show contents
+showVal (Bool True) = "#t"
+showVal (Bool False) = "#f"
+showVal (List contents) = "(" ++ unwordsList contents ++ ")"
+showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
+
+unwordsList :: [LispVal] -> String
+unwordsList = unwords . map showVal
+
+eval :: LispVal -> LispVal
+eval val@(String _) = val
+eval val@(Number _) = val
+eval val@(Bool _) = val
+eval (List [Atom "quote", val]) = val
+eval (List (Atom func : args)) = apply func $ map eval args -- evaluación de funciones
+
+{-
+Prelude> ($ 2) (2+)
+4
+-}
+
+apply :: String -> [LispVal] -> LispVal
+apply func args = maybe (Bool False) ($ args) $ lookup func primitives
+
+primitives :: [(String, [LispVal] -> LispVal)]
+primitives = [("+", numericBinop (+)),
+              ("-", numericBinop (-)),
+              ("*", numericBinop (*)),
+              ("/", numericBinop div),
+              ("mod", numericBinop mod),
+              ("quotient", numericBinop quot),
+              ("remainder", numericBinop rem)]
+
+numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> LispVal
+numericBinop op params = Number $ foldl1 op $ map unpackNum params
+ 
+unpackNum :: LispVal -> Integer
+unpackNum (Number n) = n
+unpackNum (String n) = let parsed = reads n :: [(Integer, String)] in 
+                           if null parsed 
+                              then 0
+                              else fst $ parsed !! 0
+unpackNum (List [n]) = unpackNum n
+unpackNum _ = 0
+
+-- fin de lo nuevo
+
 --
 -- Helpers
 --
@@ -184,6 +248,7 @@ symbol = oneOf "!$%&|*+-/:<=>?@^_~"
 
 spaces :: Parser ()
 spaces = skipMany1 space
+
 bin2int :: String -> Integer
 bin2int s = sum $ map (\(i,x) -> x*(2^i)) $ zip [0..] $ map p (reverse s)
           where p '0' = 0

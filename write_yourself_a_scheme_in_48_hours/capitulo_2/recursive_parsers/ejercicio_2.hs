@@ -2,6 +2,7 @@ module Main where
 
 import Data.Char (toLower)
 import Control.Monad (liftM)
+import Data.Array (Array (..), listArray)
 import Data.Ratio (Rational (..), (%))
 import Data.Complex (Complex (..))
 import Numeric (readOct, readHex)
@@ -18,6 +19,7 @@ data LispVal = Atom String
              | String String
              | Char Char
              | Bool Bool
+             | Vector (Array Int LispVal)
                deriving (Show)
 
 main :: IO ()
@@ -163,6 +165,12 @@ parseUnquoteSplicing :: Parser LispVal
 parseUnquoteSplicing = do string ",@"
                           expr <- parseExpr
                           return $ List [Atom "unquote-splicing", expr]
+
+parseVector :: Parser LispVal
+parseVector = do string "#("
+                 elems <- sepBy parseExpr spaces
+                 char ')'
+                 return $ Vector (listArray (0, (length elems)-1) elems)
 
 --
 -- Helpers
