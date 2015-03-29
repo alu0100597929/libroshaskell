@@ -28,20 +28,3 @@ The functions indices, elems, and assocs, when applied to an array, return lists
 elements, or associations, respectively, in index order.
 -}
 
-{-
-Nothing >>= f = Nothing
-(Just x) >>= f = Just (f x)
-
-m >> k      = m >>= \_ -> k
-
-case m of Nothing -> Nothing
-          Just x  -> k
-
-"a <- m ; e"
-en "m >>= \a -> e"
-y "m ; n" en "m >> n"
-
-do c1 <- gooddiv a1 b1 ; c2 <- gooddiv a2 b2 ; return (c1 + c2)
-
-gooddiv a1 b1 >>= (\c1 -> gooddiv a2 b2 >>= (\c2 -> return (c1 + c2)))
--}

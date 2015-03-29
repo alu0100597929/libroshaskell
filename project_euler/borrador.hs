@@ -1,5 +1,20 @@
 --borrador con ideas para los problemas de project euler
 
-3445
+import qualified Data.Sequence as S
 
-divido entre 10 y me cargo en 5 y le resto la primera cifra por el número de cifras
+ayudante :: S.Seq Int -> S.Seq (S.Seq Int)
+ayudante [] = []
+ayudante [x] = []
+ayudante [x,y] = []
+ayudante xs = if length inicio == 2
+                then [inicio]
+                else inicio : tail inicio : ayudante inicio
+  where
+    inicio = init xs 
+
+colas :: S.Seq Int -> S.Seq (S.Seq Int)
+colas [] = []
+colas [x,y] = [[x,y]]
+colas entera@(x:xs) = entera : colas xs
+
+listasConsecutivas xs = colas xs ++ ayudante xs

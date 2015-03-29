@@ -20,7 +20,6 @@ primerFib1000 = findIndex (\x -> (num_cifras x) == 1000) fibs
 {-problema 27-}
 
 -- Cuidado!! la función esPrimo se tragaba los negativos, y los primos sólo son positivos...
-
 raizNumEntero :: Int -> Int
 raizNumEntero = floor . sqrt . fromIntegral
 
@@ -40,6 +39,14 @@ numPosibilidades = sum [1 | a <- [-9..9], b <- [-9..9]]
 
 indices = [a*b | a <- [-999..999], b <- [-999..999], (numPrimosFormula a b) == max]
           where max = maximosPrimos
+
+{- problema 30 -}
+
+solucion30 :: Int
+solucion30 = sum [x | x <- [2..194979], x == sumaElev5 x]
+  where
+    elevarA5 = (^5)
+    sumaElev5 n = sum (map (elevarA5) $ enteroALista n)
 
 {-problema 32-}
 
@@ -416,6 +423,48 @@ solucion49 = let listaPrimos = filter (> 1000) $ takeWhile (< 10000) primes in
 
 --main = print solucion49
 
+{- problema 50 -}
+
+colas :: [Int] -> [[Int]]
+colas [] = []
+colas [x,y] = [[x,y]]
+colas entera@(x:xs) = entera : colas xs
+
+inicios :: [Int] -> [[Int]]
+inicios [] = []
+inicios [x] = []
+inicios [x,y] = [] -- [[x,y]]
+inicios xs = inicio : inicios inicio
+  where
+    inicio = init xs
+
+listasConsecutivas :: [Int] -> [[Int]]
+listasConsecutivas [] = []
+listasConsecutivas [x] = []
+listasConsecutivas [x,y] = [[x,y]]
+listasConsecutivas xs = colas xs ++ listasConsecutivas (if null intermedia
+                                                         then []
+                                                         else intermedia)
+                        ++ inicios xs
+  where
+    intermedia = init $ tail xs
+
+sort2Tuples :: Ord v => (k,v) -> (k,v) -> Ordering
+sort2Tuples (_,a) (_,b)
+  | a == b = EQ
+  | a < b = GT
+  | otherwise = LT
+
+ordenarResultados :: Ord v => [(k,v)] -> [(k,v)]
+ordenarResultados = sortBy sort2Tuples
+
+paresBuenos = filter (isPrime . fst) $ filter ((<1000000) . fst) pares
+  where
+    pares = map (\xs -> (sum xs, length xs)) posibles
+    posibles = listasConsecutivas $ takeWhile (<10000) primes
+
+solucion50 = fst . head . ordenarResultados $ paresBuenos
+
 {-problema 204-}
 
 -- algoritmo de Euclides, para calcular el máximo común divisor
@@ -438,14 +487,3 @@ cuadrados n = map (^2) [1..n]
 -- queremos factorizar 1649
 
 -- num_hamming = length $ filter (\a -> (mayorFactorPrimo a) <= 97) [2..1000000000]
-
-{-problema 50-}
-
--- TODO
-
-sumaPrimos :: Int -> [Int]
--- sumaPrimos n = last . filter (esPrimo) . takeWhile (< n) $ scanl (+) 0 primes
-sumaPrimos n = takeWhile (< n) $ scanl (+) 0 primes
-
--- sumaPrimaPrimos :: [Int]
--- sumaPrimaPrimos = filter (\x -> esPrimo $ sumaPrimos x) $ takeWhile (< 1000) primes
