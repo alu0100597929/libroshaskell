@@ -71,7 +71,7 @@ num_cifras n = 1 + num_cifras (n `div` 10)
 intALista :: Int -> [Int]
 intALista n
   | n <= 0 = []
-  | otherwise = intALista (n`div` 10) ++ [n `mod` 10]
+  | otherwise = intALista (n `div` 10) ++ [n `mod` 10]
 
 esPalindromo' :: [Int] -> Bool
 esPalindromo' xs
