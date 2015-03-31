@@ -339,6 +339,17 @@ solucion43 = sum . map grupoAInt . filter condicion . map grupos $ permutaciones
 nPentagonales :: Int -> [Int]
 nPentagonales n = map (\x -> (3 * x^2 - x) `div` 2) [1..n]
 
+{- problema 45 -}
+
+pentagonales = map (\ n -> (3*n^2 - n) `div` 2) [1..]
+
+hexagonales = map (\ n -> 2*n^2 - n) [1..]
+
+solucion45 = find (\x -> es_penta x && es_hexa x) (drop 285 triangulares)
+  where
+    es_penta n = elemInfinita n pentagonales
+    es_hexa n = elemInfinita n hexagonales
+
 {-Problema 46-}
 
 escribible :: Int -> Bool
