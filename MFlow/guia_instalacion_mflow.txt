@@ -1,7 +1,6 @@
 Es necesario:
 
 sudo apt-get install -y build-essential zlib1g-dev
-sudo apt-get install -y libghc-pcre-light-dev
 
 export ~/.cabal/bin:$PATH
 
@@ -22,3 +21,12 @@ EOF
 export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH
 cabal update
 cabal install cabal-install
+
+Instalación de MFlow:
+
+cabal update
+cabal install cabal-install
+cabal install monadloc
+cabal install happy
+cabal install monadloc-pp
+cabal install MFlow
