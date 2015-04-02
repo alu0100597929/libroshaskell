@@ -6,6 +6,32 @@
 \section{Sección Uno}
 \label{1:sec:1}
 
+Todo empezó con un hilo en el foro de internet ``forocoches.com'', en él hablaban de 
+que la programación funcional iba a tener cada día más relevancia porque cuenta con ventajas de 
+las cuales la imperativa carece. Es muy interesante debido a que es el lenguaje con mayor nivel de 
+abstracción en el que he programado hasta hoy.\\
+
+A raíz de ello, me interesé por este paradigma y empecé a (e incluso terminé de) leer numerosos 
+libros sobre el lenguaje y la programación funcional en general, y a crear pequeños programas en 
+Haskell.\\
+
+Haskell es idóneo para crear lenguajes de dominio específico. En otras palabras, antes de 
+escribir tu compilador tú capturas el lenguaje que quieres compilar (el lenguaje fuente) en un 
+tipo. Las expresiones de ese tipo representarán términos en el lenguaje fuente y normalmente son 
+bastante similares al mismo, a pesar de ser Haskell.\\
+
+Entonces representas el lenguaje objetivo como otro tipo más. Finalmente, el compilador es 
+realmente una función del tipo fuente al tipo objetivo y las traducciones son fáciles de escribir y 
+leer. Las optimizaciones también son funciones como cualquier otra (ya que realmente en Haskell 
+todo es una función, y además, currificada) que mapean del dominio del lenguaje fuente al codominio
+del lenguaje objetivo.\\
+
+Por ello los lenguajes funcionales con sintaxis ligera y un fuerte sistema de tipos se consideran 
+muy adecuados para crear compiladores y muchas otras cosas que traducen cosas.\\
+
+Además, Haskell cuenta con mecanismos de abstracción muy fuertes que permiten escribir códigos 
+escuetos que se comportan muy bien.\\
+
 \begin{itemize}
   \item Item 1
   \item Item 2

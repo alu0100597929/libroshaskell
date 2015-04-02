@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/Debian) (preloaded format=pdflatex 2015.3.7)  21 MAR 2015 14:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/Debian) (preloaded format=pdflatex 2015.3.7)  2 APR 2015 17:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -550,54 +550,89 @@ e Usando Haskell []
 ]
 Cap\'{\i }tulo 1.
 (/home/freinn/libroshaskell/memoria_tfg/cap1.tex
+Underfull \hbox (badness 10000) in paragraph at lines 9--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 14--17
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--22
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--28
+
+ []
+
+[1
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 29--31
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 32--34
+
+ []
+
 Package epstopdf Info: Source file: <images/arbolbinario.eps>
-(epstopdf)                    date: 2012-09-05 14:10:14
+(epstopdf)                    date: 2015-04-01 16:29:50
 (epstopdf)                    size: 11499 bytes
 (epstopdf)             Output file: <images/arbolbinario-eps-converted-to.pdf>
-(epstopdf)                    date: 2015-03-21 14:36:30
+(epstopdf)                    date: 2015-04-01 16:29:50
 (epstopdf)                    size: 5723 bytes
 (epstopdf)             Command: <repstopdf --outfile=images/arbolbinario-eps-co
 nverted-to.pdf images/arbolbinario.eps>
-(epstopdf)             \includegraphics on input line 41.
+(epstopdf)             \includegraphics on input line 67.
 Package epstopdf Info: Output file is already uptodate.
-<images/arbolbinario-eps-converted-to.pdf, id=65, 509.905pt x 492.84125pt>
+<images/arbolbinario-eps-converted-to.pdf, id=69, 509.905pt x 492.84125pt>
 File: images/arbolbinario-eps-converted-to.pdf Graphic file (type pdf)
 <use images/arbolbinario-eps-converted-to.pdf>
 Package pdftex.def Info: images/arbolbinario-eps-converted-to.pdf used on input
- line 41.
+ line 67.
 (pdftex.def)             Requested size: 213.39566pt x 206.25493pt.
-[1
-
-])
+)
 Overfull \hbox (28.53976pt too wide) has occurred while \output is active
 \OT1/cmr/m/sl/14.4 Construcci^^Son de un Compilador y un Int^^Serprete de Schem
 e Usando Haskell \OT1/cmr/m/n/14.4 2
  []
 
-[2 <./images/arbolbinario-eps-converted-to.pdf>]
+[2]
+Overfull \hbox (28.53976pt too wide) has occurred while \output is active
+\OT1/cmr/m/sl/14.4 Construcci^^Son de un Compilador y un Int^^Serprete de Schem
+e Usando Haskell \OT1/cmr/m/n/14.4 3
+ []
+
+[3 <./images/arbolbinario-eps-converted-to.pdf>]
 Cap\'{\i }tulo 2.
-(/home/freinn/libroshaskell/memoria_tfg/cap2.tex) [3
+(/home/freinn/libroshaskell/memoria_tfg/cap2.tex) [4
 
 ]
 Cap\'{\i }tulo 3.
-(/home/freinn/libroshaskell/memoria_tfg/cap3.tex) [4
+(/home/freinn/libroshaskell/memoria_tfg/cap3.tex) [5
 
 ]
 Cap\'{\i }tulo 4.
-(/home/freinn/libroshaskell/memoria_tfg/cap4.tex) [5
+(/home/freinn/libroshaskell/memoria_tfg/cap4.tex) [6
 
 ]
 Cap\'{\i }tulo 5.
-(/home/freinn/libroshaskell/memoria_tfg/cap5.tex) [6
+(/home/freinn/libroshaskell/memoria_tfg/cap5.tex) [7
 
 ]
 Cap\'{\i }tulo 6.
-(/home/freinn/libroshaskell/memoria_tfg/cap6.tex) [7
+(/home/freinn/libroshaskell/memoria_tfg/cap6.tex) [8
 
 ]
 Cap\'{\i }tulo 7.
 (/home/freinn/libroshaskell/memoria_tfg/cap7.tex (/home/freinn/libroshaskell/me
-moria_tfg/tables/table.tex)) [8
+moria_tfg/tables/table.tex)) [9
 
 ]
 Ap\'endice A.
@@ -631,7 +666,7 @@ Overfull \hbox (14.20482pt too wide) in paragraph at lines 52--52
 ************************[] 
  []
 
-[9
+[10
 
 ]
 Overfull \hbox (24.70473pt too wide) in paragraph at lines 52--52
@@ -642,21 +677,21 @@ Overfull \hbox (24.70473pt too wide) in paragraph at lines 52--52
 )
 Overfull \hbox (35.58968pt too wide) has occurred while \output is active
 \OT1/cmr/m/sl/14.4 Construcci^^Son de un Compilador y un Int^^Serprete de Schem
-e Usando Haskell \OT1/cmr/m/n/14.4 10
+e Usando Haskell \OT1/cmr/m/n/14.4 11
  []
 
-[10]
+[11]
 Ap\'endice B.
 (/home/freinn/libroshaskell/memoria_tfg/apendice2.tex) (/home/freinn/libroshask
-ell/memoria_tfg/memtfg.bbl [11
+ell/memoria_tfg/memtfg.bbl [12
 
-]) [12
+]) [13
 
 ] (/home/freinn/libroshaskell/memoria_tfg/memtfg.aux) ) 
 Here is how much of TeX's memory you used:
  12703 strings out of 494959
  252962 string characters out of 6179407
- 285888 words of memory out of 5000000
+ 285891 words of memory out of 5000000
  15604 multiletter control sequences out of 15000+600000
  11811 words of font info for 44 fonts, out of 8000000 for 9000
  40 hyphenation exceptions out of 8191
@@ -671,11 +706,11 @@ fonts/cm/cmsl12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmt
 i12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pf
 b>
-Output written on /home/freinn/libroshaskell/memoria_tfg/memtfg.pdf (24 pages, 
-211078 bytes).
+Output written on /home/freinn/libroshaskell/memoria_tfg/memtfg.pdf (25 pages, 
+213232 bytes).
 PDF statistics:
- 137 PDF objects out of 1000 (max. 8388607)
- 87 compressed objects within 1 object stream
+ 141 PDF objects out of 1000 (max. 8388607)
+ 90 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  53 words of extra memory for PDF output out of 10000 (max. 10000000)
 
