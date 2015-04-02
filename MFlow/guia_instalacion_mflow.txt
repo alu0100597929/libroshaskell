@@ -21,8 +21,8 @@ export ~/.cabal/bin:$PATH
 
 ???????????
 
-/opt/cabal/1.20/bin/cabal update
-/opt/cabal/1.20/bin/cabal install cabal-install
+???? /opt/cabal/1.20/bin/cabal update
+???? /opt/cabal/1.20/bin/cabal install cabal-install
 
 nano ~/.cabal/config
 poner user-install: False
@@ -31,14 +31,15 @@ poner las rutas donde GHC buscará las librerías y binarios, algo así (tener e
 
 Instalación de MFlow:
 
-cabal update
-cabal install cabal-install
 cabal install monadloc
 cabal install happy
 cabal install monadloc-pp
 git clone https://github.com/agocorona/MFlow.git
 -- ^ install from git
 cd Mflow
+
+Eliminamos los comentarios del fichero MFlow.cabal
+
 cabal install
 
 runghc -iDemos Demos/demos-blaze.hs

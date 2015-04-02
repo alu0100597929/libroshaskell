@@ -9,6 +9,8 @@ import Numeric (readOct, readHex)
 import System.Environment
 import Text.ParserCombinators.Parsec hiding (spaces)
 
+-----------------Parte nueva-----------------
+
 -- nuevo, Control.Monad.Error está deprecated
 import Control.Monad.Except
 
@@ -50,6 +52,18 @@ LispError, creating a type constructor ThrowsError that we can use on any data t
 -}
 type ThrowsError = Either LispError
 
+trapError action = catchError action (return . show)
+
+extractValue :: ThrowsError a -> a
+extractValue (Right val) = val
+
+readExpr :: String -> ThrowsError LispVal
+readExpr input = case parse parseExpr "lisp" input of
+     Left err -> throwError $ Parser err
+     Right val -> return val
+
+-----------------Parte nueva-----------------
+
 data LispVal = Atom String
              | List [LispVal]
              | DottedList [LispVal] LispVal
@@ -66,11 +80,6 @@ instance Show LispVal where show = showVal
 
 main :: IO ()
 main = getArgs >>= print . eval . readExpr . head
-
-readExpr :: String -> LispVal
-readExpr input = case parse parseExpr "lisp" input of
-         Left err -> String $ "No match: " ++ show err
-         Right val -> val
 
 -- not sure I understand the type of this function
 -- according to ghci
