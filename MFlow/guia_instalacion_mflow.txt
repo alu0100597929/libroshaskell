@@ -1,26 +1,33 @@
-Es necesario:
-
-sudo apt-get install -y build-essential zlib1g-dev
-
-export ~/.cabal/bin:$PATH
-
 Para buscar paquetes que puedan hacer falta:
 
 apt-cache search nombre_paquete
 
-Haskell Toolchain stable:
+Haskell Toolchain stable (www.stackage.org):
 
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:hvr/ghc
 sudo apt-get update
 sudo apt-get install -y cabal-install-1.20 ghc-7.8.4
+sudo apt-get install -y build-essential zlib1g-dev
+
+???????????
+
 cat >> ~/.bashrc <<EOF
 export PATH="~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:\$PATH"
 EOF
 export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH
-cabal update
-cabal install cabal-install
+export ~/.cabal/bin:$PATH
+
+???????????
+
+/opt/cabal/1.20/bin/cabal update
+/opt/cabal/1.20/bin/cabal install cabal-install
+
+nano ~/.cabal/config
+poner user-install: False
+
+poner las rutas donde GHC buscará las librerías y binarios, algo así (tener en cuenta prefix y demás) --> ver el fichero en este directorio llamado etc_environment.txt
 
 Instalación de MFlow:
 
@@ -29,4 +36,13 @@ cabal install cabal-install
 cabal install monadloc
 cabal install happy
 cabal install monadloc-pp
-cabal install MFlow
+git clone https://github.com/agocorona/MFlow.git
+-- ^ install from git
+cd Mflow
+cabal install
+
+runghc -iDemos Demos/demos-blaze.hs
+
+Android:
+
+wipe cache, dalvik, data y System

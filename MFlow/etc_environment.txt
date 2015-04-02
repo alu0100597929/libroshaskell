@@ -1,0 +1,12 @@
+Añadiremos cosas al /etc/environment
+
+sudo nano /etc/environment
+
+Es decir, debemos añadir cosas al final de esa string de PATH!!! NO crear otra línea PATH
+
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/root/.cabal/bin:/opt/ghc/7.8.4/bin"
+
+Este comando actualiza el PATH que estamos usando actualmente sin reiniciar, por ello es 
+obligatorio si queremos usar lo nuevo sin reiniciar:
+
+source /etc/environment
