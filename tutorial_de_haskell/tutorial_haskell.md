@@ -799,38 +799,42 @@ Cuando tenemos algo como `a -> (a -> a)` en realidad se trata de una función qu
 
 ## Pereza
 
-Se dice que la pereza es el mejor de los 7 pecados capitales, pues no nos permite cometer los otros 6.
-Las personas tendemos a la procrastinación con facilidad. Como Haskell fue (y sigue siendo) hecho por 
-personas, Haskell también es vago. A Haskell no le gusta trabajar por gusto, y esto permite que ciertas 
-computaciones terminen sobre estructuras de datos teóricamente infinitas.
+Se dice que la pereza es el mejor de los 7 pecados capitales, pues no nos permite cometer los 
+otros 6. Las personas tendemos a la procrastinación con facilidad. Como Haskell fue (y sigue 
+siendo) hecho por personas, Haskell también es vago. A Haskell no le gusta trabajar por gusto, y 
+esto permite que ciertas computaciones terminen sobre estructuras de datos teóricamente infinitas.
 
-El ejemplo más típico de lista infinita es aquella generada por `[1..]`, que genera una lista infinita 
-de números naturales en orden creciente empezando en el 1.
+El ejemplo más típico de lista infinita es aquella generada por `[1..]`, que genera una lista 
+infinita de números naturales en orden creciente empezando en el 1.
 
     Prelude> [1..]
     [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21Interrupted.
 
-Pero nosotros podemos parar la computación cuando lo necesitamos, por ejemplo mediante funciones que 
-sólo necesiten cierta cantidad de elementos, como `take`:
+**Nota:** vemos que la salida contiene `Interrupted`, eso es fruto de pulsar la combinación de 
+teclas (Ctrl + c) en sistemas POSIX, esta combinación interrumpe la ejecución del proceso en 
+ejecución en una terminal.
+
+Pero nosotros podemos parar la computación cuando lo necesitamos, por ejemplo mediante funciones 
+que sólo necesiten cierta cantidad de elementos, como `take`:
 
     Prelude> take 21 [1..]
     [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]
 
-A su vez, existen funciones condicionales que paran en cuanto cierta condición se cumple o se deja de 
-cumplir, como `takeWhile` y `find`. El siguiente ejemplo añade elementos a la lista resultado hasta que 
-encuentre algún número impar, en cuyo caso, termina:
+A su vez, existen funciones condicionales que paran en cuanto cierta condición se cumple o se 
+deja de cumplir, como `takeWhile` y `find`. El siguiente ejemplo añade elementos a la lista 
+resultado hasta que encuentre algún número impar, en cuyo caso, termina:
 
     Prelude> takeWhile even [1..]
     []
     Prelude> takeWhile even ([2,4..20] ++ [21..])
     [2,4,6,8,10,12,14,16,18,20]
 
-Como vemos, podemos hacer de este modo un cierto filtrado de listas infinitas, o al menos, de su parte 
-inicial.
+Como vemos, podemos hacer de este modo un cierto filtrado de listas infinitas, o al menos, de su 
+parte inicial.
 
-Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos hacer una función que 
-comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor en la lista 
-de números desde `2` hasta `n-1`:
+Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos hacer una función  
+que comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor 
+en la lista de números desde `2` hasta `n-1`:
 
     esPrimo :: Integer -> Bool
     esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
@@ -4042,9 +4046,9 @@ Hagamos las instancias por orden, para cumplir los requisitos de GHC 7.10, debem
       
       fmap f (Writer m a) = Writer m (f a)
  
-**Recuerda:** `pure :: a -> f a`
-`(<*>) :: f (a -> b) -> f a -> f b`
-`(<*>) :: Writer m (a -> b) -> Writer m a -> Writer m b`
+**Recuerda:** `pure :: a -> f a`  
+`(<*>) :: f (a -> b) -> f a -> f b`  
+`(<*>) :: Writer m (a -> b) -> Writer m a -> Writer m b`  
 
     instance ForWriter m => Applicative (Writer m) where
       
