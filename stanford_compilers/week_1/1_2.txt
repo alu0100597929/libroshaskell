@@ -1,0 +1,122 @@
+las 5 fases de compilación que seguía el primer compilador.
+
+1. Análisis léxico
+2. Parsing (análisis sintáctico)
+3. Análisis semántico (tipos y ámbito)
+4. Optimización (para que los programas vayan más rápido y ocupen menos memoria)
+5. Generación de código (máquina, bytecode u otro lenguaje de programación).
+
+Se hará una analogía con cómo entienden las personas el lenguaje humano para entenderlo mejor.
+
+Si a un humano le enseñamos la frase "This is a sentence" se dará cuenta de que hay 4 palabras, separadas por 3 espacios, y que la primera empieza con mayúscula.
+
+Análisis léxico: divide el programa en palabras o "tokens".
+
+if x == y then z = 1; else z = 2;
+
+Tenemos:
+
+- palabras reservadas:
+  if, then, else
+
+- nombres de variable:
+  x, y, z
+
+- constantes:
+  1, 2
+
+- operadores:
+  ==, =
+
+- otros tokens:
+  separadores (espacios), puntos y comas (;), otros signos de puntuación
+
+Pero, ¿Cómo sabemos cuál es el operador de asignación y cuál el de comparación? Eso lo sabremos más adelante.
+
+Cuando las palabras han sido entendidas, el siguiente paso es entender la estructura de la frase.
+
+Parsear: hacer diagramas de las frases (el diagrama es un árbol).
+
+Veamos un ejemplo de parseo de una frase en inglés:
+
+This: artículo
+line: nombre
+is  : verbo
+a   : artículo
+longer: adjetivo
+sentence: nombre
+
+This line is a longer sentence
+
+|________||_||________________|
+  Sujeto  Verbo    Predicado
+
+if x == y then z = 1; else z = 2;
+
+Es claramente una estructura if-then-else, por lo cual esta será la raíz del árbol:
+
+               if-then-else
+  predicate    then-stmt   else-stmt
+  x == y        z = 1        z = 2
+  \ |  /        \ | /        \ | /
+  relation      assign       assign
+
+Una vez hemos entendido la estructura de la frase, lo siguiente será entender el "significado", pero esto es muy complicado. Sabemos cómo las personas hacen el análisis léxico y sintáctico (parsing), pero es muy complicado saber cómo se detecta el significado de las cosas (aún no se conoce).
+
+La base del conocimiento del significado es eliminar inconsistencias mediante (try-catch). La realidad es que los compiladores hacen un análisis semántico muy limitado, sólo pueden encontrar e informar de inconsistencias, pero no saben qué cometido tiene ese programa.
+
+La ambigüedad es uno de los mayores problemas para los compiladores:
+
+Jack said Jerry left his assignment at home.
+
+Aquí no se sabe si "his" se refiere a Jack o a Jerry.
+
+Incluso peor:
+
+Jack said Jack left his assignment at home.
+
+¿Cuántos Jacks hay? ¿A quién se refiere "his"?
+
+En una analogía con los lenguajes de programación esto se referiría a un "variable binding":
+
+{
+  int Jack = 3;
+  {
+    int Jack = 4;
+    cout << Jack;
+  }
+}
+
+La pregunta es: ¿qué se imprimirá por pantalla? La respuesta es "4", ya que el uso de la variable Jack se enlaza a su definición aquí. Esto ocurre porque la definición del bloque interno "esconde" la definición del externo, en el ámbito de las llaves internas. Ésta es la regla estándar para mucha programación con ámbito.
+
+Además de analizar los "variables bindings", los compiladores hacen pruebas semánticas para comprobar si lo que se escribió está bien construido:
+
+Jack left her homework at home.
+
+Ahí ocurre un "type mismatch", es decir, se sabe que los tipos no concuerdan, ya que "her" se refiere a algo del género femenino, y sabemos que Jack es un nombre masculino.
+
+La cuarta fase de la compilación, la optimización. Para hacer una analogía con el lenguaje humano, se referiría a la acción de edición, que suele reducir los contenidos para que quepan en un espacio predefinido:
+
+But a little bit like editing.
+
+But akin to editing. 
+
+Menos palabras, idéntico significado.
+
+Hablando de los programas, se trata de modificar los programas para que usen menos cantidad de cierto/s recurso/s, que suelen ser tiempo y espacio. Además, se podría reducir el uso de batería, de red, de acceso a la base de datos...etc.
+
+Ejemplo simple de optimización:
+
+X = Y * 0 es lo mismo que X = 0
+
+Pero esta regla NO es correcta. Esta regla sólo vale para enteros, pero en números con punto flotante existe el NaN, donde NaN * 0 = NaN.
+
+La anterior optimización no es correcta, y por tanto si la aplicamos, los programas que usen algoritmos basados en la propagación de NaN fallarán.
+
+La generación de código se parece a la traducción humana, se pasan las cosas a otro lenguaje (máquina, otro lenguaje de programación, bytecode).
+
+La estructura general de un compilador se conserva desde los tiempos de FORTRAN, aunque las proporciones de cada una de las etapas ha variado.
+
+En los tiempos de FORTRAN todas las etapas son extensas en código, excepto la del análisis semántico, más corta.
+
+Hoy en día las dos fases más extensas en código son el análisis semántico y la optimización, ya que son las que menos entendemos. Para el análisis léxico, el parseo y la generación de código contamos con muy buenas herramientas que nos facilitan dichas tareas.

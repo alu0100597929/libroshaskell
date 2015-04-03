@@ -1,0 +1,14 @@
+Apuntes sobre el curso CS1 Compilers
+
+¿Qué es un intérprete? Es un programa que recibe como entrada el programa a ejecutar y los datos, y devuelve directamente una salida, es decir, no preprocesa el programa.
+
+¿Qué es un compilador? Es un programa que recibe el código fuente como entrada, para producir un ejecutable. El ejecutable es un programa independiente que puede ser usado a parte con los datos que queramos.
+
+FORTRAN significa formula translating, y en principio fue la mejora de un intérprete. Se pretendía que la máquina procesara directamente las fórmulas en lugar de tener que interpretarlas. Esto dió lugar a un compilador. Hoy en día, los compiladores se siguen basando en las 5 fases de compilación que seguía el primer compilador.
+
+1. Análisis léxico
+2. Parsing (análisis sintáctico)
+3. Análisis semántico (tipos y ámbito)
+4. Optimización (para que los programas vayan más rápido y ocupen menos memoria)
+5. Generación de código (máquina, bytecode u otro lenguaje de programación).
+
