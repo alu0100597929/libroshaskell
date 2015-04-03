@@ -61,6 +61,10 @@ Códigos fuente del libro del mismo nombre, adaptados por mí.
 
 Contiene los fuentes LaTeX que componen la memoria de mi Trabajo Fin de Grado.
 
+## mflow
+
+Explicaciones de cómo montar páginas web haciendo uso del framework [Mflow](http://mflowdemo.herokuapp.com/)
+
 ## monadas
 
 Explicaciones sobre mónadas que me ha dado Daniel Díaz e instancias de la clase Monad que me he ido montando.
@@ -84,6 +88,10 @@ Códigos fuente del libro del mismo nombre, adaptados por mí.
 ## real world haskell
 
 Códigos fuente del libro del mismo nombre, adaptados por mí. [Real World Haskell](http://book.realworldhaskell.org/read/)
+
+## stanford_compilers
+
+Lecciones transcritas y traducidas del curso [CS1 Compilers](https://lagunita.stanford.edu/courses/Engineering/Compilers/Fall2014/courseware/ed92b25157d94fbe9874370673ca0a58/)
 
 ## sublime Text
 
