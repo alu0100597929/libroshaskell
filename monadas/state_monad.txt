@@ -1,0 +1,5 @@
+Material traducido desde http://heh.fi/state-monad
+
+En la mónada estado, todas las lambdas reciben como parámetro el "estado inicial",
+es decir, el estado en el que dicha computación empieza. No se refiere al estado inicial de
+lo que podría ser un DFA o algo por el estilo.
