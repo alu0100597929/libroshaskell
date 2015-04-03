@@ -40,10 +40,6 @@ showError (Parser parseErr)             = "Parse error at " ++ show parseErr
  
 instance Show LispError where show = showError
 
-instance Error LispError where
-     noMsg = Default "An error has occurred"
-     strMsg = Default
-
 {-
 Type constructors are curried just like functions, and can also be partially applied.
 A full type would be Either LispError Integer or Either LispError LispVal, but we
@@ -62,6 +58,69 @@ readExpr input = case parse parseExpr "lisp" input of
      Left err -> throwError $ Parser err
      Right val -> return val
 
+--
+-- Evaluator
+--
+
+eval :: LispVal -> ThrowsError LispVal
+eval val@(String _) = return val
+eval val@(Number _) = return val
+eval val@(Bool _) = return val
+eval (List [Atom "quote", val]) = return val
+eval (List (Atom func : args)) = mapM eval args >>= apply func
+eval badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
+
+apply :: String -> [LispVal] -> ThrowsError LispVal
+apply func args = maybe (throwError $ NotFunction "Unrecognized primitive function args" func)
+                        ($ args)
+                        (lookup func primitives)
+
+--
+-- Primitive functions lookup table
+--
+primitives :: [(String, [LispVal] -> ThrowsError LispVal)]
+primitives = [("+", numericBinop (+))
+             ,("-", numericBinop (-))
+             ,("*", numericBinop (*))
+             ,("/", numericBinop div)
+             ,("mod", numericBinop mod)
+             ,("quotient", numericBinop quot)
+             ,("remainder", numericBinop rem)
+             ,("not", unaryOp not')
+             ,("boolean?", unaryOp boolP)
+             ,("list?", unaryOp listP)
+             ,("symbol?", unaryOp symbolP)
+             ,("char?", unaryOp charP)
+             ,("string?", unaryOp stringP)
+             ,("number?", unaryOp numberP)
+             ,("vector?", unaryOp vectorP)
+             ,("symbol->string", unaryOp symbol2string)
+             ,("string->symbol", unaryOp string2symbol)]
+
+numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> ThrowsError LispVal
+numericBinop op           []  = throwError $ NumArgs 2 []
+numericBinop op singleVal@[_] = throwError $ NumArgs 2 singleVal
+numericBinop op params        = mapM unpackNum params >>= return . Number . foldl1 op
+
+-- no nombrada en la web, pero había que hacer estos cambios
+unaryOp :: (LispVal -> LispVal) -> [LispVal] -> ThrowsError LispVal
+unaryOp func [arg] = return $ func arg
+
+unpackNum :: LispVal -> ThrowsError Integer
+unpackNum (Number n) = return n
+unpackNum (String n) = let parsed = reads n in 
+                           if null parsed 
+                             then throwError $ TypeMismatch "number" $ String n
+                             else return $ fst $ parsed !! 0
+unpackNum (List [n]) = unpackNum n
+unpackNum notNum     = throwError $ TypeMismatch "number" notNum
+
+main :: IO ()
+main = do
+     args <- getArgs
+     evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+     putStrLn $ extractValue $ trapError evaled
+
 -----------------Parte nueva-----------------
 
 data LispVal = Atom String
@@ -77,17 +136,6 @@ data LispVal = Atom String
              | Vector (Array Int LispVal)
 
 instance Show LispVal where show = showVal
-
-main :: IO ()
-main = getArgs >>= print . eval . readExpr . head
-
--- not sure I understand the type of this function
--- according to ghci
-repl :: IO b
-repl = getLine >>= repl' >> repl
-
-repl' :: String -> IO ()
-repl' = print . eval . readExpr
 
 --
 -- LispVal Parsers
@@ -244,41 +292,6 @@ showVal (List xs) = "(" ++ unwordsList xs ++ ")"
 showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
 
 --
--- Evaluator
---
-
-eval :: LispVal -> LispVal
-eval val@(String _) = val
-eval val@(Number _) = val
-eval val@(Bool _) = val
-eval val@(Char _) = val -- faltaba
-eval val@(Atom _) = val -- faltaba
-eval (List [Atom "quote", val]) = val
-eval (List (Atom func : args)) = apply func $ map eval args
-
---
--- Primitive functions lookup table
---
-primitives :: [(String, [LispVal] -> LispVal)]
-primitives = [("+", numericBinop (+))
-             ,("-", numericBinop (-))
-             ,("*", numericBinop (*))
-             ,("/", numericBinop div)
-             ,("mod", numericBinop mod)
-             ,("quotient", numericBinop quot)
-             ,("remainder", numericBinop rem)
-             ,("not", unaryOp not')
-             ,("boolean?", unaryOp boolP)
-             ,("list?", unaryOp listP)
-             ,("symbol?", unaryOp symbolP)
-             ,("char?", unaryOp charP)
-             ,("string?", unaryOp stringP)
-             ,("number?", unaryOp numberP)
-             ,("vector?", unaryOp vectorP)
-             ,("symbol->string", unaryOp symbol2string)
-             ,("string->symbol", unaryOp string2symbol)]
-
---
 -- Unary primitive defs all have type
 -- LispVal -> LispVal
 
@@ -314,16 +327,6 @@ string2symbol (String s) = Atom s
 string2symbol _ = error "Expecting a String"
 
 --
--- Primitive helpers
---
-
-numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> LispVal
-numericBinop op params = Number $ foldl1 op $ map unpackNum params
-
-unaryOp :: (LispVal -> LispVal) -> [LispVal] -> LispVal
-unaryOp func [arg] = func arg
-
---
 -- Helpers
 --
 
@@ -353,11 +356,3 @@ readWith f s = fst $ f s !! 0
 
 unwordsList :: [LispVal] -> String
 unwordsList = unwords . map showVal
-
-apply :: String -> [LispVal] -> LispVal
-apply func args = maybe (Bool False) ($ args) $ lookup func primitives
-
-unpackNum :: LispVal -> Integer
-unpackNum (Number n) = n
-unpackNum (List [n]) = unpackNum n
-unpackNum _ = 0

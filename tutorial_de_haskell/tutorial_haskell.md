@@ -45,7 +45,19 @@ Reacción típica de un programador al ver su primer fragmento de código Haskel
 
 # Introducción
 
-En el momento de la escritura de este tutorial, se ha usado una versión beta de GHC 7.10.1, el cual en el momento en el que escribo estas palabras está en RC3. La versión final está al caer y el código de este tutorial ha sido adaptado a dicha versión. Todo el código de este tutorial ha sido testeado. De todas formas, si he cometido algún error, ruego que me lo comuniques a la sección [Issues](https://github.com/freinn/libroshaskell/issues) del repositorio del tutorial.
+Todo el código de este tutorial ha sido testeado con GHC 7.8.4 y 7.10.1. De todas formas, si he 
+cometido algún error, ruego que me lo comuniques a la sección [Issues](https://github.com/freinn/libroshaskell/issues) del repositorio del tutorial.
+
+# Referencias indispensables
+
+El [informe oficial revisado de Haskell 98](https://www.haskell.org/onlinereport/index98.html) 
+nos permite ver la implementación que en su momento se hizo de las funciones predefinidas. Es muy 
+importante [la sección del módulo `Prelude`](https://www.haskell.org/onlinereport/standard-prelude.html#sect8). Puedes entrar [aquí](https://www.haskell.org/onlinereport/index98.html) para ver el 
+índice completo.
+
+En las [Haskell Hierarchical Libraries](http://downloads.haskell.org/~ghc/latest/docs/html/libraries/) podemos ir al módulo que queramos y una vez dentro de él ver las definiciones de las 
+funciones. Además, pulsando el botón *source* podemos ver el código real de las mismas, y 
+aprender mucho.
 
 # Ideas sueltas
 
@@ -3922,12 +3934,43 @@ Por tanto hemos escrito una función que maneja perfectamente la posibilidad de 
 
 El operador `(>>=)` evita el problema de las tuplas anidadas de resultados porque el resultado del primer argumento está directamente disponible para ser procesado por el segundo. Por tanto, `(>>=)` integra la secuenciación de valores de tipo `Maybe` con el procesamiento de sus valores resultado. Se le llama *bind* porque el segundo argumento enlaza el resultado del primero.
 
-Es importante también que `(>>=)` es (en el caso de `Maybe`) simplemente la función `aplicar` con el 
-orden de los argumentos invertido.
+Es importante también que `(>>=)` es (en el caso de `Maybe`) simplemente la función `aplicar` con 
+el orden de los argumentos invertido.
 
     aplicar :: (a -> Maybe b) -> Maybe a -> Maybe b
     aplicar _ Nothing  = Nothing
     aplicar f (Just x) = f x
+
+## La función mapM
+
+`mapM` mapea una función monádica sobre una lista de valores, secuencia las acciones resultantes a través de `(>>=)`, y luego devuelve una mónada que contiene la lista de los resultados internos.
+
+    mapM             :: Monad m => (a -> m b) -> [a] -> m [b]
+    mapM f as        =  sequence (map f as)
+
+Donde `sequence`:
+
+    sequence       :: Monad m => [m a] -> m [a] 
+    sequence       =  foldr mcons (return [])
+                        where mcons p q = p >>= \x -> q >>= \y -> return (x:y)
+
+## La función mapM_
+
+    mapM_            :: Monad m => (a -> m b) -> [a] -> m ()
+    mapM_ f as       =  sequence_ (map f as)
+
+donde `sequence_`:
+
+    sequence_      :: Monad m => [m a] -> m () 
+    sequence_      =  foldr (>>) (return ())
+
+## La función (=<<)
+
+Es en realidad `(>>=)` pero con el orden de los parámetros invertido:
+
+    (=<<)            :: Monad m => (a -> m b) -> m a -> m b
+    f =<< x          =  x >>= f
+
 
 ## La mónada lista
 
@@ -4066,57 +4109,60 @@ conclusión de que no existe solución a ese problema.
 
 ## Lenguajes funcionales: ##
 
-Se le indica al ordenador qué es cada cosa, y por ello las funciones no tienen permitido tener efectos
-laterales.
+Se le indica al ordenador qué es cada cosa, y por ello las funciones no tienen permitido tener 
+efectos laterales.
 
-Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* estructuras de 
-datos que de manera "innata" tienen las modificaciones que queríamos hacer ya hechas.
+Por tanto, no podemos modificar estructuras de datos existentes, sino construir *nuevas* 
+estructuras de datos que de manera "innata" tienen las modificaciones que queríamos hacer ya 
+hechas.
 
 El hecho de que las funciones no puedan cambiar el estado - como por ejemplo, actualizar variables
 globales - es bueno porque nos ayuda a razonar sobre nuestros programas. Sim embargo, esto crea 
 algunos problemas: Si una función no puede cambiar nada, ¿cómo se supone que nos devolverá el 
 resultado que calculó?
 
-Haskell cuenta con un buen sistema para tratar con funciones que tienen efectos laterales. Se trata de
-separar la parte pura de nuestro programa de la parte impura (que se ocupa de la E/S, por ejemplo). 
-Las ventajas que brinda esta separación son dos:
+Haskell cuenta con un buen sistema para tratar con funciones que tienen efectos laterales. Se 
+trata de separar la parte pura de nuestro programa de la parte impura (que se ocupa de la E/S, 
+por ejemplo). Las ventajas que brinda esta separación son dos:
 
 * podemos seguir razonando sobre nuestro programa puro
 
 * seguimos aprovechando las virtudes de la pureza - como evaluación perezosa, robustez, uso de 
 composición - mientras nos comunicamos fácilmente con el mundo exterior.
 
+<!-- fin de lista -->
+
 # Variables
 
 ## Lenguajes imperativos: ##
 
 Variable en programación imperativa: trozo de memoria mutable con un nombre variable en Haskell,
-simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir que es 
-algo permanente.
+simplemente un nombre que usaremos para la sustitución el valor en Haskell es una forma de decir 
+que es algo permanente.
 
 * Variables: asociaciones cambiables entre nombres y valores.
 
 * Se llaman imperativos porque consisten en secuencias de órdenes.
 
-* Asignaciones: asocian a una variable el resultado de una expresión. Cada expresión de orden puede
-referir a otras variables que pueden haber sido cambiadas por órdenes anteriores. Esto permite que los
-valores pasen de orden a orden.
+* Asignaciones: asocian a una variable el resultado de una expresión. Cada expresión de orden 
+puede referir a otras variables que pueden haber sido cambiadas por órdenes anteriores. Esto 
+permite que los valores pasen de orden a orden.
 
-* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una orden 
-anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes durante la 
-ejecución de un programa.
+* En los lenguajes imperativos, las órdenes pueden cambiar el valor asociado a un nombre por una 
+orden anterior así que cada nombre puede ser y usualmente será asociado a valores diferentes 
+durante la ejecución de un programa.
 
 En lenguajes imperativos, el mismo nombre puede ser asociado a diferentes valores.
 
 ## Lenguajes funcionales: ##
 
-Los lenguajes funcionales se basan en llamadas estructuradas a funciones. Un programa funcional es una
-expresión consistentente en una llamada a una función que llama a otras funciones.
+Los lenguajes funcionales se basan en llamadas estructuradas a funciones. Un programa funcional 
+es una expresión consistentente en una llamada a una función que llama a otras funciones.
 
     \<función1\>(\<función2\>(\<función3\>...)...))
 
-Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce como
-composición o anidamiento de funciones.
+Por tanto, cada función recibe valores de y pasa valores a la función llamadora. Esto se conoce 
+como composición o anidamiento de funciones.
 
 En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede 
 cambiar a lo largo de la ejecución.
