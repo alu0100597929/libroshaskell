@@ -28,10 +28,12 @@ put s = State $ \_ -> ((), s)
 -- s :: s
 
 instance Functor (State s) where
+  -- aquí se hace reconocimiento de patrones y h será una función
   --fmap f (State h) = State $ \s -> -- como el resultado es un State, empezamos poniendo el constructor
   --  let (a, s') = h s
   --  in (f a, s')
 
+  -- aquí NO se hace reconocimiento de patrones y st será una (State s a) ó (State s) a
   fmap f st = State $ \s ->
     let (a,s') = runState st s
     in (f a, s')

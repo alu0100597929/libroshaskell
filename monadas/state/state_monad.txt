@@ -7,4 +7,3 @@ lo que podría ser un DFA o algo por el estilo.
 La mónada estado es simplemente una instancia de la clase de tipos que contiene una función. Dicha función es del tipo s -> (a,s) donde s es el "estado inicial", y (a,s) es un par que contiene, respectivamente, el resultado (a) y el nuevo estado, que también es de tipo s.
 
 El constructor de valor sería algo como S (s -> (a,s)) y constituiría un nuevo tipo newtype State s a = S (s -> (a,s))
-
