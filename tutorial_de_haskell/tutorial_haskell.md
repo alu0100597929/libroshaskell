@@ -59,128 +59,6 @@ En las [Haskell Hierarchical Libraries](http://downloads.haskell.org/~ghc/latest
 funciones. Además, pulsando el botón *source* podemos ver el código real de las mismas, y 
 aprender mucho.
 
-# Ideas sueltas
-
-`(<*>)` es el ya conocido `($)` elevado a funtores aplicativos, y `ap` es lo mismo pero elevado a mónadas.
-
-    ghci> :type ($)
-    ($) :: (a -> b) -> a -> b
-    ghci> :type (<*>)
-    (<*>) :: (Applicative f) => f (a -> b) -> f a -> f b
-    ghci> :type ap
-    ap :: (Monad m) => m (a -> b) -> m a -> m b
-
-Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
-
-La aplicación de funciones tiene la máxima prioridad, 10.
-
-La evaluación perezosa significa: haz sólo lo que te pida un patrón a la izquierda de una ecuación o cualificador (`where` o `let`).
-
-Todo lo que puede hacer una función en Haskell es recibir ciertos parámetros y devolver cierto valor.
-
-Las cosas pueden actuar más como computaciones que como cajas: (`IO` y `(->) r`) pueden ser funtores.
-
-`return` no tiene nada que ver con el `return` de otros lenguajes. No hace que la ejecución de una función termine. Simplemente recibe un valor normal y lo pone en un contexto.
-
-* mapear una función sobre una función produce una función.
-* mapear una función sobre un `Maybe` produce un `Maybe`.
-* mapear una función sobre una lista produce una lista.
-
-Bind es `>>=`, la analogía de la aplicación de funciones en contextos monádicos.
-
-Bind permite hacer algo análogo al reconocimiento de patrones, sin hacerlo.
-
-Lo que realmente hace el operador bind `>>=` es:
-
-1. "extrae" el valor de un contexto monádico.
-2. aplica una función a ese valor extraído.
-3. lo envuelve de nuevo en un contexto monádico.
-
-Luego el tipo de bind `(>>=)` es:
-
-    (>>=) :: m a -> (a -> m b) -> m b
-
-En una expresión `do`, todo lo que no sea un `let` es un valor monádico.
-
-Por ello, los funtores aplicativos como mucho pueden ser parámetros de funciones usando el estilo aplicativo.
-
-Las mónadas son superiores y nos permiten encadenar computaciones que podrían fallar, entre otras cosas, y en caso de fallo 
-este fallo se propaga de una a otra. Si todas tienen éxito, simplemente se encadenan de izquierda a derecha.
-
-El operador `(>>)` recibe una mónada de tipo `a` y otra de tipo `b` (**nota importante:** que haya dos
-variables de tipo no implica que deban enlazarse a tipos distintos, las mónadas de `(>>)` bien pueden ser
-del mismo tipo), y lo que hace es..TODO.
-
-    (>>) :: (Monad m) => m a -> m b -> m b
-    m >> n = m >>= \_ -> n
-
-`return` inyecta un valor en una mónada (contenedor).
-
-De hecho, las compresiones de listas son sólo azúcar sintáctico para usar listas como mónadas. Las 
-compresiones de listas y las listas en notación `do` se traducen a usar >>= en computaciones no 
-deterministas.
-
-El filtrado en las compresiones de listas se resume a usar la función `guard` con esa condición.
-
-Es mucho mejor empezar las funciones por su cabecera, debido al fuerte sistema de tipos de Haskell.
-
-Normalmente se hace `read "846195673" :: Int` ó `read "5232.488647" :: Float` para pasar de un tipo a 
-otro, si usamos `map` es mejor usar una función con cabecera explícita, que le da la información 
-suficiente al compilador acerca de qué tipo queremos:
-
-    leerInts ::[String] -> [Int]
-    leerInts = map read
-
-Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". 
-Una compresión de listas equivale a un "para todo x" en matemáticas.
-
-**Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
-
-# Ideas Razonando con Haskell
-
-## Estilo de funciones con argumento declarado "point-wise": ##
-
-    sum :: (Num a) => [a] -> a
-    sum xs = foldl (+) 0 xs
-
-El `xs` está lo más a la derecha posible a los dos lados del signo igual. A causa de la currificación,
-podemos omitir `xs` en ambos lados, ya que `fold (+) 0` crea una función que recibe una lista. De este 
-modo, estamos creando una función de orden superior.
-
-## Estilo de funciones sin argumento declarado "point-free": ##
-
-    sum' :: (Num a) => [a] -> a
-    sum' = foldl (+) 0
-
-# Sistema de tipos
-
-Gracias al sistema de tipos, se puede inferir el tipo más general de una función a partir de sus 
-ecuaciones.
-
-Todas las apariciones de una variable de tipos deben ser reemplazadas por el mismo tipo.
-Si tenemos una función con una variable de tipos `a`, e intentamos que esa a se corresponda con dos 
-tipos diferentes, obtendremos un error.
-
-Un tipo polimórfico tiene muchos tipos. Un tipo polimórfico es una plantilla (un esquema de tipos) que 
-puede ser usada para crear tipos específicos.
-
-Una expresión en la que intervienen funciones polimórficas es correcta desde el punto de vista de su 
-tipo si se pueden encontrar sustituciones consistentes para las variables de tipo.
-
-Capítulo 4:
-
-Los sinónimos de tipo (y por tanto, también los identificadores de tipo) comienzan con mayúsculas en 
-Haskell.
-
-Capítulo 6:
-
-El constructor (:) es asociativo a la derecha
-
-Capítulo 7:
-
-El anidamiento de varias concatenaciones a la izquierda tiene complejidad cuadrática.
-El anidamiento de varias concatenaciones a la derecha tiene complejidad lineal.
-
 <!--inicio de la parte más básica del tutorial-->
 
 # Primeros pasos
@@ -222,6 +100,11 @@ Es una instalación muy complicada, mejor llama a un hamijo juanker:
     sudo apt-get install haskell-platform
 
 Después de darle los 30€ que tu amigo se ha ganado, ya puedes limpiarte el sudor de la frente y empezar a programar.
+
+## Instalación en Windows
+
+Lo más recomendado es usar [minGHC](https://github.com/fpco/minghc#readme). Una vez instalado, 
+podremos ejecutar GHCi en la consola de windows.
 
 ## Jugando con GHCi
 
@@ -389,6 +272,10 @@ En la programación funcional, la principal actividad (y en realidad, lo único)
 
     ochenta :: Int
 
+**Nota:** tener en cuenta que Haskell es `case-sensitive`, es decir, sensible a mayúsculas y 
+minúsculas. Los nombres de las funciones siempre deben empezar por minúscula, mientras que los 
+módulos deben empezar siempre con mayúscula.
+
 Las declaraciones de tipos suelen ser así:
 
     nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipo1N
@@ -399,21 +286,36 @@ A continuación, escribimos la definición de `ochenta`:
 
     ochenta = 80
 
-Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 programado duramente (sin calcularlo, simplemente escribiendo un inmediato). Veamos ahora la definición completa que nos permitirá ver la función con mayor claridad.
+Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 programado duramente (
+sin calcularlo, simplemente escribiendo un inmediato). 
+
+**Nota:** si vienes de lenguajes con sintaxis estilo C (C, C++, java...) podrías echar en falta 
+la palabra reservada **return**. El `return` en Haskell es totalmente distinto, y ni siquiera 
+implica que la función termine su ejecución.
+
+Veamos ahora la definición completa que nos permitirá ver la función con mayor claridad.
 
     ochenta :: Int
     ochenta = 80
 
 **Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
-**Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada que sea. A parte de ello, la transparencia referencial nos permite conmutar aplicaciones de funciones por su definición, con la desventaja de necesitar paréntesis explícitos casi siempre.
+**Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa 
+definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** 
+al literal **80**. Donde quiera que veas uno de los dos, lo puedes reemplazar por el otro y el 
+programa siempre producirá la misma salida. Esta propiedad es conocida como **transparencia 
+referencial** y es y será cierta para cualquier definición en Haskell, sin importar lo complicada 
+que sea. A parte de ello, la transparencia referencial nos permite conmutar aplicaciones de 
+funciones por su definición, con la desventaja de necesitar paréntesis explícitos casi siempre.
 
 Definamos ahora una función `sumar` que reciba dos parámetros y los sume:
 
     sumar :: Int -> Int -> Int
     sumar a b = a + b
 
-La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una función `add` que tiene el mismo efecto. Asimismo, podríamos usar la función `(+)` (y de hecho ya la estamos utilizando en `sumar`, que sólo es un wrapper).
+La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una función `add` que 
+tiene el mismo efecto. Asimismo, podríamos usar la función `(+)` (y de hecho ya la estamos 
+utilizando en `sumar`, que sólo es un wrapper).
 
     *Main> sumar 4 5
     9
@@ -424,11 +326,13 @@ La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una
     *Main> 4 `sumar` 11
     15
 
-Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
+Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos 
+harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
 
 # Reconocimiento de patrones
 
-Para entender qué es el reconocimiento de patrones primero debemos saber qué es *casar*. Para ello, el diccionario de la Real Academia es nuestro hamijo:
+Para entender qué es el reconocimiento de patrones primero debemos saber qué es *casar*. Para 
+ello, el diccionario de la Real Academia es nuestro hamijo:
 
 * Dicho de dos o más cosas: Corresponder, conformarse, cuadrar.
 * Unir, juntar o hacer coincidir algo con otra cosa. Casar la oferta con la demanda.
@@ -3446,35 +3350,45 @@ Veamos ahora el tipo de `Either`:
     Prelude> :k Either
     Either :: * -> * -> *
 
-Esto nos dice que `Either` recibe dos tipos concretos como parámetros de tipo para producir un tipo concreto.
-También parece la declaración de tipos de una función que recibe dos valores y devuelve algo. Los constructores de tipos están currificados (como las funciones), así que podemos aplicarlos parcialmente:
+Esto nos dice que `Either` recibe dos tipos concretos como parámetros de tipo para producir un 
+tipo concreto. También parece la declaración de tipos de una función que recibe dos valores y 
+devuelve algo. Los constructores de tipos están currificados (como las funciones), así que 
+podemos aplicarlos parcialmente:
 
     Prelude> :k Either String
     Either String :: * -> *
     Prelude> :k Either String Int
     Either String Int :: *
 
-Cuando quisimos hacer `Either` parte de la clase de tipos `Functor`, necesitamos aplicarla parcialmente, porque `Functor` sólo quiere tipos con kind `* -> *`, por tanto necesitamos aplicar parcialmente `Either` para obtener esto en vez de su kind original `* -> * -> *`.
+Cuando quisimos hacer `Either` parte de la clase de tipos `Functor`, necesitamos aplicarla 
+parcialmente, porque `Functor` sólo quiere tipos con kind `* -> *`, por tanto necesitamos aplicar 
+parcialmente `Either` para obtener esto en vez de su kind original `* -> * -> *`.
 
-Si volvemos a mirar la definición de `Functor`, vemos que la variable de tipo `f` se usa como un tipo que recibe un tipo concreto para producir un tipo concreto.
+Si volvemos a mirar la definición de `Functor`, vemos que la variable de tipo `f` se usa como un 
+tipo que recibe un tipo concreto para producir un tipo concreto.
 
     class Functor where
       fmap :: (a -> b) -> f a -> f b
 
-Sabemos que debe producir un tipo concreto, porque se usa como el tipo de un valor en una función. Y por ello deducimos que los tipos que quieren ser amigos de `Functor` deben tener un kind `* -> *`.
+Sabemos que debe producir un tipo concreto, porque se usa como el tipo de un valor en una 
+función. Y por ello deducimos que los tipos que quieren ser amigos de `Functor` deben tener un 
+kind `* -> *`.
 
 # Mónadas
 
-`Monad` es una clase como otra cualquiera (sí, aunque no te lo creas).
+`Monad` es una clase como otra cualquiera (sí, aunque no te lo creas). Lo único que necesita un 
+lenguaje de programación para soportar mónadas es la capacidad de usar lambdas.
 
-**Nota:** para que un tipo pueda ser instancia de `Monad` tiene que tener kind `* -> *`. Este es un requisito **necesario, pero no suficiente**.
+**Nota:** para que un tipo pueda ser instancia de `Monad` tiene que tener kind `* -> *`. Este es 
+un requisito **necesario, pero no suficiente**.
 
 * `Maybe :: * -> *`
 * `Maybe a :: *`    (ahora ya `Maybe a` no puede ser aplicado a ningún tipo más).
 * `Either :: * -> * -> *`
 * `Either String :: * -> *`
 
-El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parámetro libre, digamos `Bool` no podría, `Either`tampoco, `Either Bool` sí.
+El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parámetro 
+libre, digamos `Bool` no podría, `Either`tampoco, `Either Bool` sí.
 
 Lo mismo pasa con la clase `Functor`.
 
@@ -3483,13 +3397,17 @@ Los métodos de `Monad` son:
     (>>=) :: m a -> (a -> m b) -> m b
     return :: a -> m a
 
-donde `a`, `b` son cualquier cosa y `m` es la mónada que estamos instanciando, el tipo que estamos instanciando en la clase de tipos `Monad`.
+donde `a`, `b` son cualquier cosa y `m` es la mónada que estamos instanciando, el tipo que 
+estamos instanciando en la clase de tipos `Monad`.
 
-Cuando escribes la instancia, como cuando escribes muchas funciones en Haskell, el tipo te va a forzar a escribir lo único que tiene sentido escribir. Definamos un tipo que, aunque en apariencia inútil, tiene sus usos prácticos, el tipo identidad:
+Cuando escribes la instancia, como cuando escribes muchas funciones en Haskell, el tipo te va a 
+forzar a escribir lo único que tiene sentido escribir. Definamos un tipo que, aunque en 
+apariencia inútil, tiene sus usos prácticos, el tipo identidad:
 
     data Id a = Id a
 
-En la práctica, dado un tipo `a`, los elementos que puedes construir en `a` y los que puedes construir en `Id a` son prácticamente los mismos, por eso se llama identidad.
+En la práctica, dado un tipo `a`, los elementos que puedes construir en `a` y los que puedes 
+construir en `Id a` son prácticamente los mismos, por eso se llama identidad.
 
 `Id` puede ser instanciado en la clase `Functor`.
 
@@ -4266,3 +4184,135 @@ También se ha demostrado que un orden de evaluación particular conduce más a 
 otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y otras partes en otro. En 
 particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
 programa en paralelo.
+
+# Ideas sueltas
+
+**Importante:** mencionar el ejemplo del DFA en el cual tenemos que usar `let` dentro de un 
+bloque `do` para que se tome como funciones efectivas dentro.
+
+`(<*>)` es el ya conocido `($)` elevado a funtores aplicativos, y `ap` es lo mismo pero elevado a 
+mónadas.
+
+    ghci> :type ($)
+    ($) :: (a -> b) -> a -> b
+    ghci> :type (<*>)
+    (<*>) :: (Applicative f) => f (a -> b) -> f a -> f b
+    ghci> :type ap
+    ap :: (Monad m) => m (a -> b) -> m a -> m b
+
+Las funciones pueden ser pasadas a funciones, y las acciones pueden ser pasadas a acciones.
+
+La aplicación de funciones tiene la máxima prioridad, 10.
+
+La evaluación perezosa significa: haz sólo lo que te pida un patrón a la izquierda de una 
+ecuación o cualificador (`where` o `let`).
+
+Todo lo que puede hacer una función en Haskell es recibir ciertos parámetros y devolver cierto 
+valor.
+
+Las cosas pueden actuar más como computaciones que como cajas: (`IO` y `(->) r`) pueden ser 
+funtores.
+
+`return` no tiene nada que ver con el `return` de otros lenguajes. No hace que la ejecución de 
+una función termine. Simplemente recibe un valor normal y lo pone en un contexto.
+
+* mapear una función sobre una función produce una función.
+* mapear una función sobre un `Maybe` produce un `Maybe`.
+* mapear una función sobre una lista produce una lista.
+
+Bind es `>>=`, la analogía de la aplicación de funciones en contextos monádicos.
+
+Bind permite hacer algo análogo al reconocimiento de patrones, sin hacerlo.
+
+Lo que realmente hace el operador bind `>>=` es:
+
+1. "extrae" el valor de un contexto monádico.
+2. aplica una función a ese valor extraído.
+3. lo envuelve de nuevo en un contexto monádico.
+
+Luego el tipo de bind `(>>=)` es:
+
+    (>>=) :: m a -> (a -> m b) -> m b
+
+En una expresión `do`, todo lo que no sea un `let` es un valor monádico.
+
+Por ello, los funtores aplicativos como mucho pueden ser parámetros de funciones usando el estilo 
+aplicativo.
+
+Las mónadas son superiores y nos permiten encadenar computaciones que podrían fallar, entre otras 
+cosas, y en caso de fallo este fallo se propaga de una a otra. Si todas tienen éxito, simplemente 
+se encadenan de izquierda a derecha.
+
+El operador `(>>)` recibe una mónada de tipo `a` y otra de tipo `b` (**nota importante:** que haya dos
+variables de tipo no implica que deban enlazarse a tipos distintos, las mónadas de `(>>)` bien pueden ser
+del mismo tipo), y lo que hace es..TODO.
+
+    (>>) :: (Monad m) => m a -> m b -> m b
+    m >> n = m >>= \_ -> n
+
+`return` inyecta un valor en una mónada (contenedor).
+
+De hecho, las compresiones de listas son sólo azúcar sintáctico para usar listas como mónadas. Las 
+compresiones de listas y las listas en notación `do` se traducen a usar >>= en computaciones no 
+deterministas.
+
+El filtrado en las compresiones de listas se resume a usar la función `guard` con esa condición.
+
+Es mucho mejor empezar las funciones por su cabecera, debido al fuerte sistema de tipos de Haskell.
+
+Normalmente se hace `read "846195673" :: Int` ó `read "5232.488647" :: Float` para pasar de un tipo a 
+otro, si usamos `map` es mejor usar una función con cabecera explícita, que le da la información 
+suficiente al compilador acerca de qué tipo queremos:
+
+    leerInts ::[String] -> [Int]
+    leerInts = map read
+
+Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". 
+Una compresión de listas equivale a un "para todo x" en matemáticas.
+
+**Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
+
+# Ideas Razonando con Haskell
+
+## Estilo de funciones con argumento declarado "point-wise": ##
+
+    sum :: (Num a) => [a] -> a
+    sum xs = foldl (+) 0 xs
+
+El `xs` está lo más a la derecha posible a los dos lados del signo igual. A causa de la currificación,
+podemos omitir `xs` en ambos lados, ya que `fold (+) 0` crea una función que recibe una lista. De este 
+modo, estamos creando una función de orden superior.
+
+## Estilo de funciones sin argumento declarado "point-free": ##
+
+    sum' :: (Num a) => [a] -> a
+    sum' = foldl (+) 0
+
+# Sistema de tipos
+
+Gracias al sistema de tipos, se puede inferir el tipo más general de una función a partir de sus 
+ecuaciones.
+
+Todas las apariciones de una variable de tipos deben ser reemplazadas por el mismo tipo.
+Si tenemos una función con una variable de tipos `a`, e intentamos que esa a se corresponda con dos 
+tipos diferentes, obtendremos un error.
+
+Un tipo polimórfico tiene muchos tipos. Un tipo polimórfico es una plantilla (un esquema de tipos) que 
+puede ser usada para crear tipos específicos.
+
+Una expresión en la que intervienen funciones polimórficas es correcta desde el punto de vista de su 
+tipo si se pueden encontrar sustituciones consistentes para las variables de tipo.
+
+Capítulo 4:
+
+Los sinónimos de tipo (y por tanto, también los identificadores de tipo) comienzan con mayúsculas en 
+Haskell.
+
+Capítulo 6:
+
+El constructor (:) es asociativo a la derecha
+
+Capítulo 7:
+
+El anidamiento de varias concatenaciones a la izquierda tiene complejidad cuadrática.
+El anidamiento de varias concatenaciones a la derecha tiene complejidad lineal.

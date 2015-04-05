@@ -32,5 +32,4 @@ type CharParser st a = GenParser Char st a
 
 between parsea el carácter de apertura, luego el parser, después el de cierre y se queda con lo que parser haya parseado.
 
-type ReadS a = String -> [(a, String)] En realida esta función reads se trata de un parser, como su propio tipo indica.
-
+type ReadS a = String -> [(a, String)] En realidad esta función reads se trata de un parser, como su propio tipo indica.
