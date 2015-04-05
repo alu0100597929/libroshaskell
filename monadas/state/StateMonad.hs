@@ -1,4 +1,4 @@
-module ExampleState (State(..), evalState, execState, get, put) where
+module StateMonad (State(..), evalState, execState, get, put) where
 
 --significado: el tipo es State s a, es decir, al pasarle un s, obtengo (a,s)
 newtype State s a = State { runState :: s -> (a, s) }
@@ -46,10 +46,10 @@ instance Functor (State s) where
 instance Applicative (State s) where
   pure a = State $ \s -> (a,s)
   
-  (State g) <*> (State h) = State $ \s ->
-    let (a,s') = h s
-        (f,_)  = g s
-    in (f a,s')
+  (State sf) <*> (State sv) = State $ \s ->
+    let (f,s1)  = sf s
+        (a,s2) = sv s1
+    in (f a,s2)
 
 -- return :: a -> m a
 -- (>>=) :: m a -> (a -> m b) -> m b
