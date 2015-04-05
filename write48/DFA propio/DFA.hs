@@ -1,27 +1,35 @@
 module DFA where
 
-  -- se podría hacer con "tipos dinámicos"
-  data DFA = DFA
-    { intialState :: Int
-    , isAccepting :: Int -> Bool
-    , transition  :: Int -> Char -> Int
-    }
+  data DFA = DFA { intialState :: String
+                 , isAccepting :: String -> Bool
+                 , transition  :: String -> Char -> String
+                 }
 
   -- estado inicial
-  i = 1
+  i = "Q1"
 
   -- criterio de aceptación
-  a = (`elem` [1])
+  a = (`elem` ["Q1"])
 
-  -- tabla de transiciones, el lenguaje es aquel formado por cadenas a as y bes con
-  -- un número par de as
-  t 1 'A' = 2
-  t 1 'B' = 1
-  t 2 'A' = 1
-  t 2 'B' = 2
-  t _ _   = error "el símbolo no pertenece al lenguaje"
+  strToRow :: [String] -> [((String, Char), String)]
+  strToRow str = map crea_tupla por_espacios
+    where
+      crea_tupla [x,y,z] = ((x, head y), z)
+      por_espacios = map words str
 
-  dfa = DFA i a t
+  leerDFA :: String -> IO ()
+  leerDFA filename = do
+                      contenidos <- readFile filename
+                      putStr "Cadena:"
+                      cadena <- getLine
+                      let table = strToRow . lines $ contenidos
+                          dfa = DFA i a (t table)
+                      print $ testDFA dfa cadena
+
+  -- currificada para usar foldl
+  t tab n c = case lookup (n,c) tab of
+      Just x -> x
+      _      -> error "transición errónea"
 
   testDFA :: DFA -> [Char] -> Bool
   testDFA (DFA i a t) = a . foldl t i
