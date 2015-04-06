@@ -1,15 +1,14 @@
+-- DFA format file
+-- 1st line: initial state
+-- last line: set of final states
+-- other lines: transitions table entries
+
 module DFA where
 
   data DFA = DFA { intialState :: String
                  , isAccepting :: String -> Bool
                  , transition  :: String -> Char -> String
                  }
-
-  -- estado inicial
-  i = "Q1"
-
-  -- criterio de aceptación
-  a = (`elem` ["Q1"])
 
   strToRow :: [String] -> [((String, Char), String)]
   strToRow str = map crea_tupla por_espacios
@@ -22,8 +21,10 @@ module DFA where
                       contenidos <- readFile filename
                       putStr "Cadena:"
                       cadena <- getLine
-                      let table = strToRow . lines $ contenidos
-                          dfa = DFA i a (t table)
+                      let lineas = lines $ contenidos
+                          i = head lineas
+                          a = (`elem` last (map words lineas))
+                          dfa = DFA i a (t (strToRow (tail (init lineas))))
                       print $ testDFA dfa cadena
 
   -- currificada para usar foldl
