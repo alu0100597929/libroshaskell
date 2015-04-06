@@ -1,4 +1,6 @@
+Q1
 Q1 A Q2
 Q1 B Q1
 Q2 A Q1
 Q2 B Q2
+Q1 Q2 Q4
