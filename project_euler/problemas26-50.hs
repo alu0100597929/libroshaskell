@@ -248,7 +248,7 @@ parAB p a = (a, valorB p a)
 
 solucionesP p = length $ takeWhile (\(a,b) -> a < b) $ map (\a -> parAB p a) (valoresA p)
 
-perimetroMaxSols = case (findIndex (\a -> a == max_sols) sols_p) of Just x -> x + 1
+solucion39 = case (findIndex (\a -> a == max_sols) sols_p) of Just x -> x + 1
                                                                     Nothing -> -1
           where
             max_sols = maximum sols_p
@@ -256,7 +256,7 @@ perimetroMaxSols = case (findIndex (\a -> a == max_sols) sols_p) of Just x -> x 
 
 --  *************************-- 
 --  *************************-- 
--- solucion39 = print perimetroMaxSols
+-- main = print solucion39
 --  *************************-- 
 --  *************************-- 
 

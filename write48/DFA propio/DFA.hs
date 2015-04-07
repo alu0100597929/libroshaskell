@@ -28,6 +28,7 @@ module DFA where
                       print $ testDFA dfa cadena
 
   -- currificada para usar foldl
+  t :: [((String, Char), String)] -> String -> Char -> String
   t tab n c = case lookup (n,c) tab of
       Just x -> x
       _      -> error "transición errónea"

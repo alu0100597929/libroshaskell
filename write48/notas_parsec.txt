@@ -22,7 +22,9 @@ el operador <- liga a un nombre lo que hay dentro de la mónada sobre la cual op
 
 char consume entrada, si puede.
 
->> lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre.
+* ver la mónada GenParser en la documentación oficial de Parsec.
+
+>> lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre. >> consume entrada, y falla si ambos argumentos (parsers) fallan.
 
 type CharParser st a = GenParser Char st a
 
