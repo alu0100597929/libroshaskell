@@ -2,3 +2,7 @@ cabal install natural-numbers
 cabal install primes
 cabal install Hunit
 cabal install matrix
+
+## Pruebas unitarias
+
+cabal install hspec validate
