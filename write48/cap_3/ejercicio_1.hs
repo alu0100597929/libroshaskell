@@ -26,6 +26,7 @@ data LispVal = Atom String
              | Char Char
              | Bool Bool
              | Vector (Array Int LispVal)
+             | Nil ()
 
 instance Show LispVal where show = showVal
 
@@ -54,23 +55,24 @@ parseExpr = parseAtom
         <|> parseQuasiquote
         <|> try parseUnquoteSplicing
         <|> parseUnquote
-        <|> do char '('
-               x <- try parseList <|> parseDottedList
-               char ')'
-               return x
+        <|> parseAnyList
 
 parseAtom :: Parser LispVal
 parseAtom = do first <- letter <|> symbol
                rest <- many (letter <|> digit <|> symbol)
                (return . Atom) (first:rest)
 
-parseList :: Parser LispVal
-parseList = fmap List $ sepBy parseExpr spaces
-
-parseDottedList :: Parser LispVal
-parseDottedList = do head <- endBy parseExpr spaces
-                     tail <- char '.' >> spaces >> parseExpr
-                     return $ DottedList head tail
+parseAnyList :: Parser LispVal
+parseAnyList = do
+    char '('
+    many spaces
+    head <- sepEndBy parseExpr spaces
+    tail <- (char '.' >> spaces >> parseExpr) <|> return (Nil ())
+    many spaces
+    char ')'
+    return $ case tail of
+      (Nil ()) -> List head
+      otherwise -> DottedList head tail
 
 parseQuoted :: Parser LispVal
 parseQuoted = do char '\''

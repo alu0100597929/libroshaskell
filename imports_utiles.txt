@@ -6,3 +6,7 @@ cabal install matrix
 ## Pruebas unitarias
 
 cabal install hspec validate
+
+## Soporte de carácteres Unicode
+
+cabal install text-icu
