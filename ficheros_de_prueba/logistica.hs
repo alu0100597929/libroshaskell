@@ -77,7 +77,7 @@ esPalindroma xs
 posibles = [a:[b] | a <- ['a','b','c'], b <- ['a','b','c']]
 
 posAlfabeto :: Char -> Int
-posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> succ x
+posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> x + 1
                                                             Nothing -> -1
   where
     alfabeto = ['A'..'M'] ++ ['Ñ'] ++ ['O'..'Z']
