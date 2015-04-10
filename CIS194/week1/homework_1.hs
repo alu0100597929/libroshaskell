@@ -37,9 +37,3 @@ hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
 hanoi 0 _ _ _ = []
 hanoi n a c b = hanoi (n - 1) a b c
                 ++ (a,c) : hanoi (n - 1) b c a
-
--- TODO
-hanoi4 :: Integer -> Peg -> Peg -> Peg -> Peg -> [Move]
-hanoi4 0 _ _ _ _ = []
-hanoi4 n a d b c = hanoi4 (n - 1) a b c d
-                ++ (a,d) : hanoi4 (n - 1) b d b c
