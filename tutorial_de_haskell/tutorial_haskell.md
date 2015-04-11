@@ -2917,7 +2917,7 @@ llamado a `pure` fuera, se usa `Just`.
     Just "Hola"
 
 Si la función `<*>` se limitara sólo a listas, tendría un tipo `(<*>) :: [a -> b] -> [a] -> [b]`. Está 
-implementada con una compresión de listas. `<*>` debe, de alguna manera, extraer la función del parámetro 
+implementada con una comprensión de listas. `<*>` debe, de alguna manera, extraer la función del parámetro 
 izquierdo y luego mapearla sobre el parámetro derecho. En este caso, como el parámetro izquierdo es una 
 lista, no sabemos de qué tamaño, lo que hace es coger la cabeza de la lista (una función) y mapearla sobre 
 la lista parámetro derecho completa. Esto se repite hasta que la lista parámetro izquierdo sea vacía.
@@ -3273,7 +3273,7 @@ un número y devuelve un número. Cuando se usa con `[]`, `sequenceA` recibe una
 una lista de listas. Realmente crea listas que tienen todas las combinaciones posibles de sus elementos.
 
 Aclaremos un poco aquel ejemplo que no se entendía a priori haciéndolo primero con `sequenceA` y después 
-con una compresión de listas:
+con una comprensión de listas:
 
     ghci> sequenceA [[1,2,3],[4,5,6]]
     [[1,4],[1,5],[1,6],[2,4],[2,5],[2,6],[3,4],[3,5],[3,6]]
@@ -3896,6 +3896,11 @@ Es en realidad `(>>=)` pero con el orden de los parámetros invertido:
 
 ## La mónada lista
 
+Puede que te lo creas, puede que no, pero te digo que lo que vas a ver a 
+continuación te saldrá de manera natural si programas algo relativamente 
+complejo, como un NFA. De hecho las mónadas no son más que la generalización 
+de un tipo dado de computación.
+
     instance Monad [] where
       return :: a -> [a]
       return x = [x]
@@ -3911,7 +3916,7 @@ elementos posibles dadas dos listas:
                      y <- ys
                      return (x, y)
 
-Veamos si es cierto eso, desconfía siempre de la gente, !sobre todo de mí!
+Veamos si es cierto eso, desconfía siempre de la gente, ¡sobre todo de mí!
 
     *Main> pairs [1,2] [3,4]
     [(1,3),(1,4),(2,3),(2,4)]
@@ -3935,7 +3940,7 @@ Ahora expandiremos la definición de `pairs` para ver el despliegue de `(>>=)` p
     *Main> concat (map (\x -> concat (map (\y -> return (x,y)) [3,4])) [1,2])
     [(1,3),(1,4),(2,3),(2,4)]
 
-Esto se parece mucho a una comprensión de listas, por lo cual podríamos sospechar que en realidad la compresión de listas es azúcar sintáctico para el uso de la mónada lista:
+Esto se parece mucho a una comprensión de listas, por lo cual podríamos sospechar que en realidad la comprensión de listas es azúcar sintáctico para el uso de la mónada lista:
 
     pairs'' xs ys = [(x,y) | x <- xs, y <- ys]
 
@@ -4268,7 +4273,7 @@ suficiente al compilador acerca de qué tipo queremos:
     leerInts = map read
 
 Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". 
-Una compresión de listas equivale a un "para todo x" en matemáticas.
+Una comprensión de listas equivale a un "para todo x" en matemáticas.
 
 **Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
 
