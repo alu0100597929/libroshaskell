@@ -1,0 +1,5 @@
+{
+    "selector": "source.haskell",
+    "working_dir": "$file_path",
+    "cmd": ["xfce4-terminal","-x","ghci", "$file"]
+}

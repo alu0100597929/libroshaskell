@@ -10,3 +10,7 @@ cabal install hspec validate
 ## Soporte de carácteres Unicode
 
 cabal install text-icu
+
+## Excepciones, librería monádica
+-- nuevo, Control.Monad.Error está deprecated, import Control.Monad.Except
+cabal install mtl
