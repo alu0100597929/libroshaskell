@@ -6,3 +6,5 @@ cd f.lux-indicator-applet
 chmod +x setup.py
 sudo ./setup.py install
 fluxgui
+
+# 28.10N, 15.39W

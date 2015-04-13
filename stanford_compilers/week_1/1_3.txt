@@ -1,0 +1,78 @@
+Compilers - The economy of programming languages
+
+En esta clase se discutirán 3 preguntas muy interesantes.
+
+1) ¿Por qué hay tantos lenguajes de programación?
+
+2) ¿Por qué hay nuevos lenguajes de programación por ahí?
+
+3) ¿Qué es un buen lenguaje de programación?
+
+Respuestas:
+
+- ¿Por qué hay tantos lenguajes de programación?
+
+En primera instancia podemos decir que los dominios de aplicación tienen distintas necesidades, que pueden incluso entrar en conflicto.
+
+La computación científica trata de resolver cálculos muy costosos y complejos y necesita:
+
+- buen soporte para operaciones en punto flotante
+
+- buen soporte de arrays
+
+- soporte de paralelismo
+
+Por ello FORTRAN ha sido usado durante mucho tiempo, debido a que fue diseñado con el propósito de servir para la computación científica.
+
+Aplicaciones de negocios:
+
+- Persistencia: los datos no se pueden perder.
+
+- generación de informes
+
+- análisis de datos
+
+En este ámbito, dominan los lenguajes como SQL.
+
+* Programación de sistemas: sistemas operativos, embebidos...
+
+- Control de los recursos
+- restricciones de tiempo real (ser responsivo)
+
+C/C++
+
+Como vemos, con necesidades tan dispares, es muy complicado diseñar un lenguaje que cubra todos estos dominios de aplicación con buenos resultados en cada uno de ellos. Lo cual nos lleva a la siguiente pregunta:
+
+- ¿Por qué hay nuevos lenguajes de programación por ahí?
+
+"El entrenamiento del programador es el mayor coste para un lenguaje de programación."
+
+Construir compiladores no es tan difícil, y se necesita un equipo de no demasiadas personas (de 10 a 20) para construir un buen compilador en un proyecto grande.
+
+Las personas tienen que dedicar mucho tiempo, lo cual es muy caro.
+
+1. Los lenguajes más usados tardan mucho en cambiar.
+
+En el otro lado del espectro tenemos los lenguajes de programación nuevos. Como acaban de nacer, tienen muy pocos usuarios, y el costo de su aprendizaje es muy bajo. Según el lenguaje vaya creciendo en usuarios y popularidad, los cambios irán haciéndose más lentos. Es "fácil" empezar un nuevo lenguaje.
+
+A mayor productividad, mayor coste de entrenamiento.
+
+Los lenguajes se suelen crear para llenar un vacío. Por ejemplo, ahora se programa para móviles, cosa que antes no era así.
+
+Los lenguajes ya consolidados cambian más lentamente, con lo cual tienen más difícil la adaptación a nuevas tecnologías.
+
+Los lenguajes nuevos tienden a parecerse a los lenguajes viejos.
+
+Eso ocurre porque:
+
+1) es cada vez más difícil inventar cosas nuevas.
+
+2) reduce el tiempo de entrenamiento (lo que más coste tiene).
+
+- ¿Qué es un buen lenguaje de programación?
+
+*No existe una métrica universalmente avanzada para el diseño de lenguajes.
+
+Debido a esto, los programadores no se ponen de acuerdo para decir qué lenguaje es el mejor.
+
+Hay quien dice que el número de usuarios es la mejor medida de la calidad de un lenguaje, lo cual no es un argumento creíble.
