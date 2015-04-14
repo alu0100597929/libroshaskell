@@ -11,13 +11,14 @@ Nothing :: Maybe a
 y el pattern matching
 -}
 
--- fmap :: (Functor f) => (a -> b) -> f a -> f b
+-- fmap :: (Functor f) => (a -> b) -> Maybe a -> Maybe b
 instance Functor Maybe where
   fmap _ Nothing = Nothing
   fmap f (Just x) = Just (f x) 
 
 --pure :: a -> f a
 --(<*>) :: f (a -> b) -> f a -> f b
+--(<*>) :: Maybe (a -> b) -> Maybe a -> Maybe b
 instance Applicative Maybe where
   pure = Just
 
@@ -26,6 +27,7 @@ instance Applicative Maybe where
 
 -- return :: a -> m a
 -- (>>=) :: m a -> (a -> m b) -> m b
+-- (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
 instance Monad Maybe where
   return a = Just a
 

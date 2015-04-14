@@ -256,7 +256,7 @@ Las funciones `abs` y `signum` deben cumplir la siguiente ley:
 En versiones de GHCi anteriores de 7.8.X la primera línea debía ser así obligatoriamente.
 Hoy en día hay una inferencia de tipos mejorada que nos permite programar más cómodamente, como en la segunda línea.
 
-# Comandos de GHCi:
+# Comandos de GHCi
 
 * `Ctrl + L` es una combinación de teclas que **limpia cualquier consola en sistemas POSIX**, también funciona en GHCi. Es equivalente a `:! clear`.
 * `:l nombre_fichero` sirve para **compilar** (e interpretar luego las aplicaciones que queramos) el fichero dado con nombre `nombre_fichero`.
@@ -265,6 +265,10 @@ Hoy en día hay una inferencia de tipos mejorada que nos permite programar más 
 * `:k expresión_de_tipo` nos permite **comprobar el kind** de un tipo.
 * `:i función` es una opción de GHCi que nos permite ver la **fijeza** (o asociatividad) de un operador.
 * `:q` sirve para **salir** limpiamente de GHCi.
+
+# Cambio de modo de GHCi
+
+* `:set +s` cambia el modo de ejecución de GHCi, permitiendo ver cuánto tiempo tarda en ser evaluada cada una de nuestras expresiones. Muy útil para analizar el rendimiento de nuestro código.
 
 # Definiendo nuestras primeras funciones
 

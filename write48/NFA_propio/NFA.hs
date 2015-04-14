@@ -6,24 +6,31 @@
 
 -- importante, un NFA es "paralelo", pero cada estado no tiene
 -- información de lo que están haciendo los otros, por ello las
--- transiciones son del tipo String -> Char -> [String]
+-- transiciones son del tipo State -> Char -> [State]
 
 module NFA where
 
   import Control.Monad
 
-  data NFA = NFA { intialStates :: [String]
-                 , isAccepting :: String -> Bool
-                 , transition :: String -> Char -> [String]
+  --data NonEmpty a = NonEmpty a [a]
+  
+  --headN :: NonEmpty a -> a
+  --headN (NonEmpty h _) = h
+
+  type State = [Char]
+
+  data NFA = NFA { intialStates :: [State]
+                 , isAccepting :: State -> Bool
+                 , transition :: State -> Char -> [State]
                  }
 
-  strToRow :: [String] -> [((String, Char), [String])]
+  strToRow :: [State] -> [((State, Char), [State])]
   strToRow str = map crea_tupla por_espacios
     where
       crea_tupla (x:y:xs) = ((x, head y), xs)
       por_espacios = map words str
 
-  leerNFA :: String -> IO ()
+  leerNFA :: State -> IO ()
   leerNFA filename = do
                       contenidos <- readFile filename
                       putStr "Cadena:"
@@ -36,11 +43,11 @@ module NFA where
                       print $ testNFA nfa cadena
 
   -- currificada para usar foldl
-  transitions :: [((String, Char), [String])] -> String -> Char -> [String]
+  transitions :: [((State, Char), [State])] -> State -> Char -> [State]
   transitions tab str c = case lookup (str,c) tab of
                             Just x -> x
                             _      -> error "no hay transición"
 
   -- necesita el épsilon '#' al principio de la cadena
-  testNFA :: NFA -> String -> Bool
+  testNFA :: NFA -> State -> Bool
   testNFA (NFA i a t) inp = any a (i >>= \i0 -> foldM t i0 inp)
