@@ -33,14 +33,15 @@ module NFA where
   leerNFA :: State -> IO ()
   leerNFA filename = do
                       contenidos <- readFile filename
-                      putStr "Cadena:"
-                      cadena <- getLine
                       let lineas = lines $ contenidos
                           i = words $ head lineas
                           a = (`elem` last (map words lineas))
                           tab = strToRow $ tail $ init lineas
                           nfa = NFA i a (transitions tab)
-                      print $ testNFA nfa cadena
+                      forever $ do
+                                 putStr "Cadena:"
+                                 cadena <- getLine
+                                 print $ testNFA nfa cadena
 
   -- currificada para usar foldl
   transitions :: [((State, Char), [State])] -> State -> Char -> [State]
