@@ -38,7 +38,7 @@
 
 %%%%%%%%%%%%%%%%% Creamos un entorno para listar código fuente %%%%%%%%%%%%%%%
 \newenvironment{sourcecode}
-{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\scriptsize\bfseries}
+{\begin{list}{}{\setlength{\leftmargin}{1em}}\item\normalsize\bfseries}
 {\end{list}}
 
 \newenvironment{littlesourcecode}
@@ -56,7 +56,6 @@
 \newenvironment{palabrasClave}
 {\begin{list}{}{\setlength{\leftmargin}{1em}}\item[\hskip\labelsep \bfseries Palabras clave:]}
 {\end{list}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Format
@@ -128,7 +127,9 @@
   \Large La Laguna, \today 
 \end{center}
 
-\setlength{\parindent}{5mm}
+% \setlength{\parindent}{5mm}
+\setlength\parindent{0pt} % fuerza que no haya indentación de ningún
+                          % tipo por defecto
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Signature page (add the official stamp)

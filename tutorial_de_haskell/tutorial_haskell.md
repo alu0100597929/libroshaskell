@@ -333,6 +333,40 @@ utilizando en `sumar`, que sólo es un wrapper).
 Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos 
 harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
 
+# Lambdas
+
+En un lenguaje funcional, poner nombre a todas las funciones que usemos podría resultar tedioso. Además, es cómodo definir funciones al vuelo, es decir, rápidamente y en el punto del programa en el que realmente sea necesario. Las lambdas sirven para este propósito.
+
+Las lambdas se suelen declarar entre paréntesis para que el compilador sepa que se tratan de un "todo". No obstante, en el caso de las mónadas hay veces en que no son demasiado necesarios y se va resolviendo todo mediante la indentación.
+
+La sintaxis de las lambdas es la siguiente:
+
+    (\arg1 arg2 ... argn -> cuerpo_función)
+
+Es decir, para que Haskell sepa que estamos trabajando con una lambda, se usa la backslash `\` y a continuación se encuentran dos partes bien diferenciadas, separadas por una flecha `->`:
+
+* A la izquierda de la flecha `->` la lista de nombres de argumentos, separados por espacios.
+
+* A la derecha de la flecha `->` el cuerpo de la función. El tipo de esa expresión será el tipo retorno de la lambda.
+
+Definamos la lambda más sencilla que existe, lo único que hace es devolver su argumento:
+
+    \x -> x
+
+Definamos una lambda que eleve al cubo un número:
+
+    \x -> x*x*x
+
+Veamos ahora una lambda que sume sus dos argumentos:
+
+    \x y -> x + y
+
+Y por último, veamos una que ignora su primer argumento y devuelva el segundo:
+
+    \_ x -> x
+
+Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer parámetro, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial. 
+
 # Reconocimiento de patrones
 
 Para entender qué es el reconocimiento de patrones primero debemos saber qué es *casar*. Para 

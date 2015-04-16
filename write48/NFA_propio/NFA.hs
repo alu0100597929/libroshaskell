@@ -41,7 +41,7 @@ module NFA where
                       forever $ do
                                  putStr "Cadena:"
                                  cadena <- getLine
-                                 print $ testNFA nfa cadena
+                                 print $ probarNFA nfa cadena
 
   -- currificada para usar foldl
   transitions :: [((State, Char), [State])] -> State -> Char -> [State]
@@ -50,5 +50,5 @@ module NFA where
                             _      -> error "no hay transición"
 
   -- necesita el épsilon '#' al principio de la cadena
-  testNFA :: NFA -> State -> Bool
-  testNFA (NFA i a t) inp = any a (i >>= \i0 -> foldM t i0 inp)
+  probarNFA :: NFA -> State -> Bool
+  probarNFA (NFA i a t) inp = any a (i >>= \i0 -> foldM t i0 inp)

@@ -29,7 +29,7 @@ module DFA where
                       forever $ do
                                    putStr "Cadena:"
                                    cadena <- getLine
-                                   print $ testDFA dfa cadena
+                                   print $ probarDFA dfa cadena
 
   -- currificada para usar foldl
   t :: [((String, Char), String)] -> String -> Char -> String
@@ -37,5 +37,5 @@ module DFA where
       Just x -> x
       _      -> error "transición errónea"
 
-  testDFA :: DFA -> [Char] -> Bool
-  testDFA (DFA i a t) = a . foldl' t i
+  probarDFA :: DFA -> [Char] -> Bool
+  probarDFA (DFA i a t) = a . foldl' t i

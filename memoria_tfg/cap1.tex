@@ -57,7 +57,18 @@ Bla, bla, bla
 \section{Plegados de listas}
 \label{1:sec:4}
 
-Bla, bla, bla
+Pondremos un ejemplo real codificado por mí, un DFA hecho mediante un plegado de listas por la izquierda.\\
+
+\begin{sourcecode}
+  probarDFA :: DFA $->$ [Char] $->$ Bool\\
+  probarDFA (DFA i a t) = a . foldl' t i\\
+\end{sourcecode}
+
+Un DFA se podría implementar en programación imperativa con un bucle for que fuera sobreescribiendo el estado en cada iteración, haciendo un lookup en su tabla de estados dependiendo de su estado actual y el símbolo leído.
+
+Esto, en Haskell, se puede hacer usando la función \textbf{foldl} (aunque aquí por temas de rendimiento y uso de memoria se ha optado por \textbf{foldl'}).
+
+Se trata de empezar con un acumulador (en este caso, el estado inicial), y nos vamos moviendo por la lista (cadena de entrada) de izquierda a derecha, haciendo un lookup...
 
 %------------------------------------------------------------------------------
 \begin{figure}[!th]
