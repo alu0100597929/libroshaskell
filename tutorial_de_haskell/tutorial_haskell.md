@@ -3,7 +3,7 @@
 - autor: Francisco Nebrera Perdomo
 - institución: Universidad de La Laguna
 - correo electrónico: freinn@gmail.com
-- fecha: Marzo 2015
+- fecha: Mayo 2015
 
 <!-- -->
 
@@ -4194,10 +4194,52 @@ otro. Por tanto, es mejor ejecutar ciertas partes de un programa en un orden y o
 particular, si un lenguaje es independiente del orden de evaluación quizá sea posible ejecutar partes del 
 programa en paralelo.
 
+# Evaluación perezosa: modo de funcionamiento
+
+Si sabes programar en algún lenguaje imperativo es probable que sepas usar el "short circuit", es decir, un método que permita reducir la evaluación de varias expresiones a algunas menos, e incluso en ciertas ocasiones a sólo una.
+
+<!-- ejemplo de short circuit con puerta OR -->
+
+La evaluación perezosa trata de emular este efecto, pero no se limita a la evaluación de expresiones booleanas, sino a prácticamente todo el conjunto del lenguaje Haskell. Se pueden realizar computaciones con gran complejidad gracias a la evaluación perezosa.
+
+En la evaluación perezosa las expresiones se evalúan de izquierda a derecha, construyendo un grafo. Luego, este grafo se empieza a reducir de arriba a abajo, y mediante esto se consigue muchas veces que ciertos nodos del árbol queden sin explorar, ya que no es necesario hacerlo, sólo con una parte del árbol podemos saber, en ciertos casos, qué resultado dará la expresión en su conjunto.
+
+**Teorema:** La evaluación perezosa **nunca** ejecuta más pasos de evaluación que la evaluación impaciente.
+
+Además de ahorrar pasos de evaluación, la evaluación perezosa nos permite trabajar con listas infinitas, algo que la evaluación impaciente no puede hacer.
+
+Otra idea importante es que el compilador no traduce directamente el Haskell que programamos a código máquina, sino que lo cambia. Por ello es muy difícil saber qué hará realmente nuestro programa a bajo nivel.
+
+La ejecución de un progrma en Haskell se basa en la evaluación de expresiones. La idea principal que rige la evaluación es la aplicación de funciones. Dada una función:
+
+    cuadrado x = x*x
+
+Podemos evaluar la expresión:
+
+    cuadrado (1+2)
+
+Reemplazando la parte izquierda de la definición de `cuadrado` con la de la derecha, y sustituyendo el parámetro `x` por su argumento real.
+
+    cuadrado (1+2)
+    => (1+2)*(1+2)
+
+La evaluación ahora necesita hacer primero las sumas, aplicando `(+)`, para luego pasarle los resultados a `(*)`:
+
+    (1+2)*(1+2)
+    => 3*(1+2)
+    => 3*3
+    => 9
+
+En este caso, hemos evaluado `(1+2)` dos veces. Sin embargo, sabemos que las dos expresiones `(1+2)` son realmente la misma, porque corresponden al mismo argumento de la función, `x`.
+
+Para evitar estos cálculos redudantes se usa un método llamado reducción de grafo. Cada expresión puede ser representada como un grafo. Nuestro ejemplo se puede representar como sigue.
+
+<!-- en el DIA, usar assorted, flowchart --> 
+
 # Ideas sueltas
 
 **Importante:** mencionar el ejemplo del DFA en el cual tenemos que usar `let` dentro de un 
-bloque `do` para que se tome como funciones efectivas dentro.
+bloque `do` para que se tome lo que hay dentro como funciones efectivas.
 
 `(<*>)` es el ya conocido `($)` elevado a funtores aplicativos, y `ap` es lo mismo pero elevado a 
 mónadas.

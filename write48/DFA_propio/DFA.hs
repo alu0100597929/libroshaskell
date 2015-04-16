@@ -6,6 +6,7 @@
 module DFA where
 
   import Control.Monad
+  import Data.List(foldl')
 
   data DFA = DFA { intialState :: String
                  , isAccepting :: String -> Bool
@@ -37,4 +38,4 @@ module DFA where
       _      -> error "transición errónea"
 
   testDFA :: DFA -> [Char] -> Bool
-  testDFA (DFA i a t) = a . foldl t i
+  testDFA (DFA i a t) = a . foldl' t i
