@@ -26,7 +26,16 @@
 *.log
 *.sql
 *.sqlite
- 
+
+# LaTeX compilation results #
+#############################
+*.aux
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.toc
+
 # OS generated files #
 ######################
 .DS_Store

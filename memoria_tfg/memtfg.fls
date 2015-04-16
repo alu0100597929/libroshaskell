@@ -238,6 +238,8 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /home/freinn/libroshaskell/memoria_tfg/cap1.tex
 INPUT /home/freinn/libroshaskell/memoria_tfg/cap1.tex
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbsy10.tfm
 INPUT /home/freinn/libroshaskell/memoria_tfg/images/arbolbinario.eps
 INPUT /home/freinn/libroshaskell/memoria_tfg/images/arbolbinario.eps
 INPUT /home/freinn/libroshaskell/memoria_tfg/images/arbolbinario.eps
@@ -269,6 +271,8 @@ INPUT /home/freinn/libroshaskell/memoria_tfg/apendice2.tex
 INPUT /home/freinn/libroshaskell/memoria_tfg/memtfg.bbl
 INPUT /home/freinn/libroshaskell/memoria_tfg/memtfg.bbl
 INPUT /home/freinn/libroshaskell/memoria_tfg/memtfg.aux
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb
