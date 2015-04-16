@@ -339,10 +339,10 @@ Para entender qué es el reconocimiento de patrones primero debemos saber qué e
 ello, el diccionario de la Real Academia es nuestro hamijo:
 
 * Dicho de dos o más cosas: Corresponder, conformarse, cuadrar.
-* Unir, juntar o hacer coincidir algo con otra cosa. Casar la oferta con la demanda.
-* Disponer y ordenar algo de suerte que haga juego con otra cosa o tengan correspondencia entre sí. 
 
-<!-- fin de lista -->
+* Unir, juntar o hacer coincidir algo con otra cosa. Casar la oferta con la demanda.
+
+* Disponer y ordenar algo de suerte que haga juego con otra cosa o tengan correspondencia entre sí.
 
 Es un término que se usa bastante en las expresiones regulares, para ver si una expresión casa con un texto dado, y en qué lugar. Veamos un ejemplo de reconocimiento de patrones:
 
@@ -356,9 +356,55 @@ Es un término que se usa bastante en las expresiones regulares, para ver si una
 
 La función `dime` hace reconocimiento de patrones con su primer argumento, de tipo `Int`, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea `dime x = "No está entre 1 y 5"` al principio, nuestra función siempre devolvería `"No está entre 1 y 5"`, aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
 
-El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus compoenntes correspondientes.
+Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).
 
-**Nota:** el reconocimiento de patrones es en realidad reconocimiento de constructores.
+    data Persona = CrearPersona String Int
+    --                          |      |
+    --                          |      |
+    --                          |      La edad de la persona
+    --                          El nombre de la persona
+
+A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).
+
+    data Persona = Persona String Int
+    --   |         |
+    --   |         Constructor de datos
+    --   |
+    --   Constructor de tipos
+
+El tipo del último ejemplo se conoce como **tipo de dato algebraico**; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.
+
+**Importante:** el reconocimiento de patrones es en realidad reconocimiento de constructores.
+
+## Variables de tipo
+
+Las variables de tipo son aquellas que se declaran en `data` después del nombre del tipo que vamos a crear. Su finalidad principal es hacer saber qué puede formar parte del tipo, y además permitir a cualquier tipo formar parte de nuestro tipo personalizado. Veámoslo con un ejemplo:
+
+    data Persona a = PersonaConCosa String a | PersonaSinCosa String
+    --           |                         |
+    --           |                         podemos usarla aquí
+    --           |
+    --           Añadiendo una "variable de tipo" aquí
+
+En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo `Persona Int`, `Persona String`,...,etc.
+
+    franConEdad :: Persona Int
+    franConEdad = PersonaConCosa "fran" 25
+
+    franSinEdad :: Persona Int
+    franSinEdad = PersonaSinCosa "fran"
+
+Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor `PersonaConCosa String a` ó `PersonaSinCosa String`, nuestra función debe ser programada para actuar en consecuencia:
+
+    getNombre :: Persona Int -> String
+    getNombre (PersonaConCosa nombre _) = nombre
+    getNombre (PersonaSinCosa nombre)   = nombre
+
+    getEdad :: Persona Int -> Maybe Int
+    getEdad (PersonaConCosa _ edad) = Just edad
+    getEdad (PersonaSinCosa _)      = Nothing
+
+Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos `Just edad` ya que en este caso la tenemos.
 
 ## Orden de ejecución del reconocimiento de patrones
 
