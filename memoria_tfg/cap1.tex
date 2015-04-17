@@ -42,7 +42,7 @@ A continuación se describen los mencionados constructos en su sección correspond
 \section{Reconocimiento de patrones y tipos de datos algebraicos}
 \label{1:sec:2}
 
-Para entender qué es el reconocimiento de patrones primero debemos saber qué es *casar*. Para 
+Para entender qué es el reconocimiento de patrones primero debemos saber qué es \textbf{casar}. Para 
 ello usaremos las acepciones pertinentes del diccionario de la Real Academia:
 
 \begin{itemize}
@@ -63,46 +63,48 @@ dime 5 = "¡Cinco!"\\
 dime x = "No está entre 1 y 5"
 \end{sourcecode}
 
-La función `dime` hace reconocimiento de patrones con su primer argumento, de tipo `Int`, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea `dime x = ``No está entre 1 y 5'' al principio, nuestra función siempre devolvería ``No está entre 1 y 5'', aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
+La función \textbf{dime} hace reconocimiento de patrones con su primer argumento, de tipo \textbf{Int}, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea \textbf{dime x = ``No está entre 1 y 5''} al principio, nuestra función siempre devolvería ``No está entre 1 y 5'', aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
 
 Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).
 
+\textbf{Importante:} los dos guiones al principio de cada línea representan comentarios en Haskell, y su presencia aquí es de carácter didáctico.
+
 \begin{sourcecode}
-data Persona = CrearPersona String Int
-$--                          |      |$\\
-$--                          |      |$\\
-$--                          |      $La edad de la persona\\
-$--                         $El nombre de la persona
+data Persona = CrearPersona String Int\\
+$--\qquad \qquad \qquad \qquad \qquad \quad \ \ | \quad \quad \ \ | $\\
+$--\qquad \qquad \qquad \qquad \qquad \quad \ \ | \quad \quad \ \ | $\\
+$--\qquad \qquad \qquad \qquad \qquad \quad \ \ | \quad \quad \ \ $La edad de la persona\\
+$--\qquad \qquad \qquad \qquad \qquad \quad \ \ \ $El nombre de la persona
 \end{sourcecode}
 
 A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).
 
 \begin{sourcecode}
-data Persona = Persona String Int
-$--   |         |$\\
-$--   |         $Constructor de datos\\
-$--   |$\\
-$--   $Constructor de tipos
+data Persona = Persona String Int\\
+$--\ | \quad \quad \quad \ \ \ \ \ | $\\
+$--\ | \quad \quad \quad \ \ \ \ \ | $\\
+$--\ | \quad \quad \quad \ \ \ \ \ $Constructor de datos\\
+$--\ \  $Constructor de tipos
 \end{sourcecode}
 
-El tipo del último ejemplo se conoce como **tipo de dato algebraico**; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.
+El tipo del último ejemplo se conoce como \textbf{tipo de dato algebraico}; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.
 
 \textbf{Importante:} el reconocimiento de patrones es en realidad reconocimiento de constructores.
 
 \section{Variables de tipo}
 \label{1:sec:3}
 
-Las variables de tipo son aquellas que se declaran en `data` después del nombre del tipo que vamos a crear. Su finalidad principal es hacer saber qué puede formar parte del tipo, y además permitir a cualquier tipo formar parte de nuestro tipo personalizado. Veámoslo con un ejemplo:
+Las variables de tipo son aquellas que se declaran en \textbf{data} después del nombre del tipo que vamos a crear. Su finalidad principal es hacer saber qué puede formar parte del tipo, y además permitir a cualquier tipo formar parte de nuestro tipo personalizado. Veámoslo con un ejemplo:
 
 \begin{sourcecode}
-data Persona a = PersonaConCosa String a | PersonaSinCosa String\\
-$--           |                          |$\\
-$--           |$                         podemos usarla aquí\\
-$--           |$\\
-$--$          Añadiendo una "variable de tipo" aquí
+data Persona a = PersonaConCosa String a $|$ PersonaSinCosa String\\
+$--\ \qquad \qquad| \qquad \qquad \qquad \qquad \qquad \qquad \ | $\\
+$--\ \qquad \qquad| \qquad \qquad \qquad \qquad \qquad \qquad \ | $\\
+$--\ \qquad \qquad| \qquad \qquad \qquad \qquad \qquad \qquad \ $Podemos usarla aquí\\
+$--\ \qquad \qquad\  $Añadiendo una variable de tipo aquí
 \end{sourcecode}
 
-En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo \begin{sourcecode}Persona Int\end{sourcecode}, \begin{sourcecode}Persona String\end{sourcecode},...,etc.
+En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo \textbf{Persona Int}, \textbf{Persona String},...,etc.
 
 \begin{sourcecode}
 franConEdad :: Persona Int\\
@@ -112,19 +114,19 @@ franSinEdad :: Persona Int\\
 franSinEdad = PersonaSinCosa "fran"
 \end{sourcecode}
 
-Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor `PersonaConCosa String a` ó `PersonaSinCosa String`, nuestra función debe ser programada para actuar en consecuencia:
+Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor \textbf{PersonaConCosa String a} ó \textbf{PersonaSinCosa String}, nuestra función debe ser programada para actuar en consecuencia:
 
 \begin{sourcecode}
-getNombre :: Persona Int -> String\\
+getNombre :: Persona Int $\rightarrow$ String\\
 getNombre (PersonaConCosa nombre \_) = nombre\\
-getNombre (PersonaSinCosa nombre)   = nombre\\
+getNombre (PersonaSinCosa nombre) $\,\,\,\,\,$ = nombre\\
 
-getEdad :: Persona Int -> Maybe Int\\
+getEdad :: Persona Int $\rightarrow$ Maybe Int\\
 getEdad (PersonaConCosa \_ edad) = Just edad\\
-getEdad (PersonaSinCosa \_)      = Nothing
+getEdad (PersonaSinCosa \_) $\ \ \ \ \ \ \,\,\,$ = Nothing
 \end{sourcecode}
 
-Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos `Just edad` ya que en este caso la tenemos.
+Como vemos, a las variables \textbf{nombre} y \textbf{edad} respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor \textbf{PersonaSinCosa} sólo contiene el nombre y no la edad, utilizamos el tipo \textbf{Maybe} para devolver \textbf{Nothing} en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos \textbf{Just edad} ya que en este caso la tenemos.
 
 %---------------------------------------------------------------------------------
 \section{Lambdas}
