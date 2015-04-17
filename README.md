@@ -13,47 +13,43 @@ A continuación se lista el contenido de cada carpeta:
 
 Contiene los ficheros fuente que solucionan los problemas de los [99 Haskell Problems](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems).
 
-## bash_haskell
-
-Scripts hechos en Haskell, necesitan `runhaskell` instalado para funcionar.
-
-## beginning haskell source code
+## beginning_haskell_source_code
 
 Códigos fuente de la web del libro del mismo nombre.
 
-## CIS194
+## cis194
 
 Código fuente de este tutorial, que está en [CIS 194](http://www.seas.upenn.edu/~cis194/)
-
-## CSE 230 Winter 2012
-
-Código fuente de este tutorial, que está en [CSE 230 Winter 2012](https://cseweb.ucsd.edu/classes/wi12/cse230-a/lectures.html) 
 
 ## codewars
 
 Código fuente de las katas que voy resolviendo en [Code Wars](https://www.codewars.com/)
 
-## Erik Meijer
+## cse_230_winter_2012
+
+Código fuente de este tutorial, que está en [CSE 230 Winter 2012](https://cseweb.ucsd.edu/classes/wi12/cse230-a/lectures.html)
+
+## erik_meijer
 
 Fuentes funcionales (en ambos sentidos) de los tutoriales en vídeo que hace Erik Meijer.
 
-## Ficheros de prueba
+## ficheros_de_prueba
 
 Ficheros para probar pequeñas funciones creadas o adaptadas por mí, para ver si funcionan bien y poder incluirlos en documentos oficiales.
 
-## Greg Michaelson Introdution to functional programming
-
-Códigos fuente del libro del mismo nombre, adaptados por mí.
-
-## haskell fast and hard
+## haskell_fast_and_hard
 
 Código fuente de este tutorial, que está en [haskell fast and hard](https://www.fpcomplete.com/school/starting-with-haskell/haskell-fast-hard)
 
-## learn you a haskell
+## introdution_to_functional_programming
+
+Códigos fuente del libro del mismo nombre cuyo autor es Greg Michaelson, adaptados por mí.
+
+## learn_you_a_haskell
 
 Códigos fuente de la web del libro del mismo nombre, adaptados por mí.
 
-## maybe Haskell
+## maybe_Haskell
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
@@ -69,9 +65,13 @@ Explicaciones de cómo montar páginas web haciendo uso del framework [Mflow](ht
 
 Explicaciones sobre mónadas que me ha dado Daniel Díaz e instancias de la clase Monad que me he ido montando.
 
-## pearls of functional programming
+## pearls_of_functional_programming
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
+
+## programacion_dinamica
+
+Programación dinámica en Haskell.
 
 ## programming in haskell
 
@@ -85,27 +85,31 @@ Códigos fuente que resuelven, usando Haskell, algunos problemas de [Project Eul
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
-## real world haskell
+## real_world_haskell
 
 Códigos fuente del libro del mismo nombre, adaptados por mí. [Real World Haskell](http://book.realworldhaskell.org/read/)
+
+## scripts_bash_haskell
+
+Scripts hechos en Haskell, necesitan `runhaskell` instalado para funcionar.
 
 ## stanford_compilers
 
 Lecciones transcritas y traducidas del curso [CS1 Compilers](https://lagunita.stanford.edu/courses/Engineering/Compilers/Fall2014/courseware/ed92b25157d94fbe9874370673ca0a58/)
 
-## sublime Text
+## sublime_Text
 
 Trucos, consejos y ficheros de respaldo para Sublime Text 3.
 
-## the Haskell road to logic, maths and programming
+## the_Haskell_road_to_logic,_maths_and_programming
 
 Códigos fuente del libro del mismo nombre, adaptados por mí.
 
-## tutorial de haskell
+## tutorial_de_haskell
 
 Mi tutorial de Haskell, en markdown y pdf.
 
-## tutoriales parsec
+## tutoriales_parsec
 
 Código fuente de los tutoriales de Parsec que voy siguiendo, incluyendo un repositorio completo de uno de ellos, el cual luego estoy adaptando yo.
 
