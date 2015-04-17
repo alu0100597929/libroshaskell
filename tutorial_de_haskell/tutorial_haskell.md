@@ -19,7 +19,7 @@
 \
 \
 \
-![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_negativo.png)\ ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_normal.png)
+<!--![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_negativo.png)\ ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_normal.png) -->
 \
 \
 \
@@ -40,9 +40,9 @@
 \   
 
 Reacción típica de un programador al ver su primer fragmento de código Haskell:
-
+<!--
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haydiomio.png)
-
+-->
 # Introducción
 
 Todo el código de este tutorial ha sido testeado con GHC 7.8.4 y 7.10.1. De todas formas, si he 
@@ -274,7 +274,9 @@ Hoy en día hay una inferencia de tipos mejorada que nos permite programar más 
 
 En la programación funcional, la principal actividad (y en realidad, lo único) que realizaremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
 
-    ochenta :: Int
+```haskell
+ochenta :: Int
+```
 
 **Nota:** tener en cuenta que Haskell es `case-sensitive`, es decir, sensible a mayúsculas y 
 minúsculas. Los nombres de las funciones siempre deben empezar por minúscula, mientras que los 
@@ -288,7 +290,9 @@ Donde la función recibe un número N parámetros. De momento, vamos a pensar qu
 
 A continuación, escribimos la definición de `ochenta`:
 
-    ochenta = 80
+```haskell
+ochenta = 80
+```
 
 Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 programado duramente (
 sin calcularlo, simplemente escribiendo un inmediato). 
@@ -299,8 +303,10 @@ implica que la función termine su ejecución.
 
 Veamos ahora la definición completa que nos permitirá ver la función con mayor claridad.
 
-    ochenta :: Int
-    ochenta = 80
+```haskell
+ochenta :: Int
+ochenta = 80
+```
 
 **Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
@@ -314,8 +320,10 @@ funciones por su definición, con la desventaja de necesitar paréntesis explíc
 
 Definamos ahora una función `sumar` que reciba dos parámetros y los sume:
 
-    sumar :: Int -> Int -> Int
-    sumar a b = a + b
+```haskell
+sumar :: Int -> Int -> Int
+sumar a b = a + b
+```
 
 La función `sumar` la hemos implementado nosotros, pero Haskell ya contiene una función `add` que 
 tiene el mismo efecto. Asimismo, podríamos usar la función `(+)` (y de hecho ya la estamos 
@@ -351,19 +359,29 @@ Es decir, para que Haskell sepa que estamos trabajando con una lambda, se usa la
 
 Definamos la lambda más sencilla que existe, lo único que hace es devolver su argumento:
 
-    \x -> x
+```haskell
+\x -> x
+```
 
 Definamos una lambda que eleve al cubo un número:
 
-    \x -> x*x*x
+```haskell
+\x -> x*x*x
+```
 
 Veamos ahora una lambda que sume sus dos argumentos:
 
-    \x y -> x + y
+```haskell
+\x y -> x + y
+```
+
+**Nota:** el símbolo _ es el patrón subrayado, es decir, un patrón que casa con cualquier cosa y no guarda nada en memoria. Si desea saber más, lea la sección contigua "Reconocimiento de patrones".
 
 Y por último, veamos una que ignora su primer argumento y devuelva el segundo:
 
-    \_ x -> x
+```haskell
+\_ x -> x
+```
 
 Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer parámetro, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial. 
 
@@ -380,31 +398,37 @@ ello, el diccionario de la Real Academia es nuestro hamijo:
 
 Es un término que se usa bastante en las expresiones regulares, para ver si una expresión casa con un texto dado, y en qué lugar. Veamos un ejemplo de reconocimiento de patrones:
 
-    dime :: Int -> String
-    dime 1 = "¡Uno!"
-    dime 2 = "¡Dos!"
-    dime 3 = "¡Tres!"
-    dime 4 = "¡Cuatro!"
-    dime 5 = "¡Cinco!"
-    dime x = "No está entre 1 y 5"
+```haskell
+dime :: Int -> String
+dime 1 = "¡Uno!"
+dime 2 = "¡Dos!"
+dime 3 = "¡Tres!"
+dime 4 = "¡Cuatro!"
+dime 5 = "¡Cinco!"
+dime x = "No está entre 1 y 5"
+```
 
 La función `dime` hace reconocimiento de patrones con su primer argumento, de tipo `Int`, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea `dime x = "No está entre 1 y 5"` al principio, nuestra función siempre devolvería `"No está entre 1 y 5"`, aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
 
 Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).
 
-    data Persona = CrearPersona String Int
-    --                          |      |
-    --                          |      |
-    --                          |      La edad de la persona
-    --                          El nombre de la persona
+```haskell
+data Persona = CrearPersona String Int
+--                          |      |
+--                          |      |
+--                          |      La edad de la persona
+--                          El nombre de la persona
+```
 
 A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).
 
-    data Persona = Persona String Int
-    --   |         |
-    --   |         Constructor de datos
-    --   |
-    --   Constructor de tipos
+```haskell
+data Persona = Persona String Int
+--   |         |
+--   |         Constructor de datos
+--   |
+--   Constructor de tipos
+```haskell
 
 El tipo del último ejemplo se conoce como **tipo de dato algebraico**; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.
 
@@ -414,29 +438,35 @@ El tipo del último ejemplo se conoce como **tipo de dato algebraico**; tipos de
 
 Las variables de tipo son aquellas que se declaran en `data` después del nombre del tipo que vamos a crear. Su finalidad principal es hacer saber qué puede formar parte del tipo, y además permitir a cualquier tipo formar parte de nuestro tipo personalizado. Veámoslo con un ejemplo:
 
-    data Persona a = PersonaConCosa String a | PersonaSinCosa String
-    --           |                         |
-    --           |                         podemos usarla aquí
-    --           |
-    --           Añadiendo una "variable de tipo" aquí
+```haskell
+data Persona a = PersonaConCosa String a | PersonaSinCosa String
+--           |                         |
+--           |                         podemos usarla aquí
+--           |
+--           Añadiendo una "variable de tipo" aquí
+```
 
 En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo `Persona Int`, `Persona String`,...,etc.
 
-    franConEdad :: Persona Int
-    franConEdad = PersonaConCosa "fran" 25
+```haskell
+franConEdad :: Persona Int
+franConEdad = PersonaConCosa "fran" 25
 
-    franSinEdad :: Persona Int
-    franSinEdad = PersonaSinCosa "fran"
+franSinEdad :: Persona Int
+franSinEdad = PersonaSinCosa "fran"
+```
 
 Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor `PersonaConCosa String a` ó `PersonaSinCosa String`, nuestra función debe ser programada para actuar en consecuencia:
 
-    getNombre :: Persona Int -> String
-    getNombre (PersonaConCosa nombre _) = nombre
-    getNombre (PersonaSinCosa nombre)   = nombre
+```haskell
+getNombre :: Persona Int -> String
+getNombre (PersonaConCosa nombre _) = nombre
+getNombre (PersonaSinCosa nombre)   = nombre
 
-    getEdad :: Persona Int -> Maybe Int
-    getEdad (PersonaConCosa _ edad) = Just edad
-    getEdad (PersonaSinCosa _)      = Nothing
+getEdad :: Persona Int -> Maybe Int
+getEdad (PersonaConCosa _ edad) = Just edad
+getEdad (PersonaSinCosa _)      = Nothing
+```
 
 Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos `Just edad` ya que en este caso la tenemos.
 
@@ -459,28 +489,34 @@ ejecutan en orden y no dan tanta información al compilador.
 
 Dos opciones:
 
-    transcribir 'G' = 'C'
-    transcribir 'C' = 'G'
-    …
-    transcribir _ = error "…"
+```haskell
+transcribir 'G' = 'C'
+transcribir 'C' = 'G'
+…
+transcribir _ = error "…"
+```
 
 O, un poco mejor:
 
-    transcribir c = case c of
-      'G' -> 'C'
-      'C' -> 'G'
-      …
-      _ -> error "…"
+```haskell
+transcribir c = case c of
+  'G' -> 'C'
+  'C' -> 'G'
+  …
+  _ -> error "…"
+```
 
-    aARN :: String -> String
-    aARN xs = map transcribir xs
-      where
-        transcribir c = case c of
-                         'C' -> 'G'
-                         'G' -> 'C'
-                         'A' -> 'U'
-                         'T' -> 'A'
-                         _   -> error "secuencia de ADN inválida"
+```haskell
+aARN :: String -> String
+aARN xs = map transcribir xs
+  where
+    transcribir c = case c of
+                     'C' -> 'G'
+                     'G' -> 'C'
+                     'A' -> 'U'
+                     'T' -> 'A'
+                     _   -> error "secuencia de ADN inválida"
+```
 
 Prefiero la segunda, ya que es más concisa. También es más a bajo nivel, todas las formas de 
 reconocimiento de patrones se traducen a expresiones `case` en el núcleo de GHC.
@@ -530,8 +566,10 @@ Por ejemplo, queremos saber cuáles son las longitudes de los lados de un subcon
 rectángulos cuya hipotenusa mida un máximo de 100 unidades métricas cualesquiera. Para ello escribimos 
 una función:
 
-    comprension :: [(Int,Int,Int)]
-    comprension = [(a,b,c) | a <- [1..100], b <- [a + 1..100], c <- [b + 1..100], a^2 + b^2 == c^2]
+```haskell
+comprension :: [(Int,Int,Int)]
+comprension = [(a,b,c) | a <- [1..100], b <- [a + 1..100], c <- [b + 1..100], a^2 + b^2 == c^2]
+```
 
 En esta función nos damos cuenta de las siguientes cosas:
 
@@ -563,7 +601,9 @@ una tupla a otra, será el `c`.
 La función `elemIndex` nos permite obtener el índice de la lista (recuerda que la cabeza tiene índice 0) 
 que coincide con el valor del primer parámetro. El tipo de `elemIndex` es:
 
-    elemIndex :: Eq a => a -> [a] -> Maybe Int
+```haskell
+elemIndex :: Eq a => a -> [a] -> Maybe Int
+```
 
 Lo que significa que debemos usar la función sobre listas de tipos a los que se pueda aplicar la 
 función `(==)` para comprobar si son iguales. Le pasamos un elemento de tipo `a` y una lista con 
@@ -606,13 +646,15 @@ igual al último, si el segundo es igual al penúltimo, etc. Todas estas igualda
 lleguemos a la cadena vacía, que es palíndroma. Si no se da alguna, la cadena no es palíndroma y no hará 
 falta hacer más comprobaciones. Veamos cómo se hace esto en Haskell:
 
-    esPalindroma :: (Eq a) => [a] -> Bool
-    esPalindroma xs
-      | null xs = True
-      | head xs == last xs = esPalindroma (if not (null (init xs))
-                                              then tail (init xs)
-                                              else [])
-      | otherwise = False
+```haskell
+esPalindroma :: (Eq a) => [a] -> Bool
+esPalindroma xs
+  | null xs = True
+  | head xs == last xs = esPalindroma (if not (null (init xs))
+                                          then tail (init xs)
+                                          else [])
+  | otherwise = False
+```
 
 Vemos primero `(Eq a)`, que es una **clase de tipos**. Esta clase viene a imponer que el objeto tipo a, 
 que, fijémonos, es el tipo de los elementos de la lista, debe pertenecer a la clase de tipos `Eq`. Esto
@@ -652,8 +694,10 @@ devolvemos `False`.
 
 Una versión que usa la función `reverse`:
 
-    esPalindroma' :: (Eq a) => [a] -> Bool
-    esPalindroma' xs = xs == reverse xs
+```haskell
+esPalindroma' :: (Eq a) => [a] -> Bool
+esPalindroma' xs = xs == reverse xs
+```
 
 # Composición de funciones
 
@@ -665,19 +709,27 @@ La función composición, `(.)`, crea una función que recibe como argumentos do
 
 Veamos la definición de la función `(.)` para aclarar conceptos:
 
-    (.) :: (b -> c) -> (a -> b) -> a -> c
-    (f . g) x = f (g x)
+```haskell
+(.) :: (b -> c) -> (a -> b) -> a -> c
+(f . g) x = f (g x)
+```
 
 Veamos un sencillo ejemplo aclaratorio:
 
-    f :: Int -> Int
-    f = (+13)
+```haskell
+f :: Int -> Int
+f = (+13)
+```
 
-    g :: Int -> Int
-    g = (*7)
+```haskell
+g :: Int -> Int
+g = (*7)
+```
 
-    h :: Int -> Int
-    h = f . g
+```haskell
+h :: Int -> Int
+h = f . g
+```
 
 Veamos un ejemplo en acción:
 
@@ -750,23 +802,27 @@ Ahora pasamos a ver dos versiones de la función `quitarDuplicados`, que elimina
 
 Versión recursiva que sólo usa reconocimiento de patrones y el constructor `Cons`, también llamado `(:)`:
 
-    quitarDuplicados :: (Eq a) => [a] -> [a]
-    quitarDuplicados [] = []
-    quitarDuplicados [x] = [x]
-    quitarDuplicados (x:y:ys) = if x == y
-                                   then quitarDuplicados (y:ys)
-                                   else x : (quitarDuplicados (y:ys))
+```haskell
+quitarDuplicados :: (Eq a) => [a] -> [a]
+quitarDuplicados [] = []
+quitarDuplicados [x] = [x]
+quitarDuplicados (x:y:ys) = if x == y
+                               then quitarDuplicados (y:ys)
+                               else x : (quitarDuplicados (y:ys))
+```
 
 Una versión más corta, no recursiva, que hace uso de funciones predefinidas:
 
-    quitarDuplicados :: (Ord a) => [a] -> [a]
-    quitarDuplicados = map head . group . sort
+```haskell
+quitarDuplicados :: (Ord a) => [a] -> [a]
+quitarDuplicados = map head . group . sort
+```
 
 Esta versión de `quitarDuplicados` tiene la ventaja de ser muy concisa y casi autoexplicativa.
 
 # Funciones de orden superior
 
-Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry. Él inventó la técnica conocida como currificación.
+Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry, que inventó la técnica conocida como currificación.
 
 Currificar equivale a fijar parámetros, dando lugar a nuevas funciones.
 
@@ -824,8 +880,10 @@ Las comprensiones de listas nos sirven para muchas cosas, por ejemplo, podemos h
 que comprueba si un número es primo. Además, esta función parará desde que encuentre un divisor 
 en la lista de números desde `2` hasta `n-1`:
 
-    esPrimo :: Integer -> Bool
-    esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
+```haskell
+esPrimo :: Integer -> Bool
+esPrimo n = null [k | k <- [2..n-1], n `mod` k == 0]
+```
 
 Aquí usamos otro pequeño truco, nos creamos una lista con todos los potenciales divisores del número, 
 efectuamos la división, nos quedamos con el módulo y comprobamos si es cero (sería divisible). Estos 
@@ -833,9 +891,11 @@ números irán a parar a la lista solución como `k`s, que serán los divisores,
 lista contenga un sólo elemento, ya el número no será primo. Haskell es *perezoso*, y nos aprovecharemos 
 de ello; veamos la función `null` definida en el módulo `Prelude`:
 
-    null :: [a] -> Bool
-    null []    =  True
-    null (_:_) =  False
+```haskell
+null :: [a] -> Bool
+null []    =  True
+null (_:_) =  False
+```
 
 La función `null` recibe una lista, devolviendo `True` si se reconoce el patrón lista vacía (`[]`) y
 `False` en caso de que contenga al menos un elemento. Desde que la comprensión de listas tenga algún 
@@ -873,11 +933,13 @@ caso de que no lo encuentre:
 La siguiente función devuelve la posición de una letra en el alfabeto español, tomando la primera 
 posición ('A') como posición 1:
 
-    posAlfabeto :: Char -> Int
-    posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> succ x
-                                                                Nothing -> -1
-      where
-        alfabeto = ['A'..'M'] ++ ['Ñ'] ++ ['O'..'Z']
+```haskell
+posAlfabeto :: Char -> Int
+posAlfabeto c = case findIndex (== (toUpper c)) alfabeto of Just x -> succ x
+                                                            Nothing -> -1
+  where
+    alfabeto = ['A'..'M'] ++ ['Ñ'] ++ ['O'..'Z']
+```
 
     *Main> posAlfabeto '¿'
     -1
@@ -919,16 +981,18 @@ Para ver todos los paquetes disponibles, podemos consultar la [página oficial](
 
 `Data.Numbers.Primes` para resolver el problema 10 de [Project Euler](https://projecteuler.net/problem=10), a continuación el programa completo:
 
-    import Data.List (takeWhile)
-    import Data.Numbers.Primes (primes)
+```haskell
+import Data.List (takeWhile)
+import Data.Numbers.Primes (primes)
 
-    sumaPrimos = sum (takeWhile (< 2000000) primes)
+sumaPrimos = sum (takeWhile (< 2000000) primes)
+```
 
 Como se aprecia, después de los `import` de los módulos, entre paréntesis especifico qué función quiero (en este caso sólo una, si hubiera más, irían separadas por comas). De este modo, en vez de cargar el módulo completo, cargo sólo lo que me interesa.
 
 # Programación Origami: plegado/desplegado de listas:
 
-![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_folds_vater_billete.png)
+<!--![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_folds_vater_billete.png)-->
 
 Como muy bien ilustra esta fotografía del origami hecho por orudorumagi11 de deviantart.com, se 
 pueden hacer cosas asombrosas simplemente plegando billetes de un dólar. Con las listas de Haskell 
@@ -975,24 +1039,28 @@ Sea `f` una función y `z` el acumulador:
 
     \z f -> (f (f (f z a) b) c)
 
-![Despliegue de foldl][foldl]
+<!--![Despliegue de foldl][foldl]
 
-[foldl]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldl.png "Despliegue de foldl"
+[foldl]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldl.png "Despliegue de foldl" -->
 
 Un ejemplo de `foldl` en acción; la siguiente función pasa una lista (cuyos elementos deben ser enteros de una cifra) a un valor entero:
 
-    listaAInt :: [Int] -> Int
-    listaAInt = foldl (\z x -> 10*z + x) 0
+```haskell
+listaAInt :: [Int] -> Int
+listaAInt = foldl (\z x -> 10*z + x) 0
+```
 
 Como vemos, es una implementación muy concisa. Podemos pensar en `foldl` como una especie
 de bucle for en programación imperativa, que va acumulando el resultado paso a paso, y ejecutando la misma operación hasta que llega al final de la lista.
 
 ## Código de foldr
 
-    foldr k z = go
-              where
-                go []     = z
-                go (y:ys) = y `k` go ys
+```haskell
+foldr k z = go
+          where
+            go []     = z
+            go (y:ys) = y `k` go ys
+```
 
 ## Desplegado generalizado de foldr: ##
 
@@ -1000,11 +1068,12 @@ Sea `f` una función y `z` el acumulador:
 
 `foldr f z ['a', 'b', 'c']` se despliega de la siguiente manera:
 
-    \f z -> (f a (f b (f c z)))
+```haskell
+\f z -> (f a (f b (f c z)))
+```
+<!--![Despliegue de foldr][foldr]
 
-![Despliegue de foldr][foldr]
-
-[foldr]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldr.png "Despliegue de foldr"
+[foldr]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldr.png "Despliegue de foldr" -->
 
 Como vemos, el `foldl` empieza por la izquierda de la lista mientras que `foldr` empieza por el final.
 
@@ -1102,8 +1171,10 @@ Desarrollamos paso a paso y obtenemos:
 Definimos la función `and'` que recibe una lista de `Bool` y devuelve `True` si todos son `True`, y `False` 
 en cualquier otro caso.
 
-    and' :: [Bool] -\> Bool
-    and' = foldr (&&) True
+```haskell
+and' :: [Bool] -> Bool
+and' = foldr (&&) True
+```
 
 Si desarrollamos paso a paso sobre la lista `[True,False,True]` obtenemos:
 
@@ -1120,9 +1191,11 @@ infinitos elementos, todos ellos `False`?. Obtendríamos algo como:
 Haskell es vago (lazy), así que solo computará lo realmente necesario. Veamos cómo funciona la función
 `&&`:
 
-    (&&) :: Bool -\> Bool -\> Bool
-    True && x = x
-    False && _ = False
+```haskell
+(&&) :: Bool -\> Bool -\> Bool
+True && x = x
+False && _ = False
+```
 
 Como vemos, desde que ve que el primer argumento  es `False`, no necesita mirar el otro, simplemente 
 devuelve `False`.
@@ -1140,16 +1213,18 @@ evaluar siempre su segundo parámetro para dar un resultado fijo. Por ejemplo, a
 Las funciones `scanl` y `scanr` son como `foldl` y `foldr`, excepto que devuelven todos los estados intermedios 
 del acumulador en forma de lista.
 
-Scanl deja el resultado final en el último elemento de la lista resultante.
+`scanl` deja el resultado final en el último elemento de la lista resultante.
 
-Scanr lo deja en la cabeza de la lista.
+`scanr` lo deja en la cabeza de la lista.
 
 Pueden ser utilizados para monitorizar el progreso de funciones definidas mediante plegados.
 
 # Operador de aplicación de funciones ($)
 
-    ($) :: (a -\> b) -\> a -\> b
-    f $ x = f x
+```haskell
+($) :: (a -\> b) -\> a -\> b
+f $ x = f x
+```
 
 No es simplemente aplicar funciones sobre un parámetro. La aplicación normal de funciones (mediante un 
 espacio) tiene una precedencia muy alta, mientras que la aplicación mediante `$` tiene la menor 
@@ -1231,7 +1306,9 @@ imperativos orientados a objetos (C++, Ruby...).
 
 En una declaración como esta:
 
-    data Bool = False | True deriving (Ord)
+```haskell
+data Bool = False | True deriving (Ord)
+```
 
 ¿Qué constructor de valor da una instancia menor? La respuesta es sencilla, el que está definido primero, más a la izquierda (en este caso `False`).
 
@@ -1276,50 +1353,66 @@ un significado más claro a los tipos para un potencial lector de nuestro códig
 
 El ejemplo más claro se ve en la definición de `String` en Haskell:
 
-    type String = [Char]
+```haskell
+type String = [Char]
+```
 
-    toUpperString :: [Char] -> [Char]
+```haskell
+toUpperString :: [Char] -> [Char]
+```
 
 Puede ser escrita de forma más legible y clara:
 
-    toUpperString :: String -> String
+```haskell
+toUpperString :: String -> String
+```
 
 Los sinónimos se usan para dar información adicional del contenido de nuestros datos.
 
 Por ejemplo:
 
-    ListaTelefonos :: [(String, String)]
-    ListaTelefonos =
-      [("betty", "555-2938")
-      ,("bonnie", "452-2928")
-      ,("patsy", "493-2928")
-      ,("lucille", "205-2928")
-      ,("wendy", "939-8282")
-      ,("penny", "853-2492")
-      ]
+```haskell
+ListaTelefonos :: [(String, String)]
+ListaTelefonos =
+  [("Ana", "661898252")
+  ,("María", "637562754")
+  ,("Níove", "686457823")
+  ,("Rut", "696443312")
+  ,("Miriam", "822063519")
+  ,("Juana", "626789321")
+  ]
+```
 
 Puede ser convertido a:
 
-    type NumeroTelefono = String
-    type Nombre = String
-    type ListaTelefonos = [(Nombre, NumeroTelefono)]
+```haskell
+type NumeroTelefono = String
+type Nombre = String
+type ListaTelefonos = [(Nombre, NumeroTelefono)]
+```
 
 A continuación crearemos una función que devolverá si una combinación de `Nombre` y `NumeroTelefono` 
 pertenece a nuestra `ListaTelefonos`.
 
-    inListaTelefonos :: Nombre -> NumeroTelefono -> ListaTelefonos -> Bool
-    inListaTelefonos nombre numerotel listatel = (nombre, pnumber) `elem` listatel
+```haskell
+inListaTelefonos :: Nombre -> NumeroTelefono -> ListaTelefonos -> Bool
+inListaTelefonos nombre numerotel listatel = (nombre, pnumber) `elem` listatel
+```
 
 ## Parametrizando sinónimos de tipo ##
 
 Los sinónimos pueden ser parametrizados. Si queremos un tipo que representa una lista de asociación 
 pero queremos que sea general y use cualquier tipo de claves y de valores, podemos hacer:
 
-    type TablaHash k v = [(k, v)]
+```haskell
+type TablaHash k v = [(k, v)]
+```
 
 Podríamos definir un mapa de `Int` a lo que sea que queramos:
 
+```haskell
     type IntMap v = Map Int v
+```
 
 Cuando vayamos a implementar esto, probablemente queramos hacer un `qualified import de Data.Map`. 
 Cuando lo hacemos, los constructores de tipo también necesitan estar precedidos por un nombre de 
@@ -1328,7 +1421,9 @@ módulo.
 Como podemos aplicar parcialmente funciones para obtener nuevas funciones, podemos hacer lo mismo 
 para los constructores de tipos, obteniendo nuevos constructores de tipos parcialmente aplicados:
 
-    type IntTablaHash = Map.Map Int
+```haskell
+type IntTablaHash = Map.Map Int
+```
 
 Es importante entender bien la diferencia entre los constructores de tipos y los de valor.
 
@@ -1341,6 +1436,7 @@ Por tanto, los sinónimos de tipo y los tipos en general pueden ser usados en la
 Haskell. Es decir:
 
 * declaraciones `type` y `data`
+
 * después del `::` en declaraciones de tipo o anotaciones de tipo
 
 ### Constructores de tipos ###
@@ -1358,9 +1454,11 @@ Haskell. Es decir:
 
 * adverbio: también
 
-En Haskell se define como sigue:
+En Haskell su significado viene a ser el primero usado como pronombre, es decir, o es uno u otro. `Either` se define como sigue:
 
-    data Either a b = Left a | Right b deriving (Eq, Ord, Read, Show)
+```haskell
+data Either a b = Left a | Right b deriving (Eq, Ord, Read, Show)
+```
 
 Tiene dos constructores de valor. Si se usa `Left`, su contenido será de tipo `a`. Por el contrario, 
 si se usa `Right`, sus contenidos serán del tipo `b`.
@@ -1397,11 +1495,15 @@ Por tanto se deduce que una lista puede ser:
 
 Implementemos nuestra lista mediante tipos algebraicos:
 
-    data List a = Empty | Cons a (List a) deriving (Show, Read, Eq, Ord)
+```haskell
+data List a = Empty | Cons a (List a) deriving (Show, Read, Eq, Ord)
+```
 
 Usemos record syntax para esclarecer un poco qué ocurre aquí:
 
-    data List a = Empty | Cons { listHead :: a, listTail :: List a} deriving (Show, Read, Eq, Ord)
+```haskell
+data List a = Empty | Cons { listHead :: a, listTail :: List a} deriving (Show, Read, Eq, Ord)
+```
 
 Podría confundirte el constructor `Cons`. `Cons` es otra forma de decir `:`. En listas, `:` es un 
 constructor que recibe un valor y una lista y devuelve otra lista. En otras palabras, tiene dos campos:
@@ -1430,8 +1532,10 @@ especiales será infijo automáticamente.
 
 aquí definimos un nuevo operador, `:-:`:
 
-    infixr 5 :-:
-    data List a = Empty | a :-: (List a) deriving (Show, Read, Eq, Ord)
+```haskell
+infixr 5 :-:
+data List a = Empty | a :-: (List a) deriving (Show, Read, Eq, Ord)
+```
 
 * infixr n op: significa asociativo a la derecha.
 
@@ -1465,10 +1569,12 @@ Una acción de entrada/salida es algo que cuando se lleva a cabo, lleva a cabo u
 
 Decimos que una acción de E/S *produce* este resultado. Como imprimir una cadena a la terminal no devuelve ningún tipo de valor con sentido, se devuelve una unidad `()`.
 
-    main = do
-        putStrLn "Hola, escribe tu nombre:"
-        nombre <- getLine
-        putStrLn ("Me caes bien, " ++ nombre ++ "!")
+```haskell
+main = do
+    putStrLn "Hola, escribe tu nombre:"
+    nombre <- getLine
+    putStrLn ("Me caes bien, " ++ nombre ++ "!")
+```
 
 Ahora vemos que nuestro programa a compilar usa una nueva sintaxis, la sintaxis `do`. En ella, se 
 especifican las acciones a realizar línea por línea.
@@ -1491,7 +1597,9 @@ funciones que trabajan con la E/S.
 
 Volvamos a la sentencia `name <- getLine`. ¿Qué tipo tendrá `name`? La respuesta es que se trata de una `String` como otra cualquiera. De acuerdo a lo que hemos estudiado, ¿Es la siguiente sentencia válida?
 
-    nameTag = "Hello, my name is " ++ getLine
+```haskell
+nameTag = "Hello, my name is " ++ getLine
+```
 
 La respuesta es **no** por las siguientes razones:
 
@@ -1502,10 +1610,12 @@ constructo `<-`.
 
 <!-- fin de la lista -->
 
-    main = do
-      foo <- putStrLn "Hola, escribe tu nombre:"
-      name <- getLine
-      putStrLn ("Me caes bien, " ++ nombre ++ "!")
+```haskell
+main = do
+  foo <- putStrLn "Hola, escribe tu nombre:"
+  name <- getLine
+  putStrLn ("Me caes bien, " ++ nombre ++ "!")
+```
 
 En este caso hemos ligado a `foo` el resultado producido por `putStrLn "Hello, what's your name?"` 
 mediante el constructo `<-`. ¿Tiene esto sentido? Bien poco, puesto que dicho resultado es la tupla vacía o unidad `()`.
@@ -1516,7 +1626,9 @@ Excepto la última línea, podemos ligar a un nombre todas las demás si así lo
 
 Lo único que hace la siguiente línea es darle otro nombre a la acción de E/S:
 
-    myLine = getLine
+```haskell
+myLine = getLine
+```
 
 Por tanto, las únicas cuatro maneras que tenemos de hacer acciones de E/S son:
 
@@ -1542,16 +1654,18 @@ Por tanto:
 
 ## Uso de recursividad y de return ##
 
-    main = do
-      linea <- getLine
-      if null linea
-        then return ()
-        else do
-          putStrLn $ invertirPalabras linea
-          main
+```haskell
+main = do
+  linea <- getLine
+  if null linea
+    then return ()
+    else do
+      putStrLn $ invertirPalabras linea
+      main
 
-    invertirPalabras :: String -> String
-    invertirPalabras = unwords . map reverse . words
+invertirPalabras :: String -> String
+invertirPalabras = unwords . map reverse . words
+```
 
 Respecto al `else`: unimos acciones E/S en un bloque do porque después del else sólo puede haber una 
 acción E/S.
@@ -1569,13 +1683,15 @@ La palabra reservada `return` podría confundirnos bastante, sobre ella, debemos
 <!-- -->
 Este programa no termina su ejecución hasta llegar a la última línea:
 
-    main = do
-      return ()
-      return "JAJAJA"
-      line <- getLine
-      return "BLA BLA BLA"
-      return 4
-      putStrLn line
+```haskell
+main = do
+  return ()
+  return "JAJAJA"
+  line <- getLine
+  return "BLA BLA BLA"
+  return 4
+  putStrLn line
+```
 
 Por tanto, lo que hace `return` es crear acciones que devuelven un resultado, el cual se pierde al no 
 estar ligado a un nombre. Es por esto que podemos decir que es justo lo contrario que el constructo `<-`.
@@ -1588,17 +1704,21 @@ Resumen de lo expuesto:
 
 Por tanto, si primero empaquetamos con `return` y después desempaquetamos con `<-`, estamos haciendo algo equivalente a los `let` dentro de bloques `do`:
 
-    main = do
-      a <- return "hell"
-      b <- return "yeah!"
-      putStrLn $ a ++ " " ++ b
+```haskell
+main = do
+  a <- return "hell"
+  b <- return "yeah!"
+  putStrLn $ a ++ " " ++ b
+```
 
 Es por tanto equivalente a:
 
-    main = do
-      let a = "hell"
-      b = "yeah"
-      putStrLn $ a ++ " " ++ b
+```haskell
+main = do
+  let a = "hell"
+  b = "yeah"
+  putStrLn $ a ++ " " ++ b
+```
 
 Por tanto, `return` puede ser usada para:
 
@@ -1616,10 +1736,12 @@ la cadena argumento.
 
 ### `putStr` ###
 
-    main = do
-      putStr "Hola, "
-      putStr "¡buenos "
-      putStrLn "días!"
+```haskell
+main = do
+  putStr "Hola, "
+  putStr "¡buenos "
+  putStrLn "días!"
+```
 
 Tiene un efecto parecido a `putStrLn`, pero `putStr` no empieza una nueva línea tras imprimir por 
 consola la cadena argumento.
@@ -1632,21 +1754,25 @@ Su salida sería:
 
 ### `putChar` ###
 
-    main = do
-      putChar 't'
-      putChar 'e'
-      putChar 'h'
+```haskell
+main = do
+  putChar 't'
+  putChar 'e'
+  putChar 'h'
+```
 
 Recibe un carácter y **devuelve una acción** que imprime dicho carácter por pantalla (a través de la 
 consola).
 
 Podemos definir `putStr` como la aplicación recursiva de `putChar`:
 
-    putStr :: String -> IO ()
-    putStr [] = return ()
-    putStr (x:xs) = do
-      putChar x
-      putStr xs
+```haskell
+putStr :: String -> IO ()
+putStr [] = return ()
+putStr (x:xs) = do
+  putChar x
+  putStr xs
+```
 
 De este modo vemos que podemos usar definiciones recursivas en funciones que implican E/S.
 
@@ -1669,20 +1795,26 @@ GHCi está todo el tiempo usando `print` cada vez que le pasamos un valor concre
 
 ### `when` (parte de Control.Monad) ###
 
+```haskell
     import Control.Monad
 
     main = do
       input <- getLine
       when (input == "freinn") $ do
         putStrLn input
+```
 
 El programa anterior es equivalente a:
+
+```haskell
+    import Control.Monad
 
     main = do
       input <- getLine
       if (input == "SWORDFISH")
         then putStrLn input
         else return ()
+```
 
 Por tanto `when` es útil cuando queremos que cierta acción E/S se ejecute en ciertos casos, y en los casos 
 contrarios no hacer nada.
@@ -1744,29 +1876,33 @@ E/S recibida eternamente. Se encuentra en `Control.Monad`.
 
 El siguiente programa pedirá entrada a un usuario y la devolverá pasada a mayúsculas.
 
-    import Control.Monad
-    import Data.Char
+```haskell
+import Control.Monad
+import Data.Char
 
-    main = forever $ do
-      putStr "Introduce una cadena de carácteres: "
-      l <- getLine
-      putStrLn $ map toUpper l
+main = forever $ do
+  putStr "Introduce una cadena de carácteres: "
+  l <- getLine
+  putStrLn $ map toUpper l
+```
 
 ### `forM` ###
 
 Es básicamente lo mismo que `mapM` pero con el orden de los parámetros cambiados. Por ello, recibe una lista 
 y la función a mapear, que será luego secuenciada.
 
-    import Control.Monad
+```haskell
+import Control.Monad
 
-    main = do
-      colores <- forM [1,2,3,4] (\a -> do
-        putStrLn $ "¿Qué color asocias con el número "
-                 ++ show a ++ "?"
-        color <- getLine
-        return color)
-      putStrLn "Los colores que asociaste a 1, 2, 3 y 4 son: "
-      mapM putStrLn colores
+main = do
+  colores <- forM [1,2,3,4] (\a -> do
+    putStrLn $ "¿Qué color asocias con el número "
+             ++ show a ++ "?"
+    color <- getLine
+    return color)
+  putStrLn "Los colores que asociaste a 1, 2, 3 y 4 son: "
+  mapM putStrLn colores
+```
 
 La lambda `(\a -> do ...)` recibe un número y devuelve una acción E/S (cuyo resultado es la String del 
 color que hayamos elegido). La última acción del bloque `do` va a definir el tipo del bloque entero. Por 
@@ -1777,15 +1913,17 @@ resultado de `getLine` y lo liga a un nombre (en este caso color). Recordemos qu
 acción que no hace nada y devuelve como resultado el tipo del parámetro que le pasemos. Por tanto el 
 programa anterior puede ser escrito de forma más cómoda:
 
-    import Control.Monad
+```haskell
+import Control.Monad
 
-    main = do
-      colores <- forM [1,2,3,4] (\a -> do
-        putStrLn $ "¿Qué color asocias con el número "
-                 ++ show a ++ "?"
-        getLine)
-      putStrLn "Los colores que asociaste a 1, 2, 3 y 4 son: "
-      mapM putStrLn colores
+main = do
+  colores <- forM [1,2,3,4] (\a -> do
+    putStrLn $ "¿Qué color asocias con el número "
+             ++ show a ++ "?"
+    getLine)
+  putStrLn "Los colores que asociaste a 1, 2, 3 y 4 son: "
+  mapM putStrLn colores
+```
 
 Como `getLine`:
 
@@ -1827,12 +1965,14 @@ flujo.
 
 Cree un fichero de texto llamado `amayusculas.hs` con el siguiente contenido:
 
-    import Control.Monad
-    import Data.Char
+```haskell
+import Control.Monad
+import Data.Char
 
-    main = forever $ do
-      l <- getLine
-      putStrLn $ map toUpper l
+main = forever $ do
+  l <- getLine
+  putStrLn $ map toUpper l
+```
 
 A continuación, compílelo de la siguiente forma:
 
@@ -1852,11 +1992,13 @@ encuentre el carácter fin de fichero (EOF, normalmente Ctrl + D).
 
 El programa anterior, ahora implementado con `getContents`:
 
-    import Data.Char
-    
-    main = do
-      contents <- getContents
-      putStr $ map toUpper contents
+```haskell
+import Data.Char
+
+main = do
+  contents <- getContents
+  putStr $ map toUpper contents
+```
 
 De este modo, la entrada del teclado se redirige al fichero ejemplo.txt, de modo que el programa leerá el 
 fichero, y no el teclado, hasta que encuentre el carácter de fin de fichero (Ctrl + D).
@@ -1875,12 +2017,14 @@ Cree un fichero con el siguiente contenido y llámelo `lineas.txt`
 
 A continuación, cree el siguiente programa, cuyo fichero de código he llamado `sololineascortas.hs`
 
-    main = do
-      contents <- getContents
-      putStr (soloLineasCortas contents)
+```haskell
+main = do
+  contents <- getContents
+  putStr (soloLineasCortas contents)
 
-    soloLineasCortas :: String -> String
-    soloLineasCortas = unlines . filter (\line -> length line < 10) . lines
+soloLineasCortas :: String -> String
+soloLineasCortas = unlines . filter (\line -> length line < 10) . lines
+```
 
 Compílelo de la siguiente manera:
 
@@ -1897,23 +2041,27 @@ secuencia de operaciones.
 Dicha función se llama `interact` y recibe una función de tipo `(String -> String)`. El programa anterior 
 se podría acortar haciendo uso de `interact`:
 
-    main = interact shortLinesOnly
+```haskell
+main = interact shortLinesOnly
 
-    shortLinesOnly :: String -> String
-    shortLinesOnly = unlines . filter (\line -> length line < 10) . lines
+shortLinesOnly :: String -> String
+shortLinesOnly = unlines . filter (\line -> length line < 10) . lines
+```
 
 El siguiente programa pide una `String`, comprueba si es palíndroma o no e imprime el resultado:
 
-    main = interact informarPalindromas
+```haskell
+main = interact informarPalindromas
 
-    informarPalindromas :: String -> String
-    informarPalindromas =
-      unlines .
-      map (\xs -> if esPal xs then "palíndroma" else "no palíndroma") .
-      lines
+informarPalindromas :: String -> String
+informarPalindromas =
+  unlines .
+  map (\xs -> if esPal xs then "palíndroma" else "no palíndroma") .
+  lines
 
-    esPal :: String -> Bool
-    esPal xs = xs == reverse xs
+esPal :: String -> Bool
+esPal xs = xs == reverse xs
+```
 
 Cuando funciona por fichero, pasa las líneas a una lista, mapea una lambda que comprueba si es palíndroma e
 imprime el resultado, y luego lo pasa todo a líneas de nuevo.
@@ -1950,17 +2098,21 @@ material, ni siquiera la luz, puede escapar de ella."
 
 Y un programa que nos permita mostrar su contenido por consola:
 
-    import System.IO
+```haskell
+import System.IO
 
-    main = do
-      handle <- openFile "agujero_negro.txt" ReadMode
-      contenidos <- hGetContents handle
-      putStr contenidos
-      hClose handle
+main = do
+  handle <- openFile "agujero_negro.txt" ReadMode
+  contenidos <- hGetContents handle
+  putStr contenidos
+  hClose handle
+```
 
 Analicemos el comportamiento de la función `openFile` empezando por su cabecera:
 
-    openFile :: FilePath -> IOMode -> IO Handle
+```haskell
+openFile :: FilePath -> IOMode -> IO Handle
+```
 
 Por tanto, recibe un `FilePath` (ruta del fichero) y un `IOMode` (modo de E/S), lo abre y produce un 
 resultado de tipo `IO Handle`.
@@ -1968,11 +2120,15 @@ resultado de tipo `IO Handle`.
 `Filepath` es simplemente un sinónimo para `String` cuyo cometido es dar información sobre lo que se 
 espera recibir.
 
-    type FilePath = String
+```haskell
+type FilePath = String
+```
 
 En cambio, `IOMode` es un tipo, que funciona con los 4 constructores de valor siguientes:
 
-    data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+```haskell
+data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+```
 
 Remarcar que es simplemente una enumeración, al contrario de lo que sería `IO Mode`, que sería si 
 existiera, una acción que produce un valor de tipo Mode.
@@ -2008,7 +2164,9 @@ un fichero cuyo handle no ha sido cerrado.
 
 Su declaración de tipos es la siguiente:
 
-    withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+```
 
 Recibe una ruta a un archivo, un `IOMode`, y una función que recibe un handle y devuelve cierta acción. 
 
@@ -2022,12 +2180,14 @@ Su comportamiento es devolver una acción que:
 
 Si algo va mal, `withFile` se asegura de que el handle del archivo se cierre.
 
-    import System.IO
+```haskell
+import System.IO
 
-    main = do
-        withFile "girlfriend.txt" ReadMode (\handle -> do
-        contents <- hGetContents handle
-        putStr contents)
+main = do
+    withFile "girlfriend.txt" ReadMode (\handle -> do
+    contents <- hGetContents handle
+    putStr contents)
+```
 
 `(\handle -> ...)` es la función que recibe un handle y devuelve una acción, se suele hacer con una 
 lambda. Necesita recibir una función que devuelva una acción de E/S, en vez de sólo recibir una acción E/
@@ -2042,7 +2202,9 @@ asegura de que el handle quede cerrado.
 
 Se trata de una función definida en el módulo `Control.Exception`. Tiene la siguiente declaración de tipos:
 
-    bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+```haskell
+bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+```
 
 Su primer parámetro es una acción E/S que adquiere un recurso, como un handle de fichero. Su segundo 
 parámetro es una función que libera ese recurso. Estas función es llamada incluso si ocurre una excepción. 
@@ -2051,10 +2213,12 @@ El tercer parámetro es donde ocurre lo principal, como leer de un fichero o esc
 Como `bracket` va de adquirir un recurso, hacer algo con él, y asegurar que será liberado, implementar 
 `withFile` es realmente sencillo:
 
-    withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
-    withFile name mode f = bracket (openFile name mode)
-        (\handle -> hClose handle)
-        (\handle -> f handle)
+```haskell
+withFile :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile name mode f = bracket (openFile name mode)
+    (\handle -> hClose handle)
+    (\handle -> f handle)
+```
 
 El primer parámetro que le pasamos a `bracket` abre el archivo, y da como resultado un handle de archivo. 
 El segundo parámetro recibe ese handle y lo cierra. `bracket` asegura que esto ocurre incluso si ocurre 
@@ -2090,11 +2254,13 @@ ligará su contenido a algo como una `String`.
 
 El ejemplo anterior con `readFile`:
 
-    import System.IO
+```haskell
+import System.IO
 
-    main = do
-      contents <- readFile "girlfriend.txt"
-      putStr contents
+main = do
+  contents <- readFile "girlfriend.txt"
+  putStr contents
+```
 
 Debido a que no obtenemos un handle con el cual identificar nuestro fichero, no podemos cerrarlo 
 manualmente, así que Haskell hace eso por nosotros cuando usamos `readFile`.
@@ -2103,18 +2269,22 @@ manualmente, así que Haskell hace eso por nosotros cuando usamos `readFile`.
 
 La función `writeFile` tiene una declaración de tipos así:
 
-    writeFile :: FilePath -> String -> IO ()
+```haskell
+writeFile :: FilePath -> String -> IO ()
+```
 
 Recibe la ruta a un fichero y una cadena a escribir en dicho fichero, y devuelve una acción E/S que hará la
 escritura. Si ese fichero ya existe, será reiniciado antes de escribirse de nuevo. Este código lee un 
 fichero, pasa su contenido a mayúsculas y lo escribe en un nuevo fichero:
 
-    import System.IO
-    import Data.Char
+```haskell
+import System.IO
+import Data.Char
 
-    main = do
-      contents <- readFile "agujero_negro.txt"
-      writeFile "agujero_negromayus.txt" (map toUpper contents)
+main = do
+  contents <- readFile "agujero_negro.txt"
+  writeFile "agujero_negromayus.txt" (map toUpper contents)
+```
 
 ### appendFile ###
 
@@ -2125,33 +2295,37 @@ partir del carácter fin de fichero.
 El siguiente programa leerá la línea que escribamos en consola y la añadirá a nuestra lista de tareas en
 `tareas.txt`:
 
-    import System.IO
-    main = do
-      cosaQueHacer <- getLine
-      appendFile "tareas.txt" (cosaQueHacer ++ "\n")
+```haskell
+import System.IO
+main = do
+  cosaQueHacer <- getLine
+  appendFile "tareas.txt" (cosaQueHacer ++ "\n")
+```
 
 Como `getLine` no nos da el carácter '\\n' incluido en la cadena resultado, lo añadimos nosotros.
 
-    import System.IO
-    import System.Directory
-    import Data.List
+```haskell
+import System.IO
+import System.Directory
+import Data.List
 
-    main = do
-      contenido <- readFile "tareas.txt"
-      let cosasQueHacer = lines contenido
-        cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
-                                    [0..] cosasQueHacer
-      putStrLn "Estas son tus cosas que hacer:"
-      mapM_ putStrLn cosasNumeradas
-      putStrLn "¿Cuál quieres borrar?"
-      cadenaNumero <- getLine
-      let number = read cadenaNumero
-        nuevasCosasQueHacer = unlines $ delete (cosasQueHacer !! number) cosasQueHacer
-      (tempName, tempHandle) <- openTempFile "." "temp"
-      hPutStr tempHandle nuevasCosasQueHacer
-      hClose tempHandle
-      removeFile "tareas.txt"
-      renameFile tempName "tareas.txt"
+main = do
+  contenido <- readFile "tareas.txt"
+  let cosasQueHacer = lines contenido
+    cosasNumeradas = zipWith (\x linea -> show x ++ " - " ++ linea)
+                                [0..] cosasQueHacer
+  putStrLn "Estas son tus cosas que hacer:"
+  mapM_ putStrLn cosasNumeradas
+  putStrLn "¿Cuál quieres borrar?"
+  cadenaNumero <- getLine
+  let number = read cadenaNumero
+    nuevasCosasQueHacer = unlines $ delete (cosasQueHacer !! number) cosasQueHacer
+  (tempName, tempHandle) <- openTempFile "." "temp"
+  hPutStr tempHandle nuevasCosasQueHacer
+  hClose tempHandle
+  removeFile "tareas.txt"
+  renameFile tempName "tareas.txt"
+```
 
 1. Leemos `tareas.txt` y lo ligamos a `contenido`.
 
@@ -2201,31 +2375,33 @@ Usaremos `bracketOnError` del módulo `Control.Exception`. Es muy similar a `bra
 adquirirá un recurso y después se asegurará de hacer siempre limpieza después de usarlo, `bracketOnError` 
 hará la limpieza con sólo producirse una excepción.
 
-    import System.IO
-    import System.Directory
-    import Data.List
-    import Control.Exception
+```haskell
+import System.IO
+import System.Directory
+import Data.List
+import Control.Exception
 
-    main = do
-      contents <- readFile "tareas.txt"
-      let cosasQueHacer = lines contents
-          cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
-                                       [0..] cosasQueHacer
-      putStrLn "Estas son tus cosas que hacer:"
-      mapM_ putStrLn cosasNumeradas
-      putStrLn "¿Cuál quieres borrar?"
-      cadenaNumero <- getLine
-      let numero = read cadenaNumero
-          nuevasCosasQueHacer = unlines $ delete (cosasQueHacer !! numero) cosasQueHacer
-      bracketOnError (openTempFile "." "temp")
-        (\(tempName, tempHandle) -> do
-          hClose tempHandle
-          removeFile tempName)
-        (\(tempName, tempHandle) -> do
-          hPutStr tempHandle nuevasCosasQueHacer
-          hClose tempHandle
-          removeFile "tareas.txt"
-          renameFile tempName "tareas.txt")
+main = do
+  contents <- readFile "tareas.txt"
+  let cosasQueHacer = lines contents
+      cosasNumeradas = zipWith (\x linea -> show x ++ " - " ++ linea)
+                                   [0..] cosasQueHacer
+  putStrLn "Estas son tus cosas que hacer:"
+  mapM_ putStrLn cosasNumeradas
+  putStrLn "¿Cuál quieres borrar?"
+  cadenaNumero <- getLine
+  let numero = read cadenaNumero
+      nuevasCosasQueHacer = unlines $ delete (cosasQueHacer !! numero) cosasQueHacer
+  bracketOnError (openTempFile "." "temp")
+    (\(tempName, tempHandle) -> do
+      hClose tempHandle
+      removeFile tempName)
+    (\(tempName, tempHandle) -> do
+      hPutStr tempHandle nuevasCosasQueHacer
+      hClose tempHandle
+      removeFile "tareas.txt"
+      renameFile tempName "tareas.txt")
+```
 
 En vez de usar `openTempFile` normalmente, la usamos con `bracketOnError`. Después, escribimos lo que 
 queremos que pase si hay un error; en este caso, queremos cerrar el handle del fichero temporal y luego 
@@ -2246,7 +2422,9 @@ línea de comandos: `getArgs` y `getProgName`.
 
 Su declaración de tipos es la siguiente:
 
-    getArgs :: IO [String]
+```haskell
+getArgs :: IO [String]
+```
 
 Por tanto es una acción E/S que obtiene los argumentos con los que el programa se ejecutó y producirá una 
 lista con dichos argumentos.
@@ -2255,23 +2433,27 @@ lista con dichos argumentos.
 
 Su declaración de tipos es:
 
-    getProgName :: IO String
+```haskell
+getProgName :: IO String
+```
 
 Como vemos, devuelve una acción que obtiene el nombre del programa y produce una `String` con valor el 
 nombre del programa.
 
 Veamos con un ejemplo cómo funcionan las dos funciones anteriores:
 
-    import System.Environment
-    import Data.List
+```haskell
+import System.Environment
+import Data.List
 
-    main = do
-      args <- getArgs
-      progName <- getProgName
-      putStrLn "Los argumentos son:"
-      mapM putStrLn args
-      putStrLn "El nombre del programa es:"
-      putStrLn progName
+main = do
+  args <- getArgs
+  progName <- getProgName
+  putStrLn "Los argumentos son:"
+  mapM putStrLn args
+  putStrLn "El nombre del programa es:"
+  putStrLn progName
+```
 
 # Usando la línea de comandos para algo útil
 
@@ -2298,17 +2480,21 @@ como resultado la tupla vacía unidad `()`. Remarcar que esta función está cur
 tiene es que es muy sencillo añadirle funcionalidades al programa. Bastaría con definir una función y un 
 "comando" en la función dispatch que la ejecute.
 
-    dispatch :: String -> [String] -> IO ()
-    dispatch "add" = add
-    dispatch "view" = view
-    dispatch "remove" = remove
+```haskell
+dispatch :: String -> [String] -> IO ()
+dispatch "add" = add
+dispatch "view" = view
+dispatch "remove" = remove
+```
 
 La función `main` queda definida de manera bastante simple, es sólo obtener la cabeza de los argumentos (
 la operación a realizar) y la cola de la lista de argumentos, y con estos dos valores llamar a `dispatch`.
 
-    main = do
-      (command:argList) <- getArgs
-      dispatch command argList
+```haskell
+main = do
+  (command:argList) <- getArgs
+  dispatch command argList
+```
 
 La función `add`:
 
@@ -2316,65 +2502,61 @@ La función `add`:
             delete (cosasQueHacer !! numero) cosasQueHacer 
      por fallo de latex-->
 
-    add :: [String] -> IO ()
-    add [nombreFichero, cosaQueHacer] =
-      appendFile nombreFichero("\n" ++ cosaQueHacer ++ "\r")
+```haskell
+add :: [String] -> IO ()
+add [nombreFichero, cosaQueHacer] =
+  appendFile nombreFichero("\n" ++ cosaQueHacer ++ "\r")
+```
 
 El programa completo quedaría así:
 
-    import System.Environment
-    import System.Directory
-    import System.IO
-    import Data.List
-    import Control.Exception
+```haskell
+import System.Environment
+import System.Directory
+import System.IO
+import Data.List
+import Control.Exception
 
-    dispatch :: String -> [String] -> IO ()
-    dispatch "add" = add
-    dispatch "view" = view
-    dispatch "remove" = remove
+dispatch :: String -> [String] -> IO ()
+dispatch "add" = add
+dispatch "view" = view
+dispatch "remove" = remove
 
-    main = do
-      (command:argList) <- getArgs
-      dispatch command argList
+main = do
+  (command:argList) <- getArgs
+  dispatch command argList
 
-<!-- indentación extraña en newTodoItems = unlines $
-            delete (cosasQueHacer !! numero) cosasQueHacer 
-     por fallo de latex-->
+add :: [String] -> IO ()
+add [nombreFichero, cosaQueHacer] =
+  appendFile nombreFichero ("\n" ++ cosaQueHacer ++ "\r")
 
-    add :: [String] -> IO ()
-    add [nombreFichero, cosaQueHacer] =
-      appendFile nombreFichero ("\n" ++ cosaQueHacer ++ "\r")
+view :: [String] -> IO ()
+view [nombreFichero] = do
+  contenido <- readFile nombreFichero
+  let cosasQueHacer = lines contenido
+      cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
+                                  [0..] cosasQueHacer
+  putStr $ unlines cosasNumeradas
 
-    view :: [String] -> IO ()
-    view [nombreFichero] = do
-      contenido <- readFile nombreFichero
-      let cosasQueHacer = lines contenido
-          cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
-                                      [0..] cosasQueHacer
-      putStr $ unlines cosasNumeradas
-
-<!-- indentación extraña en newTodoItems = unlines $
-            delete (cosasQueHacer !! numero) cosasQueHacer 
-     por fallo de latex-->
-
-    remove :: [String] -> IO ()
-    remove [nombreFichero, numeroString] = do
-      contenido <- readFile nombreFichero
-      let cosasQueHacer = lines contenido
-          cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
-                                      [0..] cosasQueHacer
-      let numero = read numeroString
-          newTodoItems = unlines $
-            delete (cosasQueHacer !! numero) cosasQueHacer 
-      bracketOnError (openTempFile "." "temp")
-        (\(tempName, tempHandle) -> do
-          hClose tempHandle
-          removeFile tempName)
-        (\(tempName, tempHandle) -> do
-          hPutStr tempHandle newTodoItems
-          hClose tempHandle
-          removeFile nombreFichero
-          renameFile tempName nombreFichero)
+remove :: [String] -> IO ()
+remove [nombreFichero, numeroString] = do
+  contenido <- readFile nombreFichero
+  let cosasQueHacer = lines contenido
+      cosasNumeradas = zipWith (\n linea -> show n ++ " - " ++ linea)
+                                  [0..] cosasQueHacer
+  let numero = read numeroString
+      newTodoItems = unlines $
+  delete (cosasQueHacer !! numero) cosasQueHacer 
+  bracketOnError (openTempFile "." "temp")
+    (\(tempName, tempHandle) -> do
+      hClose tempHandle
+      removeFile tempName)
+    (\(tempName, tempHandle) -> do
+      hPutStr tempHandle newTodoItems
+      hClose tempHandle
+      removeFile nombreFichero
+      renameFile tempName nombreFichero)
+```
 
 ## Lidiar con entrada errónea
 
@@ -2388,22 +2570,26 @@ consecuencia.
 Por ejemplo, modifiquemos la función `dispatch` para que muestre un error en el caso de que no reconozca 
 el comando que se le pasa:
 
-    dispatch :: String -> [String] -> IO ()
-    dispatch "add" = add
-    dispatch "view" = view
-    dispatch "remove" = remove
-    dispatch comando = noExiste comando
+```haskell
+dispatch :: String -> [String] -> IO ()
+dispatch "add" = add
+dispatch "view" = view
+dispatch "remove" = remove
+dispatch comando = noExiste comando
 
-    noExiste :: String -> [String] -> IO ()
-    noExiste comando _ = putStrLn $ "El comando " ++
-                         comando ++ " no existe"
+noExiste :: String -> [String] -> IO ()
+noExiste comando _ = putStrLn $ "El comando " ++
+                     comando ++ " no existe"
+```
 
 También podemos añadir un "catchball" para el caso en el cual la función `add` sea llamada con una lista de
 parámetros con largo distinto de dos:
 
-    add :: [String] -> IO ()
-    add [fileName, todoItem] = appendFile fileName (todoItem ++ "\n")
-    add _ = putStrLn "The add command takes exactly two arguments"
+```haskell
+add :: [String] -> IO ()
+add [fileName, todoItem] = appendFile fileName (todoItem ++ "\n")
+add _ = putStrLn "The add command takes exactly two arguments"
+```
 
 ## Aleatoriedad ##
 
@@ -2431,7 +2617,9 @@ El módulo `System.Random` tiene todas las funciones dedicadas a generar valores
 
 ### random ###
 
-    random :: (RandomGen g, Random a) => g -> (a, g)
+```haskell
+random :: (RandomGen g, Random a) => g -> (a, g)
+```
 
 Como vemos, hay dos nuevas clases de tipos implicadas:
 
@@ -2448,7 +2636,9 @@ generador.
 
 ### mkStdGen ###
 
-    mkStdGen :: Int -> StdGen
+```haskell
+mkStdGen :: Int -> StdGen
+```
 
 Sirve para producir un generador manualmente. Recibe un `Int`, y en base a él nos devuelve un generador.
 
@@ -2485,14 +2675,16 @@ Creemos un programa que nos permita tirar 3 monedas y ver los resultados:
 **recuerda:** el `let` va indentado respecto a la función, y sus valores definidos todos deben estar en la 
 misma columna coincidiendo con la inicial.
 
-    import System.Random
+```haskell
+import System.Random
 
-    tresMonedas :: StdGen -> (Bool, Bool, Bool)
-    tresMonedas gen =
-      let (primeraMoneda, nuevoGen) = random gen
-          (segundaMoneda, nuevoGen') = random nuevoGen
-          (terceraMoneda, nuevoGen'') = random nuevoGen'
-      in  (primeraMoneda, segundaMoneda, terceraMoneda)
+tresMonedas :: StdGen -> (Bool, Bool, Bool)
+tresMonedas gen =
+  let (primeraMoneda, nuevoGen) = random gen
+      (segundaMoneda, nuevoGen') = random nuevoGen
+      (terceraMoneda, nuevoGen'') = random nuevoGen'
+  in  (primeraMoneda, segundaMoneda, terceraMoneda)
+```
 
 **Importante:** no hemos tenido que llamar `random gen :: (Bool, StdGen)` ya que hemos puesto una 
 declaración de tipos que indica que queremos tres Booleanos, y así Haskell puede inferir que queremos 
@@ -2500,7 +2692,9 @@ valores booleanos.
 
 ## Aleatorios en un rango ##
 
-    randomR :: (RandomGen g, Random a) :: (a, a) -> g -> (a, g)
+```haskell
+randomR :: (RandomGen g, Random a) :: (a, a) -> g -> (a, g)
+```
 
 Como se deduce de su declaración de tipos, le pasamos un par con valor mínimo y máximo respectivamente, y 
 nos devuelve un valor aleatorio en ese rango.
@@ -2515,10 +2709,12 @@ También está `randomRs`, que nos da una lista infinita de aleatorios en el ran
     ghci> take 10 $ randomRs ('a','z') (mkStdGen 3) :: [Char]
     "ndkxbvmomg"
 
-    import System.Random
-    main = do
-      gen <- getStdGen
-      putStrLn $ take 20 (randomRs ('a','z') gen)
+```haskell
+import System.Random
+main = do
+  gen <- getStdGen
+  putStrLn $ take 20 (randomRs ('a','z') gen)
+```
 
 Hasta ahora hemos creado nuestros números aleatorios mediante enteros fijos en nuestros programas. Esto no 
 es deseable, pues produce siempre los mismos resultados.
@@ -2528,12 +2724,18 @@ y usarlos para iniciar el generador global. Cuando ligamos `getStdGen` a un nomb
 al generador global un valor. Su declaración de tipo deja claro que devuelve una acción E/S que produce un 
 valor de tipo `StdGen`.
 
+```haskell
     getStdGen :: IO StdGen
+```
 
+Veamos cómo quedaría el programa:
+
+```haskell
     import System.Random
     main = do
       gen <- getStdGen
       putStrLn $ take 20 (randomRs ('a','z') gen)
+```
 
 Probemos el programa:
 
@@ -2549,23 +2751,27 @@ Probemos el programa:
 Pero debemos tener cuidado, si hacemos dos llamadas a `getStdGen`, la función pedirá el mismo generador 
 global dos veces, generando los mismos resultados.
 
-    import System.Random
-    main = do
-      gen <- getStdGen
-      putStrLn $ take 20 (randomRs ('a','z') gen)
-      gen2 <- getStdGen
-      putStr $ take 20 (randomRs ('a','z') gen2)
+```haskell
+import System.Random
+main = do
+  gen <- getStdGen
+  putStrLn $ take 20 (randomRs ('a','z') gen)
+  gen2 <- getStdGen
+  putStr $ take 20 (randomRs ('a','z') gen2)
+```
 
 La mejor forma de obtener dos cadenas diferentes es usar la acción `newStdGen`, la cual parte el generador
 aleatorio actual en dos generadores. Actualiza el generador aleatorio global con uno de ellos y produce el 
 otro como resultado.
 
-    import System.Random
-    main = do
-      gen <- getStdGen
-      putStrLn $ take 20 (randomRs ('a','z') gen)
-      gen' <- newStdGen
-      putStr $ take 20 (randomRs ('a','z') gen')
+```haskell
+import System.Random
+main = do
+  gen <- getStdGen
+  putStrLn $ take 20 (randomRs ('a','z') gen)
+  gen' <- newStdGen
+  putStr $ take 20 (randomRs ('a','z') gen')
+```
 
 No solo obtenemos un nuevo generador aleatorio cuando ligamos `newStdGen` a algo, sino que el el generador 
 global también se actualiza. Esto significa que si llamamos de nuevo a `getStdGen` y lo ligamos a algo, 
@@ -2577,25 +2783,27 @@ La función `reads` es muy buena para evitar errores en la entrada por teclado. 
 entrada inválida, la función devuelve una lista vacía. En caso contrario, devuelve un par que contiene: la 
 entrada correcta y el resto de la cadena introducida (por si queremos seguirla procesando).
 
-    import System.Random
-    import Control.Monad(when)
+```haskell
+import System.Random
+import Control.Monad(when)
 
-    main = do
-      gen <- getStdGen
-      preguntarNumero gen
-      
-    preguntarNumero :: StdGen -> IO ()
-    preguntarNumero gen = do
-      let (numAleatorio, nuevoGen) = randomR (1,10) gen :: (Int, StdGen)
-      putStrLn "¿En qué número del 1 al 10 estoy pensando? "
-      cadenaNumero <- getLine
-      when (not $ null cadenaNumero) $ do
-        case reads cadenaNumero :: [(Integer,String)] of
-          [(n, _)] -> if numAleatorio == fromIntegral n
-                        then putStrLn "¡Correcto!"
-                        else putStrLn $ "Lo siento, era " ++ show numAleatorio
-          _        -> putStrLn "invalid input"
-        preguntarNumero nuevoGen
+main = do
+  gen <- getStdGen
+  preguntarNumero gen
+  
+preguntarNumero :: StdGen -> IO ()
+preguntarNumero gen = do
+  let (numAleatorio, nuevoGen) = randomR (1,10) gen :: (Int, StdGen)
+  putStrLn "¿En qué número del 1 al 10 estoy pensando? "
+  cadenaNumero <- getLine
+  when (not $ null cadenaNumero) $ do
+    case reads cadenaNumero :: [(Integer,String)] of
+      [(n, _)] -> if numAleatorio == fromIntegral n
+                    then putStrLn "¡Correcto!"
+                    else putStrLn $ "Lo siento, era " ++ show numAleatorio
+      _        -> putStrLn "invalid input"
+    preguntarNumero nuevoGen
+```
 
 ## Bytestrings ##
 
@@ -2621,7 +2829,9 @@ Los funtores son cosas que pueden ser mapeadas, como listas, `Maybes` y árboles
 como la clase de tipos `Functor`, la cual sólo tiene un método de clase de tipos: `fmap`. `fmap` tiene una 
 declaración de tipos así:
 
-    fmap :: (a -> b) -> f a -> f b
+```haskell
+fmap :: (a -> b) -> f a -> f b
+```
 
 La cual se puede enunciar en el lenguaje natural de la siguiente manera: "Dame una función de a hasta b y 
 una caja con un `a` (o varios) y te daré una caja con un `b` (o varios)". Es decir, aplica la función dada 
@@ -2652,8 +2862,10 @@ Pasamos a infija:
 
 Como vemos, ha quedado una función casi igual que la composición, pero con otras letras.
 
-    instance Functor ((->) r) where
-        fmap = (.)
+```haskell
+instance Functor ((->) r) where
+    fmap = (.)
+```
 
     ghci> :t fmap (*3) (+100)
     fmap (*3) (+100) :: (Num a) => a -> a
@@ -2680,7 +2892,9 @@ Por tanto, la aplicación parcial de funciones devuelve una función que toma lo
 
 Si le aplicamos esto a `fmap` obtenemos:
 
-    fmap :: (a -> b) -> (f a -> f b)
+```haskell
+fmap :: (a -> b) -> (f a -> f b)
+```
 
 Por tanto es una función que recibe una función de `a` hasta `b` y devuelve otra función que recibiendo un 
 valor de funtor sobre a devuelve un valor de funtor sobre `b`.
@@ -2742,9 +2956,11 @@ valor original del funtor.
 
 Veamos la implementación de `fmap` para `Maybe`:
 
-    instance Functor Maybe where
-        fmap f (Just x) = Just (f x)
-        fmap f Nothing = Nothing
+```haskell
+instance Functor Maybe where
+    fmap f (Just x) = Just (f x)
+    fmap f Nothing = Nothing
+```
 
 Por tanto, se puede deducir que `fmap id` va a devolver:
 
@@ -2837,9 +3053,11 @@ función que esté dentro de un valor de funtor sobre otro valor de funtor con l
 Lo primero que tenemos que tener claro es qué es `Applicative`; se trata de una clase de tipos para 
 funtores.
 
-    class (Functor f) => Applicative f where
-      pure :: a -> f a
-      (<*>) :: f (a -> b) -> f a -> f b
+```haskell
+class (Functor f) => Applicative f where
+  pure :: a -> f a
+  (<*>) :: f (a -> b) -> f a -> f b
+```
 
 La primera línea es la definición de la clase `Applicative`, y también introduce una restricción de clase. 
 La restricción dice que si queremos hacer un constructor de tipo parte de la clase de tipos `Applicative` 
@@ -2872,10 +3090,12 @@ funtor y luego la mapea sobre el segundo.
 
 ## Implementación de instancia Applicative para Maybe ##
 
-    instance Applicative Maybe where
-      pure = Just
-      Nothing <*> _ = Nothing
-      (Just f) <*> something = fmap f something
+```haskell
+instance Applicative Maybe where
+  pure = Just
+  Nothing <*> _ = Nothing
+  (Just f) <*> something = fmap f something
+```haskell
 
 Vemos que `f` juega el rol del funtor aplicativo, y debe recibir un tipo concreto como parámetro, así que 
 escribimos `instance Applicative Maybe where` en vez de `instance Applicative (Maybe a) where`.
@@ -2944,8 +3164,10 @@ se generaliza de modo que `pure f <*> x <*> y <*>...` es lo mismo que `fmap f x 
 Por esto, el módulo `Control.Applicative` exporta una función llamada <$>, que es simplemente `fmap` como 
 operador infijo. Está definida así:
 
-    (<$>) :: (Functor f) => (a -> b) -> f a -> f b
-    f <$> x = fmap f x
+```haskell
+(<$>) :: (Functor f) => (a -> b) -> f a -> f b
+f <$> x = fmap f x
+```haskell
 
 Usando <$> es como realmente se ve la potencia del estilo aplicativo ya que ahora:
 
@@ -2981,9 +3203,11 @@ Podrías pensar que el estilo aplicativo sólo funciona con `Maybes`. Mal hecho.
 Las listas (realmente el constructor de tipo para listas, `[]`) son funtores aplicativos. Veámos cómo `[]` 
 es instancia de `Applicative`.
 
-    instance Applicative [] where
-    pure x = [x]
-    fs <*> xs = [f x | f <- fs, x <- xs]
+```haskell
+instance Applicative [] where
+pure x = [x]
+fs <*> xs = [f x | f <- fs, x <- xs]
+```
 
 **Recuerda:** `pure` recibe un valor y lo pone en un contexto por defecto. En otras palabras, lo pone en 
 el contexto mínimo que aún produce ese valor.
@@ -3060,12 +3284,14 @@ estamos mapeando `f`.
 
 ## IO también es un funtor aplicativo
 
-    instance Applicative IO where
-      pure = return
-        a <*> b = do
-        f <- a
-        x <- b
-        return (f x)
+```haskell
+instance Applicative IO where
+  pure = return
+    a <*> b = do
+    f <- a
+    x <- b
+    return (f x)
+```
 
 Recordemos que `pure` pone el valor que recibe en el contexto mínimo que sigue produciendo el mismo valor 
 como resultado. Por tanto, tiene sentido que `pure` sea `return`.
@@ -3089,18 +3315,22 @@ Con `IO`, se sigue extrayendo, pero también introducimos la noción se *secuenc
 "pegando" dos acciones de E/S. Necesitamos extraer la función de la primera acción de E/S, pero para 
 extraer un resultado de una acción de E/S, la acción de E/S debe ser llevada a cabo:
 
-    miAccion :: IO String
-    miAccion = do
-      a <- getLine
-      b <- getLine
-      return $ a ++ b
+```haskell
+miAccion :: IO String
+miAccion = do
+  a <- getLine
+  b <- getLine
+  return $ a ++ b
+```
 
 Esta acción de E/S pedirá escribir dos líneas al usuario y producirá un resultado con las dos líneas 
 concatenadas. Lo hemos conseguido mediante "pegar" dos acciones de E/S en otra que produce el resultado `a 
 ++ b`. Se puede hacer mediante el estilo aplicativo así:
 
-    miAccion :: IO String
-    miAccion = (++) <$> getLine <*> getLine
+```haskell
+miAccion :: IO String
+miAccion = (++) <$> getLine <*> getLine
+```
 
 Recordemos que el tipo de `getLine` es `getLine :: IO String`. Cuando usamos `<*>` entre dos valores 
 aplicativos, el resultado es un valor aplicativo, luego todo tiene sentido.
@@ -3115,18 +3345,21 @@ Veamos qué tipo produce nuestra nueva acción:
     Prelude Control.Applicative> :t (++) <$> getLine <*> getLine
     (++) <$> getLine <*> getLine :: IO [Char]
 
-
-    main = do
-      a <- (++) <$> getLine <*> getLine
-      putStrLn $ "La concatenación de las dos líneas es: " ++ a
+```haskell
+main = do
+  a <- (++) <$> getLine <*> getLine
+  putStrLn $ "La concatenación de las dos líneas es: " ++ a
+```
 
 ## Funciones como aplicativos:
 
 Otra instancia de `Applicative` es `(->) r`, o funciones.
 
-    instance Applicative ((->) r) where
-      pure x = (\_ -> x)
-      f <*> g = \x -> f x (g x)
+```haskell
+instance Applicative ((->) r) where
+  pure x = (\_ -> x)
+  f <*> g = \x -> f x (g x)
+```
 
 **Recuerda:** a consecuencia de la currificación, la aplicación de funciones se asocia a izquierdas.
 
@@ -3182,9 +3415,11 @@ Para conseguir esto, en el módulo `Control.Applicative` existe la instancia `Zi
 porque un tipo no puede tener dos instancias de la misma clase de tipos. `ZipList` tiene un constructor 
 con un único campo (una lista):
 
-    instance Applicative ZipList where
-      pure x = ZipList (repeat x)
-      ZipList fs <*> ZipList xs = ZipList (zipWith (\f x -> f x) fs xs)
+```haskell
+instance Applicative ZipList where
+  pure x = ZipList (repeat x)
+  ZipList fs <*> ZipList xs = ZipList (zipWith (\f x -> f x) fs xs)
+```
 
 Por tanto, `<*>` aplica la primera función al primer valor, la segunda función al segundo valor, etc. Esto 
 se consigue con `zipWith (\f x -> f x) fs xs`. Debido al comportamiento de `zipWith`, la lista resultado 
@@ -3246,8 +3481,10 @@ La primera (vista anteriormente) es la más importante, aunque las otras tienen 
 
 Se define así:
 
-    liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
-    liftA2 f a b = f <$> a <*> b
+```haskell
+liftA2 :: (Applicative f) => (a -> b -> c) -> f a -> f b -> f c
+liftA2 f a b = f <$> a <*> b
+```
 
 Simplemente aplica una función entre dos aplicativos, ocultando el estilo aplicativo.
 
@@ -3281,9 +3518,11 @@ esos valores aplicativos dentro de la misma.
 Implementemos una función que reciba una lista de valores aplicativos y devuelva un valor aplicativo que 
 tenga una lista como su valor resultado:
 
-    sequenceA :: (Applicative f) => [f a] -> f [a]
-    sequenceA [] = pure []
-    sequenceA (x:xs) = (:) <$> x <*> sequenceA xs
+```haskell
+sequenceA :: (Applicative f) => [f a] -> f [a]
+sequenceA [] = pure []
+sequenceA (x:xs) = (:) <$> x <*> sequenceA xs
+```
 
 Primero, miremos el tipo; transformará una lista de valores aplicativos en un valor aplicativo con una 
 lista. Si queremos poner una lista vacía en un valor aplicativo con una lista de resultados, simplemente 
@@ -3310,8 +3549,10 @@ resultado por el camino pueden ser implementadas con un fold:
 
 Podemos implementar `sequenceA` con un fold:
 
-    sequenceA :: (Applicative f) => [f a] -> f [a]
-    sequenceA = foldr (liftA2 (:)) (pure [])
+```haskell
+sequenceA :: (Applicative f) => [f a] -> f [a]
+sequenceA = foldr (liftA2 (:)) (pure [])
+```
 
 Veamos algunos ejemplos:
 
@@ -3467,8 +3708,10 @@ lenguaje de programación para soportar mónadas es la capacidad de usar lambdas
 un requisito **necesario, pero no suficiente**.
 
 * `Maybe :: * -> *`
+
 * `Maybe a :: *`    (ahora ya `Maybe a` no puede ser aplicado a ningún tipo más).
 * `Either :: * -> * -> *`
+
 * `Either String :: * -> *`
 
 El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parámetro 
@@ -3478,8 +3721,10 @@ Lo mismo pasa con la clase `Functor`.
 
 Los métodos de `Monad` son:
 
-    (>>=) :: m a -> (a -> m b) -> m b
-    return :: a -> m a
+```haskell
+(>>=) :: m a -> (a -> m b) -> m b
+return :: a -> m a
+```
 
 donde `a`, `b` son cualquier cosa y `m` es la mónada que estamos instanciando, el tipo que 
 estamos instanciando en la clase de tipos `Monad`.
@@ -3488,19 +3733,23 @@ Cuando escribes la instancia, como cuando escribes muchas funciones en Haskell, 
 forzar a escribir lo único que tiene sentido escribir. Definamos un tipo que, aunque en 
 apariencia inútil, tiene sus usos prácticos, el tipo identidad:
 
-    data Id a = Id a
+```haskell
+data Id a = Id a
+```
 
 En la práctica, dado un tipo `a`, los elementos que puedes construir en `a` y los que puedes 
 construir en `Id a` son prácticamente los mismos, por eso se llama identidad.
 
 `Id` puede ser instanciado en la clase `Functor`.
 
-**Recuerda:** sólo hay un método en la clase Functor
-`fmap :: (a -> b) -> f a -> f b`
-donde `f` es el tipo que estamos instanciando, el resto es polimórfico.
+**Recuerda:** sólo hay un método en la clase `Functor`.
 
-    class Functor f where
-      fmap :: (a -> b) -> f a -> f b
+`fmap :: (a -> b) -> f a -> f b` donde `f` es el tipo que estamos instanciando, el resto es polimórfico.
+
+```haskell
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b
+```
 
 Como se ve, en la definición aparece `Functor f`
 es en ese momento donde se especifica: en los métodos que voy a describir abajo, `f` es el tipo de cada instancia de esta clase, entonces, para hacer una instancia la clase, hay que escribir la definición de cada método, sustituyendo el parámetro `f` (en este caso) con el que estamos instanciando.
@@ -3537,16 +3786,20 @@ Dado que:
 
 Ahora que `Id` forma parte de la clase `Functor`, hagamos a este tipo instancia de la clase de tipos `Monad`:
 
-    class Monad m where
-      (>>=) :: m a -> (a -> m b) -> m b
-      return :: a -> m a
+```haskell
+class Monad m where
+  (>>=) :: m a -> (a -> m b) -> m b
+  return :: a -> m a
+```
 
 Para ello, debemos hacer lo mismo que hicimos con `Functor`, pero en este caso debemos definir dos funciones, `(>>=)`, que se conoce como bind, y `return`, que, recordemos, tiene muy poco que ver con los returns de otros lenguajes como C.
 
 Empecemos por lo fácil, definamos `return`.
 
-    return :: a -> Id a
-    return = Id
+```haskell
+return :: a -> Id a
+return = Id
+```
 
 Ya que antes vimos que `Id :: a -> Id a`.
 
@@ -3560,8 +3813,10 @@ Su tipo concreto para el tipo `Id a` es:
 
 Luego la propia definición nos programa a nosotros y nos dice qué tenemos que programar; como el primer argumento es de tipo `Id a`, tenemos que hacer reconocimiento de patrones (pattern matching):
 
-    (>>=) :: Id a -> (a -> Id b) -> Id b
-    (Id a) >>= f = f a
+```haskell
+(>>=) :: Id a -> (a -> Id b) -> Id b
+(Id a) >>= f = f a
+```
 
 Todo encaja. Mediante pattern matching hemos "sacado" el argumento tipo `a` de `Id a`, hemos aplicado `f` a dicho argumento y se procude al final un valor de tipo `Id b`, ¡luego hemos definido nuestra primera mónada!
 
@@ -3569,10 +3824,12 @@ Todo encaja. Mediante pattern matching hemos "sacado" el argumento tipo `a` de `
 
 Por defecto se define como
 
+```haskell
     (>>) :: m a -> m b -> m b
     m >> k = m >>= \_ -> k
+```haskell
 
-Así que es sólo para ahorrate la lambda que ignora su argumento.
+Así que es sólo para ahorrarse la lambda que ignora su argumento.
 
 Digamos que `m :: m a`, para alguna instancia de `Monad m` la función de la derecha es constantemente `k` así que el valor en `m` realmente es ignorado 
 y devuelve `k`.
@@ -3581,7 +3838,9 @@ Hace un bind, pero con una función constante que no depende de la `a`.
 
 `(>>)` **no** es simplemente ignorar el primer argumento. Lo hacemos por definición:
 
-    m >> k = m >>= \_ -> k
+```haskell
+m >> k = m >>= \_ -> k
+```
 
 ¿Qué resultado dará la siguiente expresión?
 
@@ -3668,20 +3927,26 @@ Como vemos, los valores `e` y `n`, es decir, los resultados, con cosas de tipo `
 
 Como ejemplo, se muestran tres funciones equivalentes pero escritas en distinta notación:
 
-    seqnCases :: Maybe a -> Maybe b -> Maybe (a,b)
-    seqnCases a b = case a of
-                      Nothing -> Nothing
-                      Just x -> case b of
-                                  Nothing -> Nothing
-                                  Just y -> Just (x,y)
+```haskell
+seqnCases :: Maybe a -> Maybe b -> Maybe (a,b)
+seqnCases a b = case a of
+                  Nothing -> Nothing
+                  Just x -> case b of
+                              Nothing -> Nothing
+                              Just y -> Just (x,y)
+```
 
-    seqnDo :: Maybe a -> Maybe b -> Maybe (a,b)
-    seqnDo a b = do x <- a
-                    y <- b
-                    Just (x,y)
+```haskell
+seqnDo :: Maybe a -> Maybe b -> Maybe (a,b)
+seqnDo a b = do x <- a
+                y <- b
+                Just (x,y)
+```
 
-    seqnBind :: Maybe a -> Maybe b -> Maybe (a,b)
-    seqnBind a b = a >>= \x -> b >>= \y -> Just (x,y)
+```haskell
+seqnBind :: Maybe a -> Maybe b -> Maybe (a,b)
+seqnBind a b = a >>= \x -> b >>= \y -> Just (x,y)
+```
 
 ## La mónada Maybe
 
@@ -3689,14 +3954,18 @@ Como ejemplo, se muestran tres funciones equivalentes pero escritas en distinta 
 
 La definicion del tipo `Maybe` es:
 
-    data Maybe a = Just a | Nothing
+```haskell
+data Maybe a = Just a | Nothing
+```
 
 Vemos que es un tipo suma, pues puede tener valores de diferentes "formas".
 
 Tiene dos constructores de datos:
 
-    Just :: a -> Maybe a
-    Nothing :: Maybe a
+```haskell
+Just :: a -> Maybe a
+Nothing :: Maybe a
+```haskell
 
 Algo interesante sobre `Nothing` es que habita muchos tipos:
 
@@ -3708,9 +3977,11 @@ Y muchos más. La clave de esto es que **no** todos los `Nothing` son iguales.
 
 Vamos a hacer `Maybe` instancia de `Functor`, en este caso, `fmap :: (a -> b) -> Maybe a -> Maybe b`:
 
-    fmap :: (a -> b) -> Maybe a -> Maybe b
-    fmap _ Nothing  = Nothing
-    fmap f (Just x) = Just (f x)
+```haskell
+fmap :: (a -> b) -> Maybe a -> Maybe b
+fmap _ Nothing  = Nothing
+fmap f (Just x) = Just (f x)
+```
 
 Como tenemos dos constructores, nos han hecho falta dos ecuaciones (o una ecuación si hubiéramos usado `case`, pero bueno, dos pattern matchings en fin y al cabo).
 
@@ -3723,18 +3994,24 @@ Así que `fmap` en el tipo `Maybe`, aplica la función `f` a lo que tenga dentro
 Veamos si podemos hacer la instancia de `Monad`, empezamos con `return`, nuestras herramientas son:
 
 * Just :: a -> Maybe a
+
 * Nothing :: Maybe a
+
 * El pattern matching
 
 <!--Fin lista-->
 La declaración de tipos más general de `return` es:
 
-    return :: a -> m a
+```haskell
+return :: a -> m a
+```
 
 Por tanto podríamos definir:
 
-    return :: a -> Maybe a
-    return = Just
+```haskell
+return :: a -> Maybe a
+return = Just
+```
 
 ¡Parece que sale sólo! Como hemos dicho, los tipos de las funciones nos obligan a escribir casi siempre lo que se *debe* escribir.
 
@@ -3744,13 +4021,17 @@ Ahora, implementemos `(>>=)`:
 
 Recuerda, el tipo más general de `(>>=)` es:
 
-    (>>=) :: M a -> (a -> M b) -> M b
+```haskell
+(>>=) :: M a -> (a -> M b) -> M b
+```
 
 Por tanto, si pasamos eso a nuestra futura mónada `Maybe`:
 
-    (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
-    Nothing (>>=) _  = Nothing 
-    (Just x) (>>=) f = f x
+```haskell
+(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+Nothing (>>=) _  = Nothing 
+(Just x) (>>=) f = f x
+```
 
 Por tanto, nuestra mónada que era futura ahora es presente, !Ya tenemos otra mónada!
 
@@ -3758,19 +4039,25 @@ Esta mónada es algo más interesante, porque si miramos la definición del bind
 
 Sabemos que, en general:
 
-    (>>) :: M a -> M b -> M b
-    m >> k = m >>= \_ -> k
+```haskell
+(>>) :: M a -> M b -> M b
+m >> k = m >>= \_ -> k
+```
 
 Pero, ¿cómo funciona `(>>)` en el caso del tipo `Maybe`? Sustituyamos ese `(>>)` por el de la instancia `Maybe` para averiguarlo.
 
-    (>>) :: Maybe a -> Maybe b -> Maybe b
-    m >> k = m >>= \_ -> k
+```haskell
+(>>) :: Maybe a -> Maybe b -> Maybe b
+m >> k = m >>= \_ -> k
+```
 
 Vayamos un poco más allá y veamos qué pasa si sustituímos el operador bind:
 
-    (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
-    Nothing (>>=) _  = Nothing 
-    (Just x) (>>=) f = f x
+```haskell
+(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+Nothing (>>=) _  = Nothing 
+(Just x) (>>=) f = f x
+```
 
 Luego, de `m >> k = m >>= \_ -> k` nos quedamos con:
 
@@ -3816,35 +4103,45 @@ Un tipo más realista para `div` sería:
 
 Lo malo de usar un tipo de retorno `Maybe Int` es que tenemos que usar pattern matching para ver qué hacemos en cada caso:
 
-    gooddiv :: Int -> Int -> Maybe Int
-    gooddiv _ 0 = Nothing
-    gooddiv n m = Just (div n m)
+```haskell
+gooddiv :: Int -> Int -> Maybe Int
+gooddiv _ 0 = Nothing
+gooddiv n m = Just (div n m)
+```
 
 Ahora queremos hacer varias divisiones, y devolver la suma de los resultados si ambas divisiones han tenido éxito. Con el antiguo `div` haríamos:
 
-    myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+```haskell
+myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+```
 
 Lo malo de esto es que puede dar excepciones si `b1` y/o `b2` valen 0.
 
 Así que vamos a usar `gooddiv`. El problema es que no puedo usar `(+)` con el tipo Maybe de por medio, la siguiente definición daría error de tipos:
 
-    myop a1 b1 a2 b2 = gooddiv a1 b1 + gooddiv a2 b2
+```haskell
+myop a1 b1 a2 b2 = gooddiv a1 b1 + gooddiv a2 b2
+```
 
 Para arreglar esto, deberíamos hacer pattern matching en los resultados:
 
-    myop a1 b1 a2 b2 = case gooddiv a1 b1 of
-      Nothing -> Nothing
-      Just c1 -> case gooddiv a2 b2 of
-        Nothing -> Nothing
-        Just c2 -> Just (c1 + c2)
+```haskell
+myop a1 b1 a2 b2 = case gooddiv a1 b1 of
+  Nothing -> Nothing
+  Just c1 -> case gooddiv a2 b2 of
+    Nothing -> Nothing
+    Just c2 -> Just (c1 + c2)
+```
 
 Quizá este esquema podría servir para funciones sencillas como `myop` (a pesar de ser un poco tedioso de programar). Sin embargo, esta sección del tutorial trata de mónadas, lo cual nos hace pensar que quizás nos puedan ayudar.
 
 Claro, ¡`Maybe` es instancia de `Monad`! ¿Qué pasa si hago esto?
 
-    do c1 <- gooddiv a1 b1
-       c2 <- gooddiv a2 b2
-       return (c1 + c2)
+```haskell
+do c1 <- gooddiv a1 b1
+   c2 <- gooddiv a2 b2
+   return (c1 + c2)
+```haskell
 
 Recordemos las reglas de transformación de expresiones `do`:
 
@@ -3860,17 +4157,21 @@ en `m >> n`.
 
 Hagamos uso de las reglas de traducción para pasar esto a notación usando bind:
 
-    gooddiv a1 b1 >>= (\c1 ->
-    gooddiv a2 b2 >>= (\c2 ->
-    return (c1 + c2)))
+```haskell
+gooddiv a1 b1 >>= (\c1 ->
+gooddiv a2 b2 >>= (\c2 ->
+return (c1 + c2)))
+```
 
 Esto se puede leer como: aplica `gooddiv` a `a1 b1` y llama a su valor resultado `c1`, luego aplica `gooddiv` a `a2 b2` y llama a su valor resultado `c2`, y por último combina los dos resultados usando la función `(+)`.
 
 Recordemos la definición de bind para `Maybe`:
 
-    (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
-    Nothing (>>=) _  = Nothing 
-    (Just x) (>>=) f = f x
+```haskell
+(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+Nothing (>>=) _  = Nothing 
+(Just x) (>>=) f = f x
+```
 
 Ahora usando esta información vamos a "traducir" lo siguiente:
 
@@ -3922,19 +4223,27 @@ Lo mismo, pero expresado mediante notación `do`:
 
 En el módulo `Control.Monad` se encuentra la función `liftM2`, que tiene tipo:
 
-    liftM2 :: Monad m => (a1 -> a2 -> r) -> m a1 -> m a2 -> m r
+```haskell
+liftM2 :: Monad m => (a1 -> a2 -> r) -> m a1 -> m a2 -> m r
+```
 
 Esto se parece bastante a `fmap` pero con dos argumentos. Ahora recordemos la primera definición que hicimos de `myop`:
 
-    myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+```haskell
+myop a1 b1 a2 b2 = div a1 b1 + div a2 b2
+```
 
 Si hacemos el operador prefijo:
 
-    myop a1 b1 a2 b2 = (+) (div a1 b1) (div a2 b2)
+```haskell
+myop a1 b1 a2 b2 = (+) (div a1 b1) (div a2 b2)
+```
 
 Por tanto podemos usar `liftM2`:
 
-    mygoodop a1 b1 a2 b2 = liftM2 (+) (gooddiv a1 b1) (gooddiv a2 b2)
+```haskell
+mygoodop a1 b1 a2 b2 = liftM2 (+) (gooddiv a1 b1) (gooddiv a2 b2)
+```
 
 Por tanto hemos escrito una función que maneja perfectamente la posibilidad de fallos que implican las divisiones por cero ¡en una sola línea!
 
@@ -3943,40 +4252,51 @@ El operador `(>>=)` evita el problema de las tuplas anidadas de resultados porqu
 Es importante también que `(>>=)` es (en el caso de `Maybe`) simplemente la función `aplicar` con 
 el orden de los argumentos invertido.
 
-    aplicar :: (a -> Maybe b) -> Maybe a -> Maybe b
-    aplicar _ Nothing  = Nothing
-    aplicar f (Just x) = f x
+```haskell
+aplicar :: (a -> Maybe b) -> Maybe a -> Maybe b
+aplicar _ Nothing  = Nothing
+aplicar f (Just x) = f x
+```
 
 ## La función mapM
 
 `mapM` mapea una función monádica sobre una lista de valores, secuencia las acciones resultantes a través de `(>>=)`, y luego devuelve una mónada que contiene la lista de los resultados internos.
 
-    mapM             :: Monad m => (a -> m b) -> [a] -> m [b]
-    mapM f as        =  sequence (map f as)
+```haskell
+mapM             :: Monad m => (a -> m b) -> [a] -> m [b]
+mapM f as        =  sequence (map f as)
+```
 
 Donde `sequence`:
 
+```haskell
     sequence       :: Monad m => [m a] -> m [a] 
     sequence       =  foldr mcons (return [])
                         where mcons p q = p >>= \x -> q >>= \y -> return (x:y)
+```
 
 ## La función mapM_
 
+```haskell
     mapM_            :: Monad m => (a -> m b) -> [a] -> m ()
     mapM_ f as       =  sequence_ (map f as)
+```
 
 donde `sequence_`:
 
+```haskell
     sequence_      :: Monad m => [m a] -> m () 
     sequence_      =  foldr (>>) (return ())
+```
 
 ## La función (=<<)
 
 Es en realidad `(>>=)` pero con el orden de los parámetros invertido:
 
+```haskell
     (=<<)            :: Monad m => (a -> m b) -> m a -> m b
     f =<< x          =  x >>= f
-
+```
 
 ## La mónada lista
 
@@ -3985,20 +4305,24 @@ continuación te saldrá de manera natural si programas algo relativamente
 complejo, como un NFA. De hecho las mónadas no son más que la generalización 
 de un tipo dado de computación.
 
-    instance Monad [] where
-      return :: a -> [a]
-      return x = [x]
+```haskell
+instance Monad [] where
+  return :: a -> [a]
+  return x = [x]
 
-      (>>=)  :: [a] -> (a -> [b]) -> [b]
-      xs >>= f = concat (map f xs)
+  (>>=)  :: [a] -> (a -> [b]) -> [b]
+  xs >>= f = concat (map f xs)
+```
 
 Ahora presentaré tres maneras de definir una función `pairs` que produce todas las tuplas de dos 
 elementos posibles dadas dos listas:
 
-    pairs :: [a] -> [b] -> [(a,b)]
-    pairs xs ys = do x <- xs
-                     y <- ys
-                     return (x, y)
+```haskell
+pairs :: [a] -> [b] -> [(a,b)]
+pairs xs ys = do x <- xs
+                 y <- ys
+                 return (x, y)
+```
 
 Veamos si es cierto eso, desconfía siempre de la gente, ¡sobre todo de mí!
 
@@ -4007,10 +4331,12 @@ Veamos si es cierto eso, desconfía siempre de la gente, ¡sobre todo de mí!
 
 Ahora traduzcamos, mediante nuestras reglas de oro, la notación `do`:
 
-    pairs' :: [a] -> [b] -> [(a,b)]
-    pairs' xs ys = xs >>= 
-                     (\x -> ys >>=
-                       (\y -> return (x,y)))
+```haskell
+pairs' :: [a] -> [b] -> [(a,b)]
+pairs' xs ys = xs >>= 
+                 (\x -> ys >>=
+                   (\y -> return (x,y)))
+```
 
     *Main> pairs' [1,2] [3,4]
     [(1,3),(1,4),(2,3),(2,4)]
@@ -4026,7 +4352,9 @@ Ahora expandiremos la definición de `pairs` para ver el despliegue de `(>>=)` p
 
 Esto se parece mucho a una comprensión de listas, por lo cual podríamos sospechar que en realidad la comprensión de listas es azúcar sintáctico para el uso de la mónada lista:
 
-    pairs'' xs ys = [(x,y) | x <- xs, y <- ys]
+```haskell
+pairs'' xs ys = [(x,y) | x <- xs, y <- ys]
+```
 
 ¿Miente el creador del tutorial? En la mayoría de los casos, la respuesta es sí, pero esta es una de las excepciones que confirman la regla.
 
@@ -4039,42 +4367,57 @@ Esta sección necesita mejoras:
 
 Veamos ahora una mónada bastante interesante, que permite ir guardando la información histórica que queramos.
 
-    data Writer m a = Writer m a
+```haskell
+data Writer m a = Writer m a
 
-    class ForWriter t where
-      something :: t
-      combine :: t -> t -> t
+class ForWriter t where
+  something :: t
+  combine :: t -> t -> t
+```
 
 Hagamos las instancias por orden, para cumplir los requisitos de GHC 7.10, debemos hacer todas nuestras mónadas instancia de `Applicative`, pero para que algo sea instancia de `Applicative` primero debe ser instancia de `Functor`:
 
 **Recuerda:** `fmap :: Functor f => (a -> b) -> f a -> f b`.
 
-    instance Functor (Writer m) where
-      
-      fmap f (Writer m a) = Writer m (f a)
- 
-**Recuerda:** `pure :: a -> f a`  
-`(<*>) :: f (a -> b) -> f a -> f b`  
-`(<*>) :: Writer m (a -> b) -> Writer m a -> Writer m b`  
+```haskell
+instance Functor (Writer m) where
+  
+  fmap f (Writer m a) = Writer m (f a)
+```
 
-    instance ForWriter m => Applicative (Writer m) where
-      
-      pure a = Writer something a
+**Recuerda:**
 
-      Writer m f <*> Writer m' a = Writer (combine m m') (f a)
+```haskell
+pure :: a -> f a  
+
+(<*>) :: f (a -> b) -> f a -> f b  
+
+(<*>) :: Writer m (a -> b) -> Writer m a -> Writer m b  
+
+instance ForWriter m => Applicative (Writer m) where
+  
+  pure a = Writer something a
+
+  Writer m f <*> Writer m' a = Writer (combine m m') (f a)
+```
 
 Finalmente, hagamos una mónada que compile:
 
-**Recuerda:** `return :: a -> m a`
-`(>>=) :: m a -> (a -> m b) -> m b`
+**Recuerda:**
 
-    instance ForWriter m => Monad (Writer m) where
-      
-      return a = Writer something a
+```haskell
+return :: a -> m a
 
-      Writer m a >>= f =
-        let Writer m' b = f a -- esto se puede hacer porque el tipo sólo tiene un constructor
-          in Writer (combine m m') b
+(>>=) :: m a -> (a -> m b) -> m b
+
+instance ForWriter m => Monad (Writer m) where
+  
+  return a = Writer something a
+
+  Writer m a >>= f =
+    let Writer m' b = f a -- esto se puede hacer porque el tipo sólo tiene un constructor
+      in Writer (combine m m') b
+```
 
 # Asociatividad de los elementos de Haskell
 
@@ -4395,8 +4738,10 @@ Normalmente se hace `read "846195673" :: Int` ó `read "5232.488647" :: Float` p
 otro, si usamos `map` es mejor usar una función con cabecera explícita, que le da la información 
 suficiente al compilador acerca de qué tipo queremos:
 
-    leerInts ::[String] -> [Int]
-    leerInts = map read
+```haskell
+leerInts ::[String] -> [Int]
+leerInts = map read
+```
 
 Haskell es muy fiel a las matemáticas reales, teóricas. El reconocimiento de patrones es un "binding". 
 Una comprensión de listas equivale a un "para todo x" en matemáticas.
@@ -4407,8 +4752,10 @@ Una comprensión de listas equivale a un "para todo x" en matemáticas.
 
 ## Estilo de funciones con argumento declarado "point-wise": ##
 
-    sum :: (Num a) => [a] -> a
-    sum xs = foldl (+) 0 xs
+```haskell
+sum :: (Num a) => [a] -> a
+sum xs = foldl (+) 0 xs
+```
 
 El `xs` está lo más a la derecha posible a los dos lados del signo igual. A causa de la currificación,
 podemos omitir `xs` en ambos lados, ya que `fold (+) 0` crea una función que recibe una lista. De este 
@@ -4416,8 +4763,10 @@ modo, estamos creando una función de orden superior.
 
 ## Estilo de funciones sin argumento declarado "point-free": ##
 
-    sum' :: (Num a) => [a] -> a
-    sum' = foldl (+) 0
+```haskell
+sum' :: (Num a) => [a] -> a
+sum' = foldl (+) 0
+```
 
 # Sistema de tipos
 
@@ -4438,10 +4787,6 @@ Capítulo 4:
 
 Los sinónimos de tipo (y por tanto, también los identificadores de tipo) comienzan con mayúsculas en 
 Haskell.
-
-Capítulo 6:
-
-El constructor (:) es asociativo a la derecha
 
 Capítulo 7:
 
