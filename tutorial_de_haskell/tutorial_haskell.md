@@ -19,7 +19,7 @@
 \
 \
 \
-<!--![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_negativo.png)\ ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_normal.png) -->
+![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_negativo.png)\ ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_haskell_normal.png)
 \
 \
 \
@@ -40,9 +40,9 @@
 \   
 
 Reacción típica de un programador al ver su primer fragmento de código Haskell:
-<!--
+
 ![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/haydiomio.png)
--->
+
 # Introducción
 
 Todo el código de este tutorial ha sido testeado con GHC 7.8.4 y 7.10.1. De todas formas, si he 
@@ -284,7 +284,9 @@ módulos deben empezar siempre con mayúscula.
 
 Las declaraciones de tipos suelen ser así:
 
-    nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipo1N
+```haskell
+nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipoN
+```
 
 Donde la función recibe un número N parámetros. De momento, vamos a pensar que el último parámetro es el tipo de retorno, por tanto nuestra función `ochenta` no recibe nada (no hay ninguna flecha) sino que devuelve un valor de tipo `Int`.Se puede leer como `ochenta` de tipo `Int`.
 
@@ -410,7 +412,9 @@ dime x = "No está entre 1 y 5"
 
 La función `dime` hace reconocimiento de patrones con su primer argumento, de tipo `Int`, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea `dime x = "No está entre 1 y 5"` al principio, nuestra función siempre devolvería `"No está entre 1 y 5"`, aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
 
-Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).
+Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor). Deben empezar por mayúsculas, y en el caso de los constructores de valor se comportan como funciones de los tipos que contienen al tipo definido por el constructor de tipos. TODO.
+
+**Truco:** realmente, debemos escribir tantas ecuaciones como constructores de valor en una función que reciba tipos algebraicos.
 
 ```haskell
 data Persona = CrearPersona String Int
@@ -428,7 +432,7 @@ data Persona = Persona String Int
 --   |         Constructor de datos
 --   |
 --   Constructor de tipos
-```haskell
+```
 
 El tipo del último ejemplo se conoce como **tipo de dato algebraico**; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.
 
@@ -443,7 +447,7 @@ data Persona a = PersonaConCosa String a | PersonaSinCosa String
 --           |                         |
 --           |                         podemos usarla aquí
 --           |
---           Añadiendo una "variable de tipo" aquí
+--           Añadiendo una variable de tipo aquí
 ```
 
 En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo `Persona Int`, `Persona String`,...,etc.
@@ -992,7 +996,7 @@ Como se aprecia, después de los `import` de los módulos, entre paréntesis esp
 
 # Programación Origami: plegado/desplegado de listas:
 
-<!--![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_folds_vater_billete.png)-->
+![](/media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/rsz_folds_vater_billete.png)
 
 Como muy bien ilustra esta fotografía del origami hecho por orudorumagi11 de deviantart.com, se 
 pueden hacer cosas asombrosas simplemente plegando billetes de un dólar. Con las listas de Haskell 
@@ -1039,9 +1043,9 @@ Sea `f` una función y `z` el acumulador:
 
     \z f -> (f (f (f z a) b) c)
 
-<!--![Despliegue de foldl][foldl]
+![Despliegue de foldl][foldl]
 
-[foldl]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldl.png "Despliegue de foldl" -->
+[foldl]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldl.png "Despliegue de foldl"
 
 Un ejemplo de `foldl` en acción; la siguiente función pasa una lista (cuyos elementos deben ser enteros de una cifra) a un valor entero:
 
@@ -1071,9 +1075,9 @@ Sea `f` una función y `z` el acumulador:
 ```haskell
 \f z -> (f a (f b (f c z)))
 ```
-<!--![Despliegue de foldr][foldr]
+![Despliegue de foldr][foldr]
 
-[foldr]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldr.png "Despliegue de foldr" -->
+[foldr]: /media/freinn/Libros/Informatica/Programacion/Haskell/resumenes/foldr.png "Despliegue de foldr"
 
 Como vemos, el `foldl` empieza por la izquierda de la lista mientras que `foldr` empieza por el final.
 

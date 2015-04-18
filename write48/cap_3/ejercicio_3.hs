@@ -38,14 +38,6 @@ readExpr input = case parse parseExpr "lisp" input of
          Left err -> String $ "No match: " ++ show err
          Right val -> val
 
--- not sure I understand the type of this function
--- according to ghci
-repl :: IO b
-repl = getLine >>= repl' >> repl
-
-repl' :: String -> IO ()
-repl' = print . eval . readExpr
-
 --
 -- LispVal Parsers
 --

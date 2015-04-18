@@ -62,7 +62,7 @@ parseAnyList = do
     char '('
     many spaces
     head <- sepEndBy parseExpr spaces
-    tail <- (char '.' >> spaces >> parseExpr) <|> return (Nil ())
+    tail <- (char '.' >> spaces >> parseExpr) <|> return (Nil ()) -- return mete, <- saca
     many spaces
     char ')'
     return $ case tail of

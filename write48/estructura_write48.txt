@@ -1,2 +1,10 @@
 ****** Estructura del programa de Write Yourself a Scheme in 48 hours ******
 
+Parser es una mónada. Por ello cuando tenemos un LispVal debemos usar return para que ese valor sea puesto en un contexto monádico.
+
+Los Parser nos devuelven Strings, que sacamos con el constructo <-.
+por ejemplo, many1 digit devuelve un Parser String, es decir, una mónada que contiene una String.
+
+liftM lo que hace es elevar una función para que opere sólo con lo que hay dentro de la mónada.
+
+reads --> devuelve una lista con tuplas de la forma: (valor parseado, lo que queda de la cadena)
