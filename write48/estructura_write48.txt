@@ -8,3 +8,11 @@ por ejemplo, many1 digit devuelve un Parser String, es decir, una mónada que co
 liftM lo que hace es elevar una función para que opere sólo con lo que hay dentro de la mónada.
 
 reads --> devuelve una lista con tuplas de la forma: (valor parseado, lo que queda de la cadena)
+
+Either es una mónada en la cual bind para cuando encuentra un "Left", devolviendo ese Left y ahorrando mucho tiempo de computación.
+
+The Either monad also provides two other functions besides the standard monadic ones:
+
+throwError, which takes an Error value and lifts it into the Left (error) constructor of an Either
+
+catchError, which takes an Either action and a function that turns an error into another Either action. If the action represents an error, it applies the function, which you can use to, e.g. turn the error value into a normal one via return or re-throw as a different error.
