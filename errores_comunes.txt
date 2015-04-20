@@ -1,0 +1,6 @@
+Duplicate instance...
+
+Solución:
+
+1) Renombrar dicha instancia, por ejemplo usando apóstrofes.
+2) Usar la instancia que queramos explícitamente: NombreIns.función /NombreIns.Constructor

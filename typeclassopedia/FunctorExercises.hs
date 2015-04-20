@@ -1,40 +1,95 @@
 module FunctorExercises where
 
---data Either a b = Left a | Right b
-
---Implement Functor instances for Either e and ((->) e).
-
--- fmap :: (a -> b) -> f a -> f b
--- fmap :: (a -> b) -> (Either e) a -> (Either e) b
---instance Functor (Either e) where
-  --fmap _ (Left a) = (Left a)
-  --fmap g (Right b) = Right (g b)
-
--- fmap :: (a -> b) -> f a -> f b
--- fmap :: (a -> b) -> ((->) r) a -> ((->) r) b
--- fmap :: (a -> b) -> (r -> a) -> (r -> b)
---instance Functor ((->) r) where
-  --fmap f g = \x -> (f . g) x
+{-
+1.Implement Functor instances for Either e and ((->) e).
+2.Implement Functor instances for ((,) e) and for Pair, defined as
 
 data Pair a = Pair a a
 
-instance Functor Pair where
-  fmap f (Pair a b) = Pair result result 
-    where
-      result = f a
+Explain their similarities and differences.
 
--- fmap :: (a -> b) -> f a -> f b
--- fmap :: (a -> b) -> ((,) e) a -> ((,) e) b
--- fmap :: (a -> b) -> (e,a) -> (e,b)
-
---instance Functor ((,) e) where
---  fmap f (e,a) = (e,f a)
+3.Implement a Functor instance for the type ITree, defined as
 
 data ITree a = Leaf (Int -> a)
              | Node [ITree a]
 
+4.Give an example of a type of kind * -> * which cannot be made an instance of Functor (without using undefined). 
+5.Is this statement true or false? The composition of two Functors is also a Functor. If false, give a counterexample; if true, prove it by exhibiting some appropriate Haskell code. 
+-}
+
+data Either a b = Left a | Right b
+
+
+-- 1. Implement Functor instances for Either e and ((->) e).
+
+ 
 -- fmap :: (a -> b) -> f a -> f b
--- fmap :: (a -> b) -> ITree a -> ITree b
+-- fmap :: (a -> b) -> (Either e) a -> (Either e) b
+
+{- la siguiente instancia es correcta, y es la estándar de Prelude, por lo que no 
+puedes redefinirla.
+
+Puedes utilizar un identificador cualificado para referirte a ella
+
+-}
+
+instance Functor (FunctorExercises.Either e) where
+  fmap _ (FunctorExercises.Left a) = FunctorExercises.Left a
+  fmap f (FunctorExercises.Right a) = FunctorExercises.Right (f a)
+
+-- otra solución es renombrar tu dato Either
+data Either' a b = Left' a | Right' b  deriving Show
+
+instance Functor (Either' e) where
+  fmap _ (Left' a) = Left' a
+  fmap f (Right' a) = Right' (f a)
+
+{-
+*FunctorExercises> fmap (+3) (Right' 5)
+Right' 8
+
+*FunctorExercises> fmap (+3) (Left' 5)
+Left' 5
+-}
+
+{-
+--este ejercicio
+
+instance Functor ((->) r) where
+  fmap f g = (.)
+
+*FunctorExercises> fmap (+ 3) (* 5) 6
+33   -- i.e.: 5*6 + 3
+-}
+
+newtype Function a b = Function { getFunction :: a -> b }
+
+instance Functor (Function a) where
+  fmap g (Function h) = Function (g . h)
+
+incrementar = getFunction $ Function (+1)
+
+data Pair a = Pair a a deriving Show
+
+--  la siguiente instancia no aprovecha la "funcionalidad" del segundo argumento
+
+--  instance Functor Pair where
+  --  fmap f (Pair a b) = Pair result result
+    --  where
+      --  result = f a
+
+--  Es mejor poner:
+
+instance Functor Pair where
+  fmap f (Pair a b) = Pair (f a) (f b)
+
+{-*FunctorExercises> fmap (+3) (Pair 10 1000)
+Pair 13 1003
+-}
+
+data ITree a = Leaf (Int -> a)
+             | Node [ITree a]
+
 instance Functor ITree where
   fmap g (Leaf h) = Leaf (g . h)
   fmap g (Node list) = Node (map (fmap g) list)
