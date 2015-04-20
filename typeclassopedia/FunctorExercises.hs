@@ -69,6 +69,14 @@ instance Functor (Function a) where
 
 incrementar = getFunction $ Function (+1)
 
+{-
+You could have let f1 = Function length :: Function [a] Int,
+then have fmap show f1 :: Function [a] String, for example.
+To run it you would have to use getFunction:
+let f1 = Function length;
+getFunction (fmap show f1) [1, 2, 3] to get "3" as the result
+-}
+
 data Pair a = Pair a a deriving Show
 
 --  la siguiente instancia no aprovecha la "funcionalidad" del segundo argumento
