@@ -1,4 +1,5 @@
 import Text.ParserCombinators.Parsec hiding ((<|>), many)
+import Text.Parsec.Numbers (parseFloat)
 import Control.Applicative
 import Control.Monad
 
@@ -56,8 +57,7 @@ parse stringLiteral "test" "\"true\""
 
 data JSONValue = B Bool
                | S String
-               | I Integer
-               | F Double
+               | N Double -- número de JSON
                | A [JSONValue] --array de JSON
                | O [(String, JSONValue)]
                deriving Show
@@ -107,23 +107,18 @@ parse jsonValue "test" "\"hello\""
 parse jsonValue "test" "true"
 -}
 
+number :: Parser JSONValue
 number = do
   signo <- lexeme $ many $ char '-' -- recuerda, many equivale a *
   cifras <- lexeme $ many1 digit
-  return $ case signo of
-             "-" -> negate $ read cifras :: Integer
-             _ -> read cifras :: Integer
-
-anyNumber :: Parser JSONValue
-anyNumber = do 
-  entera <- many1 number
-  lexeme $ char '.'
-  decimal <- many1 number
-  return $ F $ read (show entera ++ "." ++ show decimal)
+  return $ N $ case signo of
+             "-" -> negate $ read cifras :: Double
+             _ -> read cifras :: Double
 
 -- ($) :: Functor f => (a -> b) -> f a -> f b
 -- ($) :: (a -> b) -> Parser a -> Parser b
-jsonNumber = I <$> (lexeme number)
+jsonNumber :: Parser JSONValue
+jsonNumber = N <$> parseFloat
 
 array :: Parser [JSONValue]
 array =

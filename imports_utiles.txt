@@ -18,3 +18,8 @@ cabal install mtl
 # Vectores
 
 cabal install vector
+
+# Helpers para Parsec
+
+import Text.Parsec.Numbers
+cabal install parsectools
