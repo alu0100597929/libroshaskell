@@ -9,6 +9,7 @@
           "SortAs": "SGML",
           "GlossTerm": "Standard Generalized Markup Language",
           "Acronym": "SGML",
+          "Numero" : 2689355174.377,
           "Abbrev": "ISO 8879:1986",
           "GlossDef": {
                         "para": "A meta-markup language, used to create markup languages such as DocBook.",

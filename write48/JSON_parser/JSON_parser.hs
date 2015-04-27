@@ -107,6 +107,8 @@ parse jsonValue "test" "\"hello\""
 parse jsonValue "test" "true"
 -}
 
+-- como los números de JSON realmente son double, este parser no
+-- se llegó a usar
 number :: Parser JSONValue
 number = do
   signo <- lexeme $ many $ char '-' -- recuerda, many equivale a *
