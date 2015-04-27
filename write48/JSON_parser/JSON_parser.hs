@@ -17,7 +17,8 @@ matchFalse = string "false"
 -- ahora queremos combinar los dos tipos, y recibiendo una String,
 -- queremos devolver un Bool, necesitamos (*>) "star arrow"
 -- (*>) primero intenta lo de la izq., si tiene éxito, ejecuta lo de
--- la dcha y lo devuelve. Si no, devuelve lo que dé (error) el de la izq.
+-- la dcha y si también tiene éxito, lo devuelve. Si no, devuelve lo
+-- que dé (error) cualquiera de los dos parsers que haya dado error.
 
 {- En resumen, devuelve aquello a lo que la flecha apunte, si todo va bien.-}
 -- *> :: Applicative f => f a -> f b -> f b
@@ -55,6 +56,8 @@ parse stringLiteral "test" "\"true\""
 
 data JSONValue = B Bool
                | S String
+               | I Integer
+               | F Double
                | A [JSONValue] --array de JSON
                | O [(String, JSONValue)]
                deriving Show
@@ -62,8 +65,12 @@ data JSONValue = B Bool
 -- parser principal, usamos spaces al principio, porque es lo
 -- único que da fallo con los lexeme parsers, el principio con espacios.
 jsonValue :: Parser JSONValue
-jsonValue = spaces >> (jsonBool <|> jsonStringLiteral <|> jsonArray
-                           <|> jsonObject )
+jsonValue = spaces >> (jsonBool
+                   <|> jsonStringLiteral
+                   <|> jsonArray
+                   <|> jsonObject
+                   <|> jsonNumber
+                   <?> "JSON value") -- mensaje de error
 
 -- pero esto también da error de tipos porque recordemos:
 -- bool :: Parser Bool
@@ -73,8 +80,8 @@ jsonValue = spaces >> (jsonBool <|> jsonStringLiteral <|> jsonArray
 -- ($) :: (a -> b) -> Parser a -> Parser b
 -- map :: (a -> b) -> [a] -> [b]
 
-jsonBool' :: Parser JSONValue
-jsonBool' = B <$> bool
+jsonBool'' :: Parser JSONValue
+jsonBool'' = B <$> bool
 -- jsonBool = fmap B bool
 
 -- jsonStringLiteral :: Parser JSONValue
@@ -99,6 +106,24 @@ jsonValue = jsonBool <|> jsonStringLiteral
 parse jsonValue "test" "\"hello\""
 parse jsonValue "test" "true"
 -}
+
+number = do
+  signo <- lexeme $ many $ char '-' -- recuerda, many equivale a *
+  cifras <- lexeme $ many1 digit
+  return $ case signo of
+             "-" -> negate $ read cifras :: Integer
+             _ -> read cifras :: Integer
+
+anyNumber :: Parser JSONValue
+anyNumber = do 
+  entera <- many1 number
+  lexeme $ char '.'
+  decimal <- many1 number
+  return $ F $ read (show entera ++ "." ++ show decimal)
+
+-- ($) :: Functor f => (a -> b) -> f a -> f b
+-- ($) :: (a -> b) -> Parser a -> Parser b
+jsonNumber = I <$> (lexeme number)
 
 array :: Parser [JSONValue]
 array =
@@ -144,7 +169,7 @@ ws = many (oneOf " \t\n")
 lexeme :: Parser a -> Parser a
 lexeme p = p <* ws
 
-jsonBool = lexeme jsonBool'
+jsonBool' = lexeme jsonBool''
 
 -- el resto de Parsers ya fueron arreglados para usar lexeme.
 -- es importante darse cuenta de que lexeme debe usarse en cada uno
@@ -154,3 +179,67 @@ jsonBool = lexeme jsonBool'
 *Main> parse jsonValue "test" "[true, true, true]"
 Right (A [B True,B True,B True])
 -}
+
+{-day :: Parser Integer
+day = (string "Monday" *> pure 1)
+  <|> (string "Tuesday" *> pure 2)
+  <|> (string "Wednesday" *> pure 3)
+  <|> (string "Thursday" *> pure 4)
+  <|> (string "Friday" *> pure 5)
+  <|> (string "Saturday" *> pure 6)
+  <|> (string "Sunday" *> pure 7)-}
+
+-- este parser no funciona, al meter "Thursday" esperaba un "Tuesday"
+-- qué ha ocurrido? que <|> no es tan sencillo como habíamos dicho, lo
+-- que hace es que los parsers de derecha a izquierda consumen entrada
+-- todo lo que pueden, podemos arreglarlo con try (backtracking)
+
+day' :: Parser Integer
+day' = (string "Monday" *> pure 1)
+  <|> try (string "Tuesday" *> pure 2)
+  <|> (string "Wednesday" *> pure 3)
+  <|> (string "Thursday" *> pure 4)
+  <|> (string "Friday" *> pure 5)
+  <|> (string "Saturday" *> pure 6)
+  <|> (string "Sunday" *> pure 7)
+
+-- creamos un combinador que haga try del primero
+-- hay que ponerlo en el lugar correcto
+(<||>) :: Parser a -> Parser a -> Parser a
+p <||> q = (try p) <|> q
+
+day :: Parser Integer
+day = lexeme $ (string "Monday" *> pure 1)
+  <|> (string "Tuesday" *> pure 2)
+  <||> (string "Wednesday" *> pure 3)
+  <|> (string "Thursday" *> pure 4)
+  <|> (string "Friday" *> pure 5)
+  <|> (string "Saturday" *> pure 6)
+  <||> (string "Sunday" *> pure 7)
+
+-- parse jsonBool "test" "false"
+-- Right (B False)
+
+-- parse jsonBool "test" "falsehood"
+-- Using jsonBool to parse string: falsehood
+-- Right (B False)
+
+--Esto ocurre porque el parser sólo mira lo que casa al principio, y
+--se confunde. Tenemos que poner más condiciones, y lo hacemos con Applicative
+
+jsonBool :: Parser JSONValue
+jsonBool = jsonBool' <* eof
+
+{-
+*Main> parse jsonBool "test" "false"
+Right (B True)
+*Main> parse jsonBool "test" "falsefrwfer"
+Left "test" (line 1, column 6):
+unexpected 'f'
+expecting end of input
+-}
+
+main = do
+  putStr "Nombre_fichero: "
+  filename <- getLine
+  parseFromFile jsonValue filename
