@@ -23,3 +23,7 @@ cabal install vector
 
 import Text.Parsec.Numbers
 cabal install parsectools
+
+# Debuguear funciones estilo printf
+
+import Debug.Trace

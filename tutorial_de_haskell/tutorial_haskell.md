@@ -122,10 +122,10 @@ Para iniciar GHCi usaremos el comando `ghci` en la consola que tengamos, lo cual
     "ola k ase"
     *Main> 2^100
     1267650600228229401496703205376
-    *Main> 2^200
-    1606938044258990275541962092341162602522202993782792835301376
+    *Main> 2^128
+    340282366920938463463374607431768211456
 
-Como vemos, Haskell soporta aritmética con enteros enormes (tanto como nuestra memoria principal nos permita), y hemos visto ejemplos de operaciones con números y cadenas. 
+Como vemos, Haskell soporta aritmética con enteros enormes (tanto como nuestra memoria principal nos permita). Como curiosidad, el número 2^128 (340282366920938463463374607431768211456) es el número de direcciones IP disponibles en el protocolo IPv6. A su vez se han ilustrado mediante ejemplos las funciones raíz cuadrada `sqrt` y la concatenación para cadenas `(++)`, que en este caso se escribe entre paréntesis al tratarse de un operador.
 
 Veamos ahora la función `div` que permite realizar divisiones enteras:
 
@@ -4807,11 +4807,11 @@ Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los
 
 La mónada sobre la que opera Parsec es `GenParser`.
 
-el operador `<-` liga a un nombre lo que hay dentro de la mónada sobre la cual opera (GenParser). Por tanto, si opera sobre:
+el operador `<-` (que es en realidad bind (>>=)) liga a un nombre lo que hay dentro de la mónada sobre la cual opera (GenParser). Por tanto, si opera sobre:
 
-* `many`, `many1`, `string`...devolverá una `String`
+* `many`, `many1`, `string`...ligará una `String`
 
-* `char`...devolverá un `Char`
+* `char`...ligará un `Char`
 
 * `noneOf` no consume aquella entrada que no debe, dicha entrada es una condición de parada.
 
@@ -4825,8 +4825,6 @@ Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ej
 
 `char`, `string`...consumen entrada, si pueden.
 
-* ver la mónada GenParser en la documentación oficial de Parsec.
-
 `(>>)` lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre. >> consume entrada, y falla si ambos argumentos (parsers) fallan.
 
     type CharParser st a = GenParser Char st a
@@ -4835,6 +4833,24 @@ Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ej
 
 `<$>` es sinónimo de `fmap`.
 
-`between parsea` el carácter de apertura, luego el parser, después el de cierre y se queda con lo que parser haya parseado.
+`between parser a c` el carácter de apertura, luego el parser, después el de cierre y se queda con lo que parser haya parseado.
 
 `type ReadS a = String -> [(a, String)]`. En realidad esta función `reads` se trata de un parser, como su propio tipo indica.
+
+<!--TODO: ver la mónada GenParser en la documentación oficial de Parsec. -->
+
+## Parsec en acción: un parser de JSON
+
+El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día para el intercambio de información a través de la red. Es un formato sencillo y fácil de parsear, y por ello está ganando terreno frente a su competidor principal, XML. Sus principales elementos son:
+
+* Number
+
+* String
+
+* Boolean
+
+* Array
+
+* null
+
+<!--fin lista-->

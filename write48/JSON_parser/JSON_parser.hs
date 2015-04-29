@@ -2,10 +2,17 @@ import Text.ParserCombinators.Parsec hiding ((<|>), many)
 import Text.Parsec.Numbers (parseFloat)
 import Control.Applicative
 import Control.Monad
+import Prelude hiding (Null,null)
 
 -- Parser que devuelve un Bool, siempre True
 alwaysTrue :: Parser Bool
 alwaysTrue = pure True
+
+alwaysFalse :: Parser Bool
+alwaysFalse = pure False
+
+alwaysNull :: Parser String
+alwaysNull = pure "null"
 
 -- Parser String: un parser que devuelve una String
 -- Como vemos, parsec devuelve un Either, Left si da error, Right si todo va bien
@@ -14,6 +21,9 @@ matchTrue = string "true"
 
 matchFalse :: Parser String
 matchFalse = string "false"
+
+matchNull :: Parser String
+matchNull = string "null"
 
 -- ahora queremos combinar los dos tipos, y recibiendo una String,
 -- queremos devolver un Bool, necesitamos (*>) "star arrow"
@@ -29,7 +39,10 @@ boolTrue = matchTrue *> alwaysTrue
 -- boolTrue = (string "true") *> (pure True)
 
 boolFalse :: Parser Bool
-boolFalse = matchFalse *> alwaysTrue
+boolFalse = matchFalse *> alwaysFalse
+
+null :: Parser String
+null = matchNull *> alwaysNull
 
 -- operador "choice" (<|>) intenta los parsers en orden, hasta que uno tenga
 -- éxito o todos fallen
@@ -60,12 +73,14 @@ data JSONValue = B Bool
                | N Double -- número de JSON
                | A [JSONValue] --array de JSON
                | O [(String, JSONValue)]
+               | Null String
                deriving Show
 
 -- parser principal, usamos spaces al principio, porque es lo
 -- único que da fallo con los lexeme parsers, el principio con espacios.
 jsonValue :: Parser JSONValue
-jsonValue = spaces >> (jsonBool
+jsonValue = spaces >> (jsonNull
+                   <|> jsonBool
                    <|> jsonStringLiteral
                    <|> jsonArray
                    <|> jsonObject
@@ -87,6 +102,10 @@ jsonBool'' = B <$> bool
 -- jsonStringLiteral :: Parser JSONValue
 -- jsonStringLiteral = S <$> stringLiteral
 -- jsonStringLiteral = fmap S stringLiteral
+
+matchNull' = Null <$> null
+
+matchNull'' = lexeme matchNull'
 
 jsonStringLiteral :: Parser JSONValue
 jsonStringLiteral = lexeme (S <$> stringLiteral)
@@ -126,7 +145,7 @@ array :: Parser [JSONValue]
 array =
   (lexeme $ char '[')
   *>
-  ( jsonValue `sepBy` (lexeme $ many $ char ',') )
+  ( jsonValue `sepBy` (lexeme $ char ',') )
   <*
   (lexeme $ char ']')
 
@@ -140,7 +159,7 @@ jsonArray = A <$> array
 
 jsonObject :: Parser JSONValue
 jsonObject = O <$> ((lexeme $ char '{') *>
-                    (objectEntry `sepBy` (lexeme $ many $ char ','))
+                    (objectEntry `sepBy` (lexeme $ char ','))
                     <* (lexeme $ char '}'))
 
 objectEntry :: Parser (String, JSONValue)
@@ -224,8 +243,8 @@ day = lexeme $ (string "Monday" *> pure 1)
 --Esto ocurre porque el parser sólo mira lo que casa al principio, y
 --se confunde. Tenemos que poner más condiciones, y lo hacemos con Applicative
 
-jsonBool :: Parser JSONValue
-jsonBool = jsonBool' <* eof
+-- jsonBool :: Parser JSONValue
+-- jsonBool = jsonBool' <* eof
 
 {-
 *Main> parse jsonBool "test" "false"
@@ -235,6 +254,15 @@ Left "test" (line 1, column 6):
 unexpected 'f'
 expecting end of input
 -}
+
+--pero esto no es suficiente, porque los array y objetos que contengan booleanos
+--darán error al esperar el fin de fichero, cosa que no llega
+--solución: usar notFollowedBy, que no permite que le siga nada
+jsonBool :: Parser JSONValue
+jsonBool = jsonBool' <* notFollowedBy alphaNum
+
+jsonNull :: Parser JSONValue
+jsonNull = matchNull'' <* notFollowedBy alphaNum
 
 main = do
   putStr "Nombre_fichero: "
