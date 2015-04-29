@@ -4796,3 +4796,45 @@ Capítulo 7:
 
 El anidamiento de varias concatenaciones a la izquierda tiene complejidad cuadrática.
 El anidamiento de varias concatenaciones a la derecha tiene complejidad lineal.
+
+# Parsec
+
+Parsec es un módulo de Haskell, un conjunto de funciones exportables que suelen tener una finalidad común y se pueden importar en otros programas.
+
+Parsec se diseñó desde cero como una librería de parsers con capacidades industriales. Es simple, segura, está bien documentada, provee de buenos mensajes de error y es rápida. Se define como un transformador de mónadas que puede ser apilado sobre mónadas arbitrarias, y también es paramétrico en el tipo de flujo de entrada. La documentación de la versión usada en el presente Trabajo Fin de Grado se puede consultar online en [hackage](https://hackage.haskell.org/package/parsec-3.1.9).
+
+Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los nombres adecuados). Se pueden hacer analogías entre las funciones de Parsec y las expresiones regulares, como veremos en el ejemplo de código de este capítulo.
+
+La mónada sobre la que opera Parsec es `GenParser`.
+
+el operador `<-` liga a un nombre lo que hay dentro de la mónada sobre la cual opera (GenParser). Por tanto, si opera sobre:
+
+* `many`, `many1`, `string`...devolverá una `String`
+
+* `char`...devolverá un `Char`
+
+* `noneOf` no consume aquella entrada que no debe, dicha entrada es una condición de parada.
+
+`<|>` es el operador de elección. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
+
+1. intenta el parser de la izquierda, que no debería consumir entrada...(ver `try`)
+
+2. intenta el parser de la derecha.
+
+Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de <|>, es decir, si queremos encadenar varios `try`, deben estar a la izquierda de la cadena de <|>. `try` es como un lookahead, y se puede ver como algo para procesar cosas de manera atómica. `try` es backtracking, y por ello no es demasiado eficiente.
+
+`char`, `string`...consumen entrada, si pueden.
+
+* ver la mónada GenParser en la documentación oficial de Parsec.
+
+`(>>)` lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre. >> consume entrada, y falla si ambos argumentos (parsers) fallan.
+
+    type CharParser st a = GenParser Char st a
+
+`<?>` lo que hace es informar de un error si es que se produce (en tiempo de ejecución).
+
+`<$>` es sinónimo de `fmap`.
+
+`between parsea` el carácter de apertura, luego el parser, después el de cierre y se queda con lo que parser haya parseado.
+
+`type ReadS a = String -> [(a, String)]`. En realidad esta función `reads` se trata de un parser, como su propio tipo indica.

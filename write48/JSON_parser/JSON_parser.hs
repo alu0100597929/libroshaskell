@@ -126,7 +126,7 @@ array :: Parser [JSONValue]
 array =
   (lexeme $ char '[')
   *>
-  ( jsonValue `sepBy` (lexeme $ char ',') )
+  ( jsonValue `sepBy` (lexeme $ many $ char ',') )
   <*
   (lexeme $ char ']')
 
@@ -140,13 +140,13 @@ jsonArray = A <$> array
 
 jsonObject :: Parser JSONValue
 jsonObject = O <$> ((lexeme $ char '{') *>
-                    (objectEntry `sepBy` (lexeme $ char ','))
+                    (objectEntry `sepBy` (lexeme $ many $ char ','))
                     <* (lexeme $ char '}'))
 
 objectEntry :: Parser (String, JSONValue)
 objectEntry = do 
-  key <- lexeme stringLiteral 
-  char ':'
+  key <- lexeme stringLiteral -- >>=
+  char ':'                    -- >>
   value <- lexeme jsonValue
   return (key, value)
 
@@ -164,7 +164,7 @@ ws = many (oneOf " \t\n")
 
 -- mi propio combinador lexeme
 lexeme :: Parser a -> Parser a
-lexeme p = p <* ws
+lexeme p = p <* ws -- whitespace
 
 jsonBool' = lexeme jsonBool''
 
