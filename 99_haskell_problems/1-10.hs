@@ -13,7 +13,6 @@ myLength = foldr (\x n -> n + 1) 0
 myReverse :: [a] -> [a]
 myReverse = foldr (\x xs -> xs ++ [x]) []
 
-
 data NestedList a = Elem a | List [NestedList a]
 
 {-flatten :: NestedList a -> [a]

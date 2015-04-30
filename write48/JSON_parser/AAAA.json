@@ -1,1 +1,14 @@
-{"a":     true    }
+["{]", "true", "false", "null", true, {"a": [null]}, [false], false, null, true, 5e8, [-2304e2], [[[[[]]]]],
+  
+
+
+-0,
+
+
+
+  {
+    "": "",
+
+
+    "6": 54
+  }]
