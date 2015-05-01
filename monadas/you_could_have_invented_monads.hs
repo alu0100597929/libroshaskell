@@ -1,3 +1,6 @@
+import Data.Complex
+import System.Random
+
 cuadrado :: Float -> Float
 cuadrado = (^2)
 
@@ -10,16 +13,17 @@ cuadradoInfo x = (x^2, "se ha llamado a cuadrado con " ++ show x)
 cuboInfo :: Float -> (Float, String)
 cuboInfo x = (x^3, "se ha llamado a cubo con " ++ show x)
 
--- bind f' :: (Float,String) -> (Float,String)
+-- bindW significa bind para Writer
+-- bindW f' :: (Float,String) -> (Float,String)
 
 -- por muchos paréntesis que veamos, da igual, la currificación se resuelve
 -- como siempre, bind en este caso recibe dos cosas para dar una última,
 -- un resultado (Float, String)
-bind :: (Float -> (Float,String)) -> ((Float,String) -> (Float,String))
-bind f (num,str) = let (num', str') = f num in (num', str++str')
+bindW :: (Float -> (Float,String)) -> ((Float,String) -> (Float,String))
+bindW f (num,str) = let (num', str') = f num in (num', str++str')
 
-unit :: Float -> (Float, String)
-unit x = (x,"")
+unitW :: Float -> (Float, String)
+unitW x = (x,"")
 
 {-
 *Main> (bind cuadradoInfo . unit) 5
@@ -29,7 +33,7 @@ unit x = (x,"")
 -}
 
 -- composición de funciones 
-com f g = bind f . g
+com f g = bindW f . g
 
 {-
 *Main> (com cuadradoInfo cuboInfo) 3
@@ -41,4 +45,43 @@ com f g = bind f . g
 -- "información oculta" o efecto lateral es añadir la cadena vacía, que
 -- en nuestra mónada es una especie de elemento neutro
 -- lift f x = (f x,"")
-lift f = unit . f
+liftW f = unitW . f
+
+--sqrt',cbrt' :: Complex Double -> [Complex Double]
+sqrt' :: Complex Double -> [Complex Double]
+sqrt' x = let raiz = sqrt x in
+            [raiz, negate raiz]
+
+-- (**) es exponenciación fraccionaria
+cbrt' :: Complex Double -> [Complex Double]
+cbrt' x = let raiz = x ** (1/3) in
+            [raiz, negate raiz]
+
+bindL :: (Complex Double -> [Complex Double]) -> ([Complex Double] -> [Complex Double])
+bindL f xs = concat $ map f xs
+
+sixthroot x = bindL cbrt' $ sqrt' x
+
+unitL x = [x]
+
+liftL f = unitL . f
+
+-- función estándar randomizada
+-- a -> StdGen -> (b,StdGen)
+
+-- bind :: (a -> M b) -> M a -> M b
+bindR :: (a -> StdGen -> (b,StdGen)) -> (StdGen -> (a,StdGen)) -> (StdGen -> (b,StdGen))
+bindR f x seed = let (x', seed') = x seed
+                 in f x' seed'
+
+unitR :: a -> (StdGen -> (a,StdGen))
+-- unitR x g = (x, g)
+unitR = (,)
+
+liftR f = unitR . f
+
+-- Iluminación
+type Debuggable a = (a,String)
+type Multivalued a = [a]
+type Randomised a = StdGen -> (a,StdGen)
+

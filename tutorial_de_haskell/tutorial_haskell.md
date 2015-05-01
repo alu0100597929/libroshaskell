@@ -4857,5 +4857,5 @@ El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día 
 
 La principal aplicación de Haskell siempre han sido los parsers, tanto para compiladores como para propósito general.
 
-Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver parámetros que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: true, false y null.
+Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver parámetros que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: `true`, `false` y `null`.
 
