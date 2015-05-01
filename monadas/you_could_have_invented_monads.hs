@@ -1,5 +1,6 @@
 import Data.Complex
 import System.Random
+import Control.Monad.Writer
 
 cuadrado :: Float -> Float
 cuadrado = (^2)
@@ -85,3 +86,7 @@ type Debuggable a = (a,String)
 type Multivalued a = [a]
 type Randomised a = StdGen -> (a,StdGen)
 
+manyOps :: Writer String Integer
+manyOps = return 7 >>= (\x -> writer (x+1, "inc."))
+              >>= (\x -> writer (2*x, "double."))
+          >>= (\x -> writer (x-1, "dec"))
