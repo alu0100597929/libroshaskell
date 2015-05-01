@@ -86,7 +86,41 @@ type Debuggable a = (a,String)
 type Multivalued a = [a]
 type Randomised a = StdGen -> (a,StdGen)
 
-manyOps :: Writer String Integer
-manyOps = return 7 >>= (\x -> writer (x+1, "inc."))
+manyOps' :: Writer String Integer
+manyOps' = return 7 >>= (\x -> writer (x+1, "inc."))
               >>= (\x -> writer (2*x, "double."))
           >>= (\x -> writer (x-1, "dec"))
+
+{-
+manyOps :: Writer String Integer
+manyOps = do
+            x <- return 7
+            x <- writer (x+1, "inc.")
+            x <- writer (2*x, "double.")
+            writer (x-1, "dec")
+-}
+
+manyOps :: Writer String Integer
+manyOps = do
+            let x = 7
+            y <- writer (x+1,"inc\n")
+            z <- writer (2*y,"double\n")
+            writer (z-1,"dec\n")
+
+raizSexta = return 64 >>= (\x -> sqrt' x) >>= (\y -> cbrt' y)
+
+raizSexta' = do
+               let x = 64
+               y <- sqrt' x
+               return $ cbrt' y -- podemos omitir el return si queremos
+
+addDigit n g = let (a,g') = random g in (n + a `mod` 10,g')
+
+shift = liftR (*10)
+
+test :: Integer -> StdGen ->  (Integer,StdGen)
+test = bindR addDigit . bindR shift . addDigit
+
+g = mkStdGen 666
+
+main = print $ test 0 g
