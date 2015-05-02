@@ -522,6 +522,49 @@ Cabe destacar también que las funciones que reciban un parámetro `Persona a` d
 
 En este caso su aridad es distinta, pues uno recibe dos parámetros y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de parámetros pero estos fueran de distinto tipo.
 
+## Otro ejemplo de reconocimiento de patrones
+
+Échale un ojo al siguiente código:
+
+```haskell
+type Nombre = String
+ 
+data Aniversario = Cumpleanios Nombre Fecha
+                 | Boda Nombre Nombre Fecha
+ 
+data Fecha = Fecha Int Int Int   -- Año, mes, día
+ 
+pacoPerez :: Aniversario
+pacoPerez = Cumpleanios "Paco Pérez" (Fecha 1968 7 3)
+ 
+bodaPaco :: Aniversario
+bodaPaco = Boda "Paco Pérez" "Juana López" (Fecha 1987 3 4)
+ 
+type ListaAniversarios = [Aniversario]
+ 
+anniversariesOfpacoPerez :: ListaAniversarios
+anniversariesOfpacoPerez = [pacoPerez, bodaPaco]
+ 
+mostrarFecha :: Fecha -> String
+mostrarFecha (Fecha a m d) = show a ++ "-" ++ show m ++ "-" ++ show d 
+ 
+mostrarAniversario :: Aniversario -> String
+mostrarAniversario (Cumpleanios nombre fecha) =
+   nombre ++ " born " ++ mostrarFecha fecha
+mostrarAniversario (Boda nombre1 nombre2 fecha) =
+   nombre1 ++ " married " ++ nombre2 ++ " on " ++ mostrarFecha fecha
+```
+
+Escribiendo código por el estilo conseguimos código:
+
+* más legible.
+
+* cabeceras de funciones más descriptivas, casi autoexplicativas.
+
+* que obliga al programador que trabaje con esos tipos a no alterar accidentalmente el orden de los parámetros.
+
+**Nota:** vemos que en `Fecha` el constructor de tipo y de valor tienen el mismo nombre. Esto se considera una buena práctica solo cuando hay un solo constructor de valor para ese tipo.
+
 ## Orden de ejecución del reconocimiento de patrones
 
 Los patrones se pueden anidar con profundidad arbitraria, con el casamiento ejecutándose en el siguiente orden:
