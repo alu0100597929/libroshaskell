@@ -272,7 +272,15 @@ Hoy en día hay una inferencia de tipos mejorada que nos permite programar más 
 
 # Definiendo nuestras primeras funciones
 
-En la programación funcional, la principal actividad (y en realidad, lo único) que realizaremos será definir funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
+Las funciones en Haskell se tratan como valores, como si de un `Bool`, `Char`, `Int`...se tratara. Lo único que 
+las funciones pueden hacer en Haskell es trabajar con sus parámetros de entrada y devolver un valor de cierto 
+tipo. Esto se acerca más al concepto de función matemática que por ejemplo las funciones en C/C++, que a parte de 
+esto también tienen la capacidad de usar variables globales, escribir en pantalla...Esto no significa que en 
+Haskell eso no se pueda hacer, pero hay que recurrir a soluciones específicas para que una función de Haskell sea 
+capaz de llevar a cabo todas las mencionadas tareas. 
+
+En la programación funcional, la principal actividad (y en realidad, lo único) que realizaremos será definir 
+funciones. Para ello lo mejor es escribir primero una **declaración de tipos**:
 
 ```haskell
 ochenta :: Int
@@ -288,7 +296,9 @@ Las declaraciones de tipos suelen ser así:
 nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipoN
 ```
 
-Donde la función recibe un número N parámetros. De momento, vamos a pensar que el último parámetro es el tipo de retorno, por tanto nuestra función `ochenta` no recibe nada (no hay ninguna flecha) sino que devuelve un valor de tipo `Int`.Se puede leer como `ochenta` de tipo `Int`.
+Donde la función recibe un número N parámetros. De momento, vamos a pensar que el último parámetro es el tipo de 
+retorno, por tanto nuestra función `ochenta` no recibe nada (no hay ninguna flecha) sino que devuelve un valor de 
+tipo `Int`.Se puede leer como `ochenta` de tipo `Int`.
 
 A continuación, escribimos la definición de `ochenta`:
 
@@ -299,7 +309,7 @@ ochenta = 80
 Como habíamos dicho, devuelve un valor de tipo `Int`, en este caso un 80 programado duramente (
 sin calcularlo, simplemente escribiendo un inmediato). 
 
-**Nota:** si vienes de lenguajes con sintaxis estilo C (C, C++, java...) podrías echar en falta 
+**Nota:** si vienes de lenguajes con sintaxis estilo C (C, C++...) podrías echar en falta 
 la palabra reservada **return**. El `return` en Haskell es totalmente distinto, y ni siquiera 
 implica que la función termine su ejecución.
 
@@ -310,7 +320,9 @@ ochenta :: Int
 ochenta = 80
 ```
 
-**Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y no deseados debido a la falta de información de un código sin declaraciones de tipos.
+**Nota:** es mejor ser "verbose" y poner las declaraciones de tipos de todas nuestras funciones, ya que nos 
+ayudará para dos cosas; 1) es documentación implícita y 2) evita que el compilador infiera tipos más generales y 
+no deseados debido a la falta de información de un código sin declaraciones de tipos.
 
 **Importante** en Haskell, el signo `=` **no** significa asignación de variables, significa 
 definir una **equivalencia**. Aquí estamos diciendo que la palabra `ochenta` es **equivalente** 
@@ -342,6 +354,18 @@ utilizando en `sumar`, que sólo es un wrapper).
 
 Como vemos, en Haskell hay muchas maneras de llamar a las funciones, y de crear wrappers que nos 
 harán la programación más cómoda y los nombres de las funciones fáciles de recordar.
+
+# Sistema de tipos
+
+Haskell es un lenguaje fuertemente tipado, lo cual es su mayor ventaja de cara a conseguir una tasa de error muy alta en tiempo de compilación y baja en el tiempo de ejecución. La regla general es "si compila, suele funcionar".
+
+[TODO](http://en.wikibooks.org/wiki/Haskell/Type_basics_II).
+
+Mencionar tipos y constantes polimórficas, y su uso.
+
+```haskell
+fromIntegral :: (Integral a, Num b) => a -> b
+```
 
 # Lambdas
 
@@ -472,16 +496,41 @@ getEdad (PersonaConCosa _ edad) = Just edad
 getEdad (PersonaSinCosa _)      = Nothing
 ```
 
-Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos `Just edad` ya que en este caso la tenemos.
+Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los 
+que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos 
+el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, 
+devolvemos `Just edad` ya que en este caso la tenemos.
+
+## Constructores de valor como funciones
+
+Pues resulta que los constructores de valor son en realidad funciones, ¡qué sorpresa! En el ejemplo anterior, 
+teníamos los constructores de valor `PersonaConCosa` y `PersonaSinCosa`. Veamos qué ocurre cuando inspeccionamos su 
+tipo gracias al comando `:t` de GHCi:
+
+    *Main> :t PersonaConCosa 
+    PersonaConCosa :: String -> a -> Persona a
+    *Main> :t PersonaSinCosa 
+    PersonaSinCosa :: String -> Persona a
+
+Como vemos, no hay demasiada diferencia con respecto a cualquier otra función, salvo su **letra inicial**, que debe 
+ser ***mayúscula**. De este modo ya contamos con dos funciones , `PersonaConCosa` y `PersonaSinCosa`, que nos 
+permiten construir un nuevo valor de tipo `Persona a` pasándoles, respectivamente `String -> a` y `String`.
+
+También podremos usar el reconocimiento de patrones tal y como hicimos en el ejemplo de `getEdad` y `getNombre`, y 
+el compilador sabrá a qué constructor (patrón) hacemos referencia. En este caso su aridad es distinta, pues uno 
+recibe dos parámetros y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de parámetros 
+pero estos fueran de distinto tipo.
 
 ## Orden de ejecución del reconocimiento de patrones
 
 Los patrones se pueden anidar con profundidad arbitraria, con el casamiento ejecutándose en el siguiente orden:
 
 * dentro -> fuera
+
 * izquierda -> derecha
 
-Las ecuaciones de una definición de función se intentan en orden textual (de arriba a abajo), hasta que uno de los patrones case.
+Las ecuaciones de una definición de función se intentan en orden textual (de arriba a abajo), hasta que uno de los 
+patrones case.
 
 ## Guardianes vs reconocimiento de patrones vs expresiones case
 

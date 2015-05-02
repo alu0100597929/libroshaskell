@@ -33,12 +33,12 @@ instance Monoid m => Monad (Writer m) where
 
 -- ejemplo de uso de foldM
 
-sumaPasoAPaso :: Float -> Float -> Writer String Float
+sumaPasoAPaso :: Double -> Double -> Writer String Double
 sumaPasoAPaso x1 x2 = Writer (show x1 ++ " + " ++ show x2 ++ " = " ++ show suma ++ ". ") suma
   where
     suma = x1 + x2
 
 -- foldM :: (Foldable t, Monad m) => (b -> a -> m b) -> b -> t a -> m b
 -- foldM :: (b -> a -> Writer m b) -> b -> [a] -> Writer m b
-ops :: [Float] -> Writer String Float
+ops :: [Double] -> Writer String Double
 ops = foldM sumaPasoAPaso 0
