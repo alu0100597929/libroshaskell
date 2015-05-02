@@ -124,3 +124,4 @@ test = bindR addDigit . bindR shift . addDigit
 g = mkStdGen 666
 
 main = print $ test 0 g
+

@@ -1304,7 +1304,7 @@ La utilidad real de todo esto es que las funciones `==` y `/=` vienen definidas 
 esto, expresiones como `"freinn" == "guapo"` (`True` de toda la vida), ó `8 == 7` son aceptadas.
 
 Por tanto, las clases de tipos no tienen demasiado que ver con las clases de los lenguajes 
-imperativos orientados a objetos (C++, Ruby...).
+imperativos orientados a objetos (C++, Ruby...), sino con las interfaces de Java.
 
 ## Clase Ord ##
 
@@ -1465,7 +1465,7 @@ data Either a b = Left a | Right b deriving (Eq, Ord, Read, Show)
 ```
 
 Tiene dos constructores de valor. Si se usa `Left`, su contenido será de tipo `a`. Por el contrario, 
-si se usa `Right`, sus contenidos serán del tipo `b`.
+si se usa `Right`, sus contenidos serán del tipo `b`. En `Either`, se suele usar el constructor de valor `Left` para denotar error, mientras que `Right` indica computación exitosa.
 
 Por tanto haremos reconocimiento de patrones en ambos `Left` y `Right`, haciendo diferentes cosas 
 depende de cuál sea reconocido.
@@ -1710,8 +1710,8 @@ Por tanto, si primero empaquetamos con `return` y después desempaquetamos con `
 
 ```haskell
 main = do
-  a <- return "hell"
-  b <- return "yeah!"
+  a <- return "ola"
+  b <- return "k ase"
   putStrLn $ a ++ " " ++ b
 ```
 
@@ -1719,8 +1719,8 @@ Es por tanto equivalente a:
 
 ```haskell
 main = do
-  let a = "hell"
-  b = "yeah"
+  let a = "ola"
+  b = "k ase"
   putStrLn $ a ++ " " ++ b
 ```
 
@@ -1815,7 +1815,7 @@ El programa anterior es equivalente a:
 
     main = do
       input <- getLine
-      if (input == "SWORDFISH")
+      if (input == "freinn")
         then putStrLn input
         else return ()
 ```
@@ -2046,19 +2046,19 @@ Dicha función se llama `interact` y recibe una función de tipo `(String -> Str
 se podría acortar haciendo uso de `interact`:
 
 ```haskell
-main = interact shortLinesOnly
+main = interact soloLineasCortas
 
-shortLinesOnly :: String -> String
-shortLinesOnly = unlines . filter (\line -> length line < 10) . lines
+soloLineasCortas :: String -> String
+soloLineasCortas = unlines . filter (\line -> length line < 10) . lines
 ```
 
 El siguiente programa pide una `String`, comprueba si es palíndroma o no e imprime el resultado:
 
 ```haskell
-main = interact informarPalindromas
+main = interact informarDePalindromas
 
-informarPalindromas :: String -> String
-informarPalindromas =
+informarDePalindromas :: String -> String
+informarDePalindromas =
   unlines .
   map (\xs -> if esPal xs then "palíndroma" else "no palíndroma") .
   lines
@@ -2188,7 +2188,7 @@ Si algo va mal, `withFile` se asegura de que el handle del archivo se cierre.
 import System.IO
 
 main = do
-    withFile "girlfriend.txt" ReadMode (\handle -> do
+    withFile "nombre_fichero.txt" ReadMode (\handle -> do
     contents <- hGetContents handle
     putStr contents)
 ```
@@ -2262,7 +2262,7 @@ El ejemplo anterior con `readFile`:
 import System.IO
 
 main = do
-  contents <- readFile "girlfriend.txt"
+  contents <- readFile "nombre_fichero.txt"
   putStr contents
 ```
 
@@ -2478,26 +2478,26 @@ Ejemplos de ejecución del programa que haremos:
 
     $ ./todo remove todo.txt 2
 
-Definamos la función dispatch, que recibirá una `String` y una lista de `String` y devolverá la acción de
+Definamos la función `menu`, que recibirá una `String` y una lista de `String` y devolverá la acción de
 E/S adecuada ejecutándose sobre la lista de `String` que fue su segundo argumento. Esta acción producirá 
 como resultado la tupla vacía unidad `()`. Remarcar que esta función está currificada. Lo mejor que 
 tiene es que es muy sencillo añadirle funcionalidades al programa. Bastaría con definir una función y un 
-"comando" en la función dispatch que la ejecute.
+"comando" en la función menu que la ejecute.
 
 ```haskell
-dispatch :: String -> [String] -> IO ()
-dispatch "add" = add
-dispatch "view" = view
-dispatch "remove" = remove
+menu :: String -> [String] -> IO ()
+menu "añadir" = add
+menu "ver" = view
+menu "eliminar" = remove
 ```
 
 La función `main` queda definida de manera bastante simple, es sólo obtener la cabeza de los argumentos (
-la operación a realizar) y la cola de la lista de argumentos, y con estos dos valores llamar a `dispatch`.
+la operación a realizar) y la cola de la lista de argumentos, y con estos dos valores llamar a `menu`.
 
 ```haskell
 main = do
   (command:argList) <- getArgs
-  dispatch command argList
+  menu command argList
 ```
 
 La función `add`:
@@ -2521,14 +2521,14 @@ import System.IO
 import Data.List
 import Control.Exception
 
-dispatch :: String -> [String] -> IO ()
-dispatch "add" = add
-dispatch "view" = view
-dispatch "remove" = remove
+menu :: String -> [String] -> IO ()
+menu "añadir" = add
+menu "ver" = view
+menu "eliminar" = remove
 
 main = do
   (command:argList) <- getArgs
-  dispatch command argList
+  menu command argList
 
 add :: [String] -> IO ()
 add [nombreFichero, cosaQueHacer] =
@@ -2571,15 +2571,15 @@ elegante.
 Para conseguir esto, añadimos *"catchballs"*, es decir; patrones que "capturen" entrada errónea y actúen en
 consecuencia.
 
-Por ejemplo, modifiquemos la función `dispatch` para que muestre un error en el caso de que no reconozca 
+Por ejemplo, modifiquemos la función `menu` para que muestre un error en el caso de que no reconozca 
 el comando que se le pasa:
 
 ```haskell
-dispatch :: String -> [String] -> IO ()
-dispatch "add" = add
-dispatch "view" = view
-dispatch "remove" = remove
-dispatch comando = noExiste comando
+menu :: String -> [String] -> IO ()
+menu "add" = add
+menu "view" = view
+menu "remove" = remove
+menu comando = noExiste comando
 
 noExiste :: String -> [String] -> IO ()
 noExiste comando _ = putStrLn $ "El comando " ++
@@ -2823,9 +2823,9 @@ después de él.
 
 Como se puede suponer, no es una técnica demasiado eficiente, Por tanto, *para leer archivos* es mejor usar
 `bytestrings`. Las `bytestrings` son como listas, sólo que cada elemento en ellas tiene el tamaño de un 
-btye (8 bits). Además, el modo en que son vagas también es distinto.
+byte (8 bits). Además, el modo en que son vagas también es distinto.
 
-**Falta la parte de bytestring del capítulo 9**
+<!-- TODO: la parte de bytestring del capítulo 9** -->
 
 # Funtores
 
@@ -2843,10 +2843,15 @@ a los elementos que estén dentro de la caja.
 
 Los valores de los funtores se pueden ver como valores con un *contexto añadido*. Por ejemplo, los valores 
 `Maybe` tienen el contexto añadido de poder haber fallado. Las listas tienen el contexto añadido de que 
-pueden contener muchos valores a la vez o ninguno. `fmap` aplica una función a esos valores preservando su 
-*contexto añadido*.
+pueden contener muchos valores a la vez o ninguno. `fmap` aplica una función a esos valores **preservando su contexto añadido**.
 
-**Nota:** los valores de funtor se pueden ver como "algo que se puede mapear".
+Hay dos modos fundamentales de ver `fmap`, `fmap` es una función que:
+
+* recibe dos parámetros, una función y un contenedor, y aplica la función "dentro" del contenedor, sobre todos sus elementos, para devolver un nuevo contenedor.
+
+* está currificada (como todas las demás), así que realmente no recibe dos parámetros, sino que simplemente recibe una función de tipo `a -> b` para devolver otra función de tipo `f a -> f b` donde `f` es la instancia de la clase de tipos `Functor` sobre la cual estamos trabajando. Quizás esto no sea tan obvio, pero se puede llegar a esta conclusión parentizando la cabecera de `fmap` de este modo: `fmap :: (a -> b) -> (f a -> f b)`.
+
+**Nota:** el segundo modo de ver `fmap` es conocido como "lifting", es decir, elevamos una función "normal" `g :: a -> b` a otra función de tipo `fmap g :: f a -> f b`.
 
 Las acciones de E/S `IO` también pueden ser mapeadas con `fmap`.
 
@@ -3392,7 +3397,7 @@ LLamar a `<*>` con dos valores aplicativos devuelve un valor aplicativo, así qu
 funciones dará una función.
 
 Cuando hacemos `(+) <$> (+3) <*> (*100)`, estamos creando una función que usará `+` en los resultados de 
-(+3) y (\*100) y devuelve el resultado de la suma. Con `(+) <$> (+3) <*> (*100) $ 5`, `(+3)` y `(\*100)` 
+`(+3)` y `(\*100)` y devuelve el resultado de la suma. Con `(+) <$> (+3) <*> (*100) $ 5`, `(+3)` y `(\*100)` 
 son aplicados primero a `5`, dando como resultados `8` y `500`. Luego `+` es llamado con `8` y `500`, 
 dando como resultado `508`.
 

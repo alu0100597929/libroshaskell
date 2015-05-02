@@ -117,6 +117,10 @@ Código fuente de los tutoriales de Parsec que voy siguiendo, incluyendo un repo
 
 Código fuente de los ejercicios de la [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia).
 
+## Wikibooks_haskell
+
+Código fuente de los ejercicios del libro de Haskell en [Wikibooks](http://en.wikibooks.org/wiki/Haskell)
+
 ## write48
 
 Contiene el código fuente del tutorial [Write Yourself a Scheme in 48 hours](http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours). Todo se ha probado y modificado para que compile y funcione.
