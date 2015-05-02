@@ -979,7 +979,7 @@ Para usar este paquete, deberemos añadir en la cabecera de nuestro programa la 
 
     import Data.Numbers.Primes
 
-una vez hecho esto, podemos usar todas [éstas](https://hackage.haskell.org/package/primes-0.2.1.0/docs/Data-Numbers-Primes.html) funciones como si las tuviéramos definidas.
+Una vez hecho esto, podemos usar todas [éstas](https://hackage.haskell.org/package/primes-0.2.1.0/docs/Data-Numbers-Primes.html) funciones como si las tuviéramos definidas.
 
 Para ver todos los paquetes disponibles, podemos consultar la [página oficial](https://hackage.haskell.org/packages/).
 

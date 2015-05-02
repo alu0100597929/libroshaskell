@@ -249,7 +249,7 @@ parAB p a = (a, valorB p a)
 solucionesP p = length $ takeWhile (\(a,b) -> a < b) $ map (\a -> parAB p a) (valoresA p)
 
 solucion39 = case (findIndex (\a -> a == max_sols) sols_p) of Just x -> x + 1
-                                                                    Nothing -> -1
+                                                              Nothing -> -1
           where
             max_sols = maximum sols_p
             sols_p = map (solucionesP) [1..1000]
