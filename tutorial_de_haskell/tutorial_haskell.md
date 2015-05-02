@@ -484,23 +484,6 @@ franSinEdad :: Persona Int
 franSinEdad = PersonaSinCosa "fran"
 ```
 
-Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor `PersonaConCosa String a` ó `PersonaSinCosa String`, nuestra función debe ser programada para actuar en consecuencia:
-
-```haskell
-getNombre :: Persona Int -> String
-getNombre (PersonaConCosa nombre _) = nombre
-getNombre (PersonaSinCosa nombre)   = nombre
-
-getEdad :: Persona Int -> Maybe Int
-getEdad (PersonaConCosa _ edad) = Just edad
-getEdad (PersonaSinCosa _)      = Nothing
-```
-
-Como vemos, a las variables `nombre` y `edad` respectivamente se le han enlazado sus valores reales, que son los 
-que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos 
-el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, 
-devolvemos `Just edad` ya que en este caso la tenemos.
-
 ## Constructores de valor como funciones
 
 Pues resulta que los constructores de valor son en realidad funciones, ¡qué sorpresa! En el ejemplo anterior, 
@@ -516,10 +499,28 @@ Como vemos, no hay demasiada diferencia con respecto a cualquier otra función, 
 ser ***mayúscula**. De este modo ya contamos con dos funciones , `PersonaConCosa` y `PersonaSinCosa`, que nos 
 permiten construir un nuevo valor de tipo `Persona a` pasándoles, respectivamente `String -> a` y `String`.
 
-También podremos usar el reconocimiento de patrones tal y como hicimos en el ejemplo de `getEdad` y `getNombre`, y 
-el compilador sabrá a qué constructor (patrón) hacemos referencia. En este caso su aridad es distinta, pues uno 
-recibe dos parámetros y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de parámetros 
-pero estos fueran de distinto tipo.
+Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor `PersonaConCosa String a` ó `PersonaSinCosa String`, nuestra función debe ser programada para actuar en consecuencia:
+
+```haskell
+getNombre :: Persona Int -> String
+getNombre (PersonaConCosa nombre _) = nombre
+getNombre (PersonaSinCosa nombre)   = nombre
+
+getEdad :: Persona Int -> Maybe Int
+getEdad (PersonaConCosa _ edad) = Just edad
+getEdad (PersonaSinCosa _)      = Nothing
+```
+
+Como vemos, a las variables `nombre` y `edad` respectivamente se le han *enlazado* sus valores reales, que son los 
+que nuestra función devuelve. Como el constructor `PersonaSinCosa` sólo contiene el nombre y no la edad, utilizamos 
+el tipo `Maybe` para devolver `Nothing` en caso de que ese patrón (constructor) sea reconocido. En el otro caso, 
+devolvemos `Just edad` ya que en este caso la tenemos.
+
+**Importante:** los paréntesis son obligatorios en este caso, pues se deben tratar como un todo (un valor del tipo `Persona a`). Aunque los patrones puedan sonarnos a llamada a función, **no lo son**, y el estar en la parte izquierda de la ecuación nos da pistas sobre ello.
+
+Cabe destacar también que las funciones que reciban un parámetro `Persona a` deben tener tantas ecuaciones de reconocimiento de patrones como constructores de valor haya en ese tipo de dato. No te preocupes demasiado por el número de patrones que tengas que reconocer, pues si el tipo está bien construido el número de ecuaciones será asumible.
+
+En este caso su aridad es distinta, pues uno recibe dos parámetros y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de parámetros pero estos fueran de distinto tipo.
 
 ## Orden de ejecución del reconocimiento de patrones
 
