@@ -137,7 +137,7 @@ Como vemos, recibe dos argumentos, el primero será el dividendo y el segundo el
     *Main> 45 `div` 12
     3
 
-Aquí estamos haciendo exactamente la misma operación, pero con la función `div` aplicada de modo infijo. Para ello tenemos que poner el primer argumento, el nombre de la función entre commillas hacia la izquierda y por último el segundo argumento.
+Aquí estamos haciendo exactamente la misma operación, pero con la función `div` aplicada de modo infijo. Para ello tenemos que poner el primer argumento, el nombre de la función entre comillas hacia la izquierda y por último el segundo argumento.
 
 Veamos ahora la división con decimales, que se hace igual que en la mayoría de lenguajes, con `/`:
 
