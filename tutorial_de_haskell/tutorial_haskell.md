@@ -4850,6 +4850,8 @@ Una comprensión de listas equivale a un "para todo x" en matemáticas.
 
 **Jugar mucho con la idea de que las Strings son listas de Char, String es sinónimo de tipo [Char]**
 
+En realidad las expresiones `case` son reconocimiento de patrones.
+
 # Ideas Razonando con Haskell
 
 ## Estilo de funciones con argumento declarado "point-wise": ##

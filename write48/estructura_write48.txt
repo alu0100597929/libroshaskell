@@ -1,5 +1,32 @@
 ****** Estructura del programa de Write Yourself a Scheme in 48 hours ******
 
+-- Lección 1:
+
+El tipo IO es instancia de la clase de tipos Monad, mónada es un concepto, decir que un valor pertenece a la clase de tipos Monad es decir:
+
+1) Hay (un cierto tipo de) información oculta adjunta a este valor.
+2) La mayoría de funciones no se tienen que preocupar de esa información.
+
+En este caso:
+
+La información extra son acciones IO que se harán usando los valores que se van pasando de una a otra; mientras que el valor básico (el cual tiene información adjunta) es void, la tupla vacía o unidad, ().
+
+IO [String] e IO () pertenecen al mismo tipo, el de lamónada IO, pero tienen distintos tipos base. Actúan sobre (y se pasan unos a otros) valores de distintos tipos, [String] y ().
+
+Los "valores con información oculta adjunta" son llamados "valores monádicos". 
+
+Los "valores monádicos" se suele llamar "acciones", porque la manera más fácil de pensar en el uso de la mónada IO es pensar en una secuencia de acciones afectando al mundo exterior. Cada acción de la mencionada secuencia de acciones podría actuar sobre valores básicos (no monádicos).
+
+-- Lección 2:
+
+This is another example of a monad: in this case, the "extra information" that is being hidden is all the info about position in the input stream, backtracking record, first and follow sets, etc.
+
+Parsec (en realidad, genParser) es otro ejemplo de mónada: en este caso, la "información extra" que se encuentra "oculta" es toda aquella relativa a la posición en la cadena de entrada, registro de backtracking, conjuntos first y follow...etc.
+
+la función parse devuelve un Either, que tendremos que manejar según construya un Left (error) o Right (valor correcto).
+
+-- Lección 3:
+
 -- Lección 4:
 
 Parser es una mónada. Por ello cuando tenemos un LispVal debemos usar return para que ese valor sea puesto en un contexto monádico.
@@ -14,8 +41,6 @@ reads --> devuelve una lista con tuplas de la forma: (valor parseado, lo que que
 Either es una mónada en la cual bind para cuando encuentra un "Left", devolviendo ese Left y ahorrando mucho tiempo de computación.
 
 La mónada Either también provee otras dos funciones a parte de las monádicas estándar:
-
-
 
 The Either monad also provides two other functions besides the standard monadic ones:
 
@@ -39,3 +64,43 @@ efectivo:
 
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
+
+Estructura general del programa:
+
+Lección 2:
+
+readExpr: recibe una String (la cadena de entrada) y devuelve otra String con información de lo que haya parseado.
+
+readExpr utiliza la función parse, que devuelve un Either, que readExpr maneja según construya un Left (error) o Right (valor correcto).
+
+Luego se trata de ir parseando los diferentes tokens de Scheme y luego construir, mediante un constructor de valor para el tipo LispVal, un valor determinado.
+
+Para ello se aplican parsers de Parsec y se extrae su información oculta de aquello que han parseado mediante el constructo <-, o se usa liftM funcion valor_monadico (explicado en notas_parser.txt).
+
+Parsers recursivos:
+
+En un lenguaje funcional la recursividad es uno de los métodos más interesantes. En un lenguaje como Scheme y muchos otros, encontramos estructuras de datos que pueden contener a otras, por ejemplo, una lista puede contener:
+
+* otras listas (sean normales o dotted)
+* cualquier otra expresión.
+
+Por tanto, en el intérprete se llama recursivamente al parser principal, parseExpr :: Parser LispVal, para ir parseando lo que hay dentro de cada expresión.
+
+Por ejemplo, en parseList y parseDottedList se usan, respectivamente:
+
+sepBy parseExpr spaces
+endBy parseExpr spaces
+
+Los cuales van a devolver una [LispVal], justo el argumento que necesita el constructor de tipo List y el primero que necesita DottedList.
+
+Por tanto, vemos que mediante el uso de sepBy y endBy estamos haciendo llamadas recursivas a readExpr y por ello nuestro parser es recursivo.
+
+Lección 3: evaluación, parte 1
+
+Lo primero de todo es hacer LispVal instancia de Show para poder imprimir por pantalla los valores de tipo LispVal.
+
+Para ello se crea la función showVal y se iguala a show (show = showVal para el tipo LispVal). Para los dos tipos de listas, List y DottedList, se usa la función unwordsList:
+
+unwordsList :: [LispVal] -> String
+unwordsList = unwords . map showVal
+

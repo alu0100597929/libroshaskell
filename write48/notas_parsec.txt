@@ -4,11 +4,20 @@ La mónada sobre la que opera Parsec es GenParser.
 
 Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los nombres adecuados).
 
+Cualquier parser que usemos nos dará un Parser Tipo_que_sea, lo cual es un valor monádico.
+
 el operador <- liga a un nombre lo que hay dentro de la mónada sobre la cual opera (GenParser). Por tanto, si opera sobre:
 
 * many, many1, string...devolverá una String
 
 * char...devolverá un Char
+
+A su vez, si queremos aplicar funciones a los valores que están dentro de una mónada, debemos usar liftM funcion valor_monádico. liftM permite cambiar el tipo de lo que hay dentro de la mónada, y por ejemplo en:
+
+parseNumber :: Parser LispVal
+parseNumber = liftM (Number . read) $ many1 digit
+
+many1 digit devuelve una Parser String, y luego liftM (Number . read) aplica read a esa String dentro de la mónada, y consigue un Integer (que es lo que recibe el constructor de tipo de LispVal, Number). Por tanto partimos de una Parser String para llegar a una Parser LispVal.
 
 - noneOf no consume aquella entrada que no debe, dicha entrada es una condición de parada.
 
