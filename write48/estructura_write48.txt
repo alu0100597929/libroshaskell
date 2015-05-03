@@ -1,5 +1,7 @@
 ****** Estructura del programa de Write Yourself a Scheme in 48 hours ******
 
+-- Lección 4:
+
 Parser es una mónada. Por ello cuando tenemos un LispVal debemos usar return para que ese valor sea puesto en un contexto monádico.
 
 Los Parser nos devuelven Strings, que sacamos con el constructo <-.
@@ -11,8 +13,29 @@ reads --> devuelve una lista con tuplas de la forma: (valor parseado, lo que que
 
 Either es una mónada en la cual bind para cuando encuentra un "Left", devolviendo ese Left y ahorrando mucho tiempo de computación.
 
+La mónada Either también provee otras dos funciones a parte de las monádicas estándar:
+
+
+
 The Either monad also provides two other functions besides the standard monadic ones:
 
 throwError, which takes an Error value and lifts it into the Left (error) constructor of an Either
 
 catchError, which takes an Either action and a function that turns an error into another Either action. If the action represents an error, it applies the function, which you can use to, e.g. turn the error value into a normal one via return or re-throw as a different error.
+
+readExpr :: String -> ThrowsError LispVal
+eval :: LispVal -> ThrowsError LispVal
+showVal :: LispVal -> String
+
+catchError recibe un valor Either (una acción) y si es Right, la devuelve, si es Left,
+le aplica la función que recibe (en este caso está hardcoded), que en este caso lo que
+hace es pasar del Left a un valor normal de LispVal. El sentido de todo esto es que
+el Either resultado siempre tenga un valor Right:
+
+trapError action = catchError action (return . show)
+
+Ahora que tenemos asegurado que todos los valores van a ser Right, hagamos un accessor
+efectivo:
+
+extractValue :: ThrowsError a -> a
+extractValue (Right val) = val

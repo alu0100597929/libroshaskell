@@ -132,7 +132,7 @@ Veamos ahora la función `div` que permite realizar divisiones enteras:
     *Main> div 45 12
     3
 
-Como vemos, recibe dos parámetros, el primero será el dividendo y el segundo el divisor.
+Como vemos, recibe dos argumentos, el primero será el dividendo y el segundo el divisor.
 
     *Main> 45 `div` 12
     3
@@ -186,7 +186,7 @@ Hablaremos de las tuplas más adelante, pues son un tipo heterogéneo, y nos per
     Prelude> ("Sylvester Stallone", 68)
     ("Sylvester Stallone",68)
 
-La función `compare` recibe dos parámetros y nos devuelve cómo es el primero respecto al segundo; mayor (`GT`), igual (`EQ`), menor (`LT`):
+La función `compare` recibe dos argumentos y nos devuelve cómo es el primero respecto al segundo; mayor (`GT`), igual (`EQ`), menor (`LT`):
 
     *Main> compare 3 3
     EQ
@@ -273,7 +273,7 @@ Hoy en día hay una inferencia de tipos mejorada que nos permite programar más 
 # Definiendo nuestras primeras funciones
 
 Las funciones en Haskell se tratan como valores, como si de un `Bool`, `Char`, `Int`...se tratara. Lo único que 
-las funciones pueden hacer en Haskell es trabajar con sus parámetros de entrada y devolver un valor de cierto 
+las funciones pueden hacer en Haskell es trabajar con sus argumentos de entrada y devolver un valor de cierto 
 tipo. Esto se acerca más al concepto de función matemática que por ejemplo las funciones en C/C++, que a parte de 
 esto también tienen la capacidad de usar variables globales, escribir en pantalla...Esto no significa que en 
 Haskell eso no se pueda hacer, pero hay que recurrir a soluciones específicas para que una función de Haskell sea 
@@ -296,7 +296,7 @@ Las declaraciones de tipos suelen ser así:
 nombre_funcion :: parametroDeTipo1 -> parametroDeTipo2 -> ... -> parametroDeTipoN
 ```
 
-Donde la función recibe un número N parámetros. De momento, vamos a pensar que el último parámetro es el tipo de 
+Donde la función recibe un número N argumentos. De momento, vamos a pensar que el último argumento es el tipo de 
 retorno, por tanto nuestra función `ochenta` no recibe nada (no hay ninguna flecha) sino que devuelve un valor de 
 tipo `Int`.Se puede leer como `ochenta` de tipo `Int`.
 
@@ -332,7 +332,7 @@ referencial** y es y será cierta para cualquier definición en Haskell, sin imp
 que sea. A parte de ello, la transparencia referencial nos permite conmutar aplicaciones de 
 funciones por su definición, con la desventaja de necesitar paréntesis explícitos casi siempre.
 
-Definamos ahora una función `sumar` que reciba dos parámetros y los sume:
+Definamos ahora una función `sumar` que reciba dos argumentos y los sume:
 
 ```haskell
 sumar :: Int -> Int -> Int
@@ -409,7 +409,7 @@ Y por último, veamos una que ignora su primer argumento y devuelva el segundo:
 \_ x -> x
 ```
 
-Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer parámetro, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial. 
+Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer argumento, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial. 
 
 # Reconocimiento de patrones
 
@@ -518,9 +518,9 @@ devolvemos `Just edad` ya que en este caso la tenemos.
 
 **Importante:** los paréntesis son obligatorios en este caso, pues se deben tratar como un todo (un valor del tipo `Persona a`). Aunque los patrones puedan sonarnos a llamada a función, **no lo son**, y el estar en la parte izquierda de la ecuación nos da pistas sobre ello.
 
-Cabe destacar también que las funciones que reciban un parámetro `Persona a` deben tener tantas ecuaciones de reconocimiento de patrones como constructores de valor haya en ese tipo de dato. No te preocupes demasiado por el número de patrones que tengas que reconocer, pues si el tipo está bien construido el número de ecuaciones será asumible.
+Cabe destacar también que las funciones que reciban un argumento `Persona a` deben tener tantas ecuaciones de reconocimiento de patrones como constructores de valor haya en ese tipo de dato. No te preocupes demasiado por el número de patrones que tengas que reconocer, pues si el tipo está bien construido el número de ecuaciones será asumible.
 
-En este caso su aridad es distinta, pues uno recibe dos parámetros y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de parámetros pero estos fueran de distinto tipo.
+En este caso su aridad es distinta, pues uno recibe dos argumentos y el otro uno, pero también podrían ser distintos si tuvieran el mismo número de argumentos pero estos fueran de distinto tipo.
 
 ## Otro ejemplo de reconocimiento de patrones
 
@@ -561,7 +561,7 @@ Escribiendo código por el estilo conseguimos código:
 
 * cabeceras de funciones más descriptivas, casi autoexplicativas.
 
-* que obliga al programador que trabaje con esos tipos a no alterar accidentalmente el orden de los parámetros.
+* que obliga al programador que trabaje con esos tipos a no alterar accidentalmente el orden de los argumentos.
 
 **Nota:** vemos que en `Fecha` el constructor de tipo y de valor tienen el mismo nombre. Esto se considera una buena práctica solo cuando hay un solo constructor de valor para ese tipo.
 
@@ -696,7 +696,7 @@ una tupla a otra, será el `c`.
 ## elemIndex
 
 La función `elemIndex` nos permite obtener el índice de la lista (recuerda que la cabeza tiene índice 0) 
-que coincide con el valor del primer parámetro. El tipo de `elemIndex` es:
+que coincide con el valor del primer argumento. El tipo de `elemIndex` es:
 
 ```haskell
 elemIndex :: Eq a => a -> [a] -> Maybe Int
@@ -783,7 +783,7 @@ elementos primero y último, para seguir comprobando recursivamente.
 
 * Si es vacía, devolvemos la lista vacía. Pero sabemos que si `init` devuelve `True` estamos ante una
 lista singleton, ¿por qué no podemos devolver directamente `False`? Recordemos que todo lo que hagamos
-dentro del `if then else` dará algo que se pasará como parámetro a `esPalindroma`, por lo cual estamos 
+dentro del `if then else` dará algo que se pasará como argumento a `esPalindroma`, por lo cual estamos 
 obligados a devolver una lista.
 
 3. Si la lista no es vacía y cabeza y cola no son iguales, estamos ante una lista que no es palíndroma, y
@@ -857,7 +857,7 @@ En una línea de código mucho más clara, casi autodescriptiva:
 Por tanto, lo primero que hace esta nueva función es el valor absoluto, `abs`, y después cambia el signo
 `negate`,dando como resultado una lista con todos los números iniciales pasados a negativo.
 
-Composición con múltiples parámetros:
+Composición con múltiples argumentos:
 
 Para conseguir esto, tenemos que valernos de la aplicación parcial de funciones. Veámoslo con un ejemplo:
 
@@ -870,8 +870,8 @@ Puede ser transformada en:
     sum . replicate 5 $ max 6.7 8.9
 
 Si queremos reescribir una expresión con un montón de paréntesis usando composición de funciones, podemos
-empezar escribiendo la función más interna y sus parámetros. Delante de ella escribimos `$` y componemos
-todas las funciones que venían antes escribiéndolas sin su último parámetro y poniendo puntos entre ellas. 
+empezar escribiendo la función más interna y sus argumentos. Delante de ella escribimos `$` y componemos
+todas las funciones que venían antes escribiéndolas sin su último argumento y poniendo puntos entre ellas. 
 Por ejemplo:
 
     replicate 2 (product (map (*3) (zipWith max [1,2] [4,5])))
@@ -921,7 +921,7 @@ Esta versión de `quitarDuplicados` tiene la ventaja de ser muy concisa y casi a
 
 Haskell se llama así por un matemático y lógico estadounidense llamado Haskell Brooks Curry, que inventó la técnica conocida como currificación.
 
-Currificar equivale a fijar parámetros, dando lugar a nuevas funciones.
+Currificar equivale a fijar argumentos, dando lugar a nuevas funciones.
 
 Todas las funciones en Haskell están currificadas, es decir, realmente reciben un único argumento. Por tanto una función `a -> b -> c` recibe un único argumento de tipo `a` y devuelve una función `b -> c`, que recibe un argumento y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los argumentos que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
 
@@ -1006,7 +1006,7 @@ nuestra función `esPrimo`.
 ## El tipo Maybe
 
 La función `find` devuelve el primer elemento que cumple un predicado que le pasamos como primer 
-parámetro, si éste existe, si no, devuelve `Nothing`. Notar que el tipo de `find` es 
+argumento, si éste existe, si no, devuelve `Nothing`. Notar que el tipo de `find` es 
 `find :: (a -> Bool) -> [a] -> Maybe a`. `Maybe a` denota un tipo que podría haber fallado, como por 
 ejemplo:
 
@@ -1174,9 +1174,9 @@ Sea `f` una función y `z` el acumulador:
 
 Como vemos, el `foldl` empieza por la izquierda de la lista mientras que `foldr` empieza por el final.
 
-**Truco:** en el **foldr** (plegado a la **derecha**) el acumulador es el parámetro **derecho** (segundo 
-parámetro de la función binaria), y en el **foldl** (plegado a la **izquierda**) el acumulador es el 
-parámetro **izquierdo** (primer parámetro de la función binaria).
+**Truco:** en el **foldr** (plegado a la **derecha**) el acumulador es el argumento **derecho** (segundo 
+argumento de la función binaria), y en el **foldl** (plegado a la **izquierda**) el acumulador es el 
+argumento **izquierdo** (primer argumento de la función binaria).
 
 **Estilo funcional:** Generalmente, si tenemos una función del tipo `foo a = bar b a`, se podría reescribir
 como `foo = bar b` a causa de la currificicación.
@@ -1301,7 +1301,7 @@ Por tanto en nuestro ejemplo con valores sin fin en el que el primero es `False`
 cumple, retornando `False` sin que Haskell necesite evaluar el resto de la lista infinita.
 
 Por tanto, `foldr` funcionará sobre listas infinitas cuando la función binaria que le pasemos no necesite 
-evaluar siempre su segundo parámetro para dar un resultado fijo. Por ejemplo, a `&&` no le importa el valor de su segundo parámetro si el valor del primer parámetro es `False`.
+evaluar siempre su segundo argumento para dar un resultado fijo. Por ejemplo, a `&&` no le importa el valor de su segundo argumento si el valor del primer argumento es `False`.
 
 # Unfolds
 
@@ -1323,7 +1323,7 @@ Pueden ser utilizados para monitorizar el progreso de funciones definidas median
 f $ x = f x
 ```
 
-No es simplemente aplicar funciones sobre un parámetro. La aplicación normal de funciones (mediante un 
+No es simplemente aplicar funciones sobre un argumento. La aplicación normal de funciones (mediante un 
 espacio) tiene una precedencia muy alta, mientras que la aplicación mediante `$` tiene la menor 
 precedencia.
 
@@ -1356,27 +1356,27 @@ sobre una lista de funciones.
     ghci\> map ($ 3) [(4+), (10*), (^2), sqrt]
     [7.0,30.0,9.0,1.7320508075688772]
 
-Si recuerdas el cuerpo de la función `$`, deducirás que está fijando el segundo parámetro (aplicación 
+Si recuerdas el cuerpo de la función `$`, deducirás que está fijando el segundo argumento (aplicación 
 parcial) y sólo queda la función, que se va cogiendo una por una de la lista, y aplicándose.
 
 # Tipos creados por el usuario:
 
-Los constructores de valor son funciones como cualquier otra. Reciben ciertos parámetros y devuelven
+Los constructores de valor son funciones como cualquier otra. Reciben ciertos argumentos y devuelven
 un valor de un tipo. En los módulos que creemos podemos exportarlos o no, depende de lo que queramos. 
 Si no exportamos estos constructores, nuestra clase será más abstracta y podremos cambiar su 
 implementación cuando queramos, siempre quemantengamos el comportamiento y las declaración de tipos 
 de las funciones intactos, pues podrían haber sido usados en código anterior por los usuarios de 
 nuestro módulo.
 
-Los constructores de tipos tienen que tener rellenos todos los parámetros de tipo.
+Los constructores de tipos tienen que tener rellenos todos los argumentos de tipo.
 
 No existe un tipo `Maybe`, sino `Maybe Int`, `Maybe Char`...etc.
 
-Las listas también usan parámetros de tipo, no existe el tipo `[]` sino `[Int]`, `[Char]`,
+Las listas también usan argumentos de tipo, no existe el tipo `[]` sino `[Int]`, `[Char]`,
 `[[(String,Int)]]`...etc.
 
-Decimos que un tipo es concreto si no recibe parámetros de tipo (como `Char` o `Bool`), o si recibe 
-parámetros de tipo pero todos están ya rellenados. Para cualquier valor, su tipo es siempre un tipo 
+Decimos que un tipo es concreto si no recibe argumentos de tipo (como `Char` o `Bool`), o si recibe 
+argumentos de tipo pero todos están ya rellenados. Para cualquier valor, su tipo es siempre un tipo 
 concreto.
 
 Lo mejor es no poner restricciones en las declaraciones de datos, incluso si parece tener sentido. 
@@ -1418,8 +1418,8 @@ data Bool = False | True deriving (Ord)
     ghci> True < False
     False
 
-Esto es así porque ninguno de estos constructores de valor tiene parámetros de tipo, en caso de que 
-los tuvieran, se compararían estos parámetros (para ello deben ser derivados de la clase de tipos `Ord`).
+Esto es así porque ninguno de estos constructores de valor tiene argumentos de tipo, en caso de que 
+los tuvieran, se compararían estos argumentos (para ello deben ser derivados de la clase de tipos `Ord`).
 
 En el tipo de dato `Maybe a`, el constructor de valores `Nothing` se especifica antes del constructor 
 de valores `Just valor`, así que el valor de `Nothing` es siempre más pequeño que el valor de `Just 
@@ -1646,7 +1646,7 @@ La fijeza del operador `*` es `infixl 7 *`, y la del operador `+` es `infixl 6`.
 
 # Maybe
 
-`Maybe Int` es un tipo concreto, pero `Maybe` es un constructor de tipo que recibe un tipo como parámetro.
+`Maybe Int` es un tipo concreto, pero `Maybe` es un constructor de tipo que recibe un tipo como argumento.
 
 # Entrada salida:
 
@@ -1700,7 +1700,7 @@ nameTag = "Hello, my name is " ++ getLine
 
 La respuesta es **no** por las siguientes razones:
 
-1. (++) necesita dos listas del mismo tipo. En esta sentencia, el primer parámetro es de tipo `String`, mientras que el segundo es el tipo `IO String`. Recuerda que no se pueden concatenar Strings y acciones E/S.
+1. (++) necesita dos listas del mismo tipo. En esta sentencia, el primer argumento es de tipo `String`, mientras que el segundo es el tipo `IO String`. Recuerda que no se pueden concatenar Strings y acciones E/S.
 
 2. Siempre que queramos "sacar" los datos de una acción E/S, debemos usar el
 constructo `<-`.
@@ -1985,7 +1985,7 @@ main = forever $ do
 
 ### `forM` ###
 
-Es básicamente lo mismo que `mapM` pero con el orden de los parámetros cambiados. Por ello, recibe una lista 
+Es básicamente lo mismo que `mapM` pero con el orden de los argumentos cambiados. Por ello, recibe una lista 
 y la función a mapear, que será luego secuenciada.
 
 ```haskell
@@ -2007,7 +2007,7 @@ ello, se ha hecho un `return` color.
 
 Sin embargo, en este ejemplo esto no era necesario, puesto que `color <- getLine` simplemente "saca" el 
 resultado de `getLine` y lo liga a un nombre (en este caso color). Recordemos que el `return` va a devolver la 
-acción que no hace nada y devuelve como resultado el tipo del parámetro que le pasemos. Por tanto el 
+acción que no hace nada y devuelve como resultado el tipo del argumento que le pasemos. Por tanto el 
 programa anterior puede ser escrito de forma más cómoda:
 
 ```haskell
@@ -2030,7 +2030,7 @@ Como `getLine`:
 
 Hemos podido ahorrarnos una línea y hacer nuestro programa más compacto y legible.
 
-La función `forM` (llamada con sus dos parámetros) produce una acción E/S, cuyo resultado ligamos a 
+La función `forM` (llamada con sus dos argumentos) produce una acción E/S, cuyo resultado ligamos a 
 colores. color es simplemente una lista normal que contiene valores de tipo `String`. Al final, imprimimos 
 todos esos colores, uno en cada línea, llamando a `mapM putStrLn colores`.
 
@@ -2045,7 +2045,7 @@ definimos "al vuelo" usando notación `do`.
 
 ### Ideas importantes sobre la E/S en Haskell ###
 
-Las acciones de E/S son valores casi como cualquier otro. Las podemos pasar como parámetros a funciones, y 
+Las acciones de E/S son valores casi como cualquier otro. Las podemos pasar como argumentos a funciones, y 
 las funciones pueden devolver acciones E/S como resultado/s. Lo que tienen de especial es que si "caen" 
 dentro de la función `main` o se ejecutan en GHCi, se llevan a cabo. Ahí es cuando se nota su acción (
 nunca mejor dicho).
@@ -2303,9 +2303,9 @@ Se trata de una función definida en el módulo `Control.Exception`. Tiene la si
 bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
 ```
 
-Su primer parámetro es una acción E/S que adquiere un recurso, como un handle de fichero. Su segundo 
-parámetro es una función que libera ese recurso. Estas función es llamada incluso si ocurre una excepción. 
-El tercer parámetro es donde ocurre lo principal, como leer de un fichero o escribir en él.
+Su primer argumento es una acción E/S que adquiere un recurso, como un handle de fichero. Su segundo 
+argumento es una función que libera ese recurso. Estas función es llamada incluso si ocurre una excepción. 
+El tercer argumento es donde ocurre lo principal, como leer de un fichero o escribir en él.
 
 Como `bracket` va de adquirir un recurso, hacer algo con él, y asegurar que será liberado, implementar 
 `withFile` es realmente sencillo:
@@ -2317,9 +2317,9 @@ withFile name mode f = bracket (openFile name mode)
     (\handle -> f handle)
 ```
 
-El primer parámetro que le pasamos a `bracket` abre el archivo, y da como resultado un handle de archivo. 
-El segundo parámetro recibe ese handle y lo cierra. `bracket` asegura que esto ocurre incluso si ocurre 
-una excepción. Finalmente, el tercer parámetro recibe un handle y le aplica la función `f` a él, la cual 
+El primer argumento que le pasamos a `bracket` abre el archivo, y da como resultado un handle de archivo. 
+El segundo argumento recibe ese handle y lo cierra. `bracket` asegura que esto ocurre incluso si ocurre 
+una excepción. Finalmente, el tercer argumento recibe un handle y le aplica la función `f` a él, la cual 
 recibe un handle de fichero y hace cosas con ese handle, como leer o escribir en el fichero 
 correspondiente.
 
@@ -2458,7 +2458,7 @@ y lo borra.
 9. Después de borrar el antiguo `tareas.txt`, usamos `renameFile` para renombrar el fichero temporal como `
 tareas.txt`.
 
-**Nota:** `removeFile` y `renameFile` reciben rutas de fichero, no handles, como parámetros.
+**Nota:** `removeFile` y `renameFile` reciben rutas de fichero, no handles, como argumentos.
 
 **Importante:** el motivo del uso de `openTempFile` suele ser evitar sobreescribir o ensuciar ficheros 
 importantes.
@@ -2680,7 +2680,7 @@ noExiste comando _ = putStrLn $ "El comando " ++
 ```
 
 También podemos añadir un "catchball" para el caso en el cual la función `add` sea llamada con una lista de
-parámetros con largo distinto de dos:
+argumentos con largo distinto de dos:
 
 ```haskell
 add :: [String] -> IO ()
@@ -2698,7 +2698,7 @@ total, suficiente.
 
 La transparencia referencial es una de las características distintivas de Haskell, recordemos, este 
 concepto hace referencia al hecho de que llamar a una función (en realidad, aplicar una función) con los 
-mismos parámetros dos o más veces deberá dar siempre el mismo resultado.
+mismos argumentos dos o más veces deberá dar siempre el mismo resultado.
 
 La transparencia referencial nos permite:
 
@@ -2940,9 +2940,9 @@ pueden contener muchos valores a la vez o ninguno. `fmap` aplica una función a 
 
 Hay dos modos fundamentales de ver `fmap`, `fmap` es una función que:
 
-* recibe dos parámetros, una función y un contenedor, y aplica la función "dentro" del contenedor, sobre todos sus elementos, para devolver un nuevo contenedor.
+* recibe dos argumentos, una función y un contenedor, y aplica la función "dentro" del contenedor, sobre todos sus elementos, para devolver un nuevo contenedor.
 
-* está currificada (como todas las demás), así que realmente no recibe dos parámetros, sino que simplemente recibe una función de tipo `a -> b` para devolver otra función de tipo `f a -> f b` donde `f` es la instancia de la clase de tipos `Functor` sobre la cual estamos trabajando. Quizás esto no sea tan obvio, pero se puede llegar a esta conclusión parentizando la cabecera de `fmap` de este modo: `fmap :: (a -> b) -> (f a -> f b)`.
+* está currificada (como todas las demás), así que realmente no recibe dos argumentos, sino que simplemente recibe una función de tipo `a -> b` para devolver otra función de tipo `f a -> f b` donde `f` es la instancia de la clase de tipos `Functor` sobre la cual estamos trabajando. Quizás esto no sea tan obvio, pero se puede llegar a esta conclusión parentizando la cabecera de `fmap` de este modo: `fmap :: (a -> b) -> (f a -> f b)`.
 
 **Nota:** el segundo modo de ver `fmap` es conocido como "lifting", es decir, elevamos una función "normal" `g :: a -> b` a otra función de tipo `fmap g :: f a -> f b`.
 
@@ -2987,9 +2987,9 @@ Como todos los funtores, se puede pensar en las funciones como valores con conte
 función como `(+3)`, podemos ver el valor como el eventual resultado de la función, y el contexto como que 
 necesitamos aplicar la función a algo para obtener el resultado.
 
-Todas las funciones en Haskell realmente reciben un único parámetro. Por tanto una función `a -> b -> c` 
-recibe un único parámetro de tipo a y devuelve una función `b -> c`, que coge un parámetro y devuelve `c`. 
-Por tanto, la aplicación parcial de funciones devuelve una función que toma los parámetros que dejamos sin 
+Todas las funciones en Haskell realmente reciben un único argumento. Por tanto una función `a -> b -> c` 
+recibe un único argumento de tipo a y devuelve una función `b -> c`, que coge un argumento y devuelve `c`. 
+Por tanto, la aplicación parcial de funciones devuelve una función que toma los argumentos que dejamos sin 
 "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
 
 Si le aplicamos esto a `fmap` obtenemos:
@@ -3035,7 +3035,7 @@ escogerá la implementación de `fmap` para listas, la cual es simplemente `map`
 simplemente es como aplicar map sobre el funtor, nada más. Los funtores de la librería estándar obedecen 
 dos leyes, y cuando creemos un funtor deberíamos verificar que las cumple para que sea instancia de funtor.
 
-**Recuerda:** la función `id` es la *función identidad*, que simplemente devuelve su parámetro sin 
+**Recuerda:** la función `id` es la *función identidad*, que simplemente devuelve su argumento sin 
 modificar. Si la queremos escribir como lambda, sería (\\x -> x).
 
 ## Ley 1
@@ -3110,7 +3110,7 @@ funtores se tratara podría resultar en código con fallos.
 
 ## Funtores aplicativos ##
 
-¿Qué pasa si mapeamos una función que recibe dos parámetros sobre un funtor?
+¿Qué pasa si mapeamos una función que recibe dos argumentos sobre un funtor?
 
 Si hacemos `fmap (*) (Just 3)`, ¿Qué obtenemos? Si miramos la implementación de instancia de `Maybe` para `
 Functor`, sabemos que si es un valor `Just`, aplicará la función sobre el valor dentro del `Just`. Por 
@@ -3133,11 +3133,11 @@ obtenemos una lista de funciones Char -> Ordering, porque la función `compare` 
 los carácteres de la lista. No es una lista del tipo `(Ord a) => a -> Ordering`, puesto que la primera `a` 
 aplicada fue un `Char`, así que la segunda debe ser también de tipo `Char`.
 
-Por tanto, vemos que si mapeamos funciones "multiparámetro" sobre valores funtor, obtenemos valores funtor 
+Por tanto, vemos que si mapeamos funciones "multiargumento" sobre valores funtor, obtenemos valores funtor 
 que contienen funciones.
 
-Una ventaja de esto es que podemos mapear funciones que reciban esas funciones como parámetros, ya que lo 
-que haya dentro del valor funtor será pasado a la función que estamos mapeando sobre él, como parámetro.
+Una ventaja de esto es que podemos mapear funciones que reciban esas funciones como argumentos, ya que lo 
+que haya dentro del valor funtor será pasado a la función que estamos mapeando sobre él, como argumento.
 
     ghci> let a = fmap (*) [1,2,3,4]
     ghci> :t a
@@ -3199,7 +3199,7 @@ instance Applicative Maybe where
   (Just f) <*> something = fmap f something
 ```haskell
 
-Vemos que `f` juega el rol del funtor aplicativo, y debe recibir un tipo concreto como parámetro, así que 
+Vemos que `f` juega el rol del funtor aplicativo, y debe recibir un tipo concreto como argumento, así que 
 escribimos `instance Applicative Maybe where` en vez de `instance Applicative (Maybe a) where`.
 
 Después, tenemos `pure`. Recuerda que se supone que recibe algo y lo "envuelve" en un valor aplicativo. Se 
@@ -3250,14 +3250,14 @@ Primero la función `+` se pone en un valor aplicativo (en este caso un valor `M
 función). Así que tenemos `pure (+)` lo cual es `Just (+)`.
 
 Después, se aplica la función `Just (+) <*> Just 3`, que da `Just (3+)`, a causa de la currificación, si a 
-la función `+` sólo le aplicamos un `3` va a darnos una función que recibe un parámetro y le suma 3 a 
-dicho parámetro.
+la función `+` sólo le aplicamos un `3` va a darnos una función que recibe un argumento y le suma 3 a 
+dicho argumento.
 
 Finalmente, se ejecuta `Just (3+) <*> Just 5`, lo cual da `Just 8`.
 
 Por tanto, lo que conseguimos con el estilo aplicativo `pure f <*> x <*> y <*>` es coger una función que 
-espera parámetros no aplicativos y usar esa función para operar en muchos valores aplicativos. La función 
-puede recibir tantos parámetros como queramos porque se aplica parcialmente y uno por uno entre los 
+espera argumentos no aplicativos y usar esa función para operar en muchos valores aplicativos. La función 
+puede recibir tantos argumentos como queramos porque se aplica parcialmente y uno por uno entre los 
 sucesivos `<*>`.
 
 `f <*> x` es lo mismo que `fmap f x`. Esta es una de las leyes aplicativas que veremos más adelante. Esto 
@@ -3275,7 +3275,7 @@ Usando <$> es como realmente se ve la potencia del estilo aplicativo ya que ahor
 
 * si queremos aplicar una función sobre tres valores aplicativos escribiremos: `f <$> x <*> y <*> z`.
 
-* Si los parámetros eran valores normales en vez de funtores aplicativos escribiremos: f x y z.
+* Si los argumentos eran valores normales en vez de funtores aplicativos escribiremos: f x y z.
 
 <!--fin lista-->
 
@@ -3293,7 +3293,7 @@ Primeramente, `<$>` es como hacer `fmap (++) (Just "johntra")`. Recuerda que `(+
 `(++) :: [a] -> [a] -> [a]`.
 
 Obtenemos entonces algo como `Just ("johntra"++)` lo cual tiene un tipo `Maybe ([Char] -> [Char])`. Date 
-cuenta de que el primer parámetro de `(++)` fue "comido" y que las `a` cambiaron a `Char`.
+cuenta de que el primer argumento de `(++)` fue "comido" y que las `a` cambiaron a `Char`.
 
 Ahora se ejecutará `Just ("johntra"++) <*> Just "volta"`, que saca la función fuera del `Just` y la mapea 
 sobre `Just "volta"`, lo cual da un resultado de tipo [Char].
@@ -3327,10 +3327,10 @@ llamado a `pure` fuera, se usa `Just`.
     Just "Hola"
 
 Si la función `<*>` se limitara sólo a listas, tendría un tipo `(<*>) :: [a -> b] -> [a] -> [b]`. Está 
-implementada con una comprensión de listas. `<*>` debe, de alguna manera, extraer la función del parámetro 
-izquierdo y luego mapearla sobre el parámetro derecho. En este caso, como el parámetro izquierdo es una 
+implementada con una comprensión de listas. `<*>` debe, de alguna manera, extraer la función del argumento 
+izquierdo y luego mapearla sobre el argumento derecho. En este caso, como el argumento izquierdo es una 
 lista, no sabemos de qué tamaño, lo que hace es coger la cabeza de la lista (una función) y mapearla sobre 
-la lista parámetro derecho completa. Esto se repite hasta que la lista parámetro izquierdo sea vacía.
+la lista argumento derecho completa. Esto se repite hasta que la lista argumento izquierdo sea vacía.
 
 De modo que obtendremos una lista con todas las combinaciones posibles de aplicación de una función de la 
 lista de la izquierda sobre los valores de la derecha.
@@ -3338,7 +3338,7 @@ lista de la izquierda sobre los valores de la derecha.
     ghci> [(*0),(+100),(^2)] <*> [1,2,3]
     [0,0,0,101,102,103,1,4,9]
 
-Si tenemos una lista de funciones que reciba dos parámetros, podemos aplicar esas funciones entre dos 
+Si tenemos una lista de funciones que reciba dos argumentos, podemos aplicar esas funciones entre dos 
 listas:
 
     ghci> [(+),(*)] <*> [1,2] <*> [3,4]
@@ -3397,7 +3397,7 @@ instance Applicative IO where
 
 Recordemos que `pure` pone el valor que recibe en el contexto mínimo que sigue produciendo el mismo valor 
 como resultado. Por tanto, tiene sentido que `pure` sea `return`.
-Recuerda que `return` devuelve una acción que no hace nada (salvo producir el valor que fue parámetro del `
+Recuerda que `return` devuelve una acción que no hace nada (salvo producir el valor que fue argumento del `
 return`).
 
 Si `<*>` fuera sólo para `IO`, tendría tipo:
@@ -3405,13 +3405,13 @@ Si `<*>` fuera sólo para `IO`, tendría tipo:
     (<*>) :: IO (a -> b) -> IO a -> IO b
 
 En el caso de `IO`, recibe una acción de E/S `a`, la cual produce una función, ejecuta la función y liga 
-esa función a `f`. Después ejecuta `b` y liga el resultado a `x`. Finalmente, ejecuta `f` con parámetro `x`
+esa función a `f`. Después ejecuta `b` y liga el resultado a `x`. Finalmente, ejecuta `f` con argumento `x`
 .
 
 Hemos usado sintaxis `do`, que, recordemos, une varias acciones E/S en una sóla.
 
-Con `Maybe` y `[]`, podemos pensar en `<*>` como simplemente extraer una función de su parámetro izquierdo 
-y aplicarla sobre su parámetro derecho.
+Con `Maybe` y `[]`, podemos pensar en `<*>` como simplemente extraer una función de su argumento izquierdo 
+y aplicarla sobre su argumento derecho.
 
 Con `IO`, se sigue extrayendo, pero también introducimos la noción se *secuenciación*, porque estamos 
 "pegando" dos acciones de E/S. Necesitamos extraer la función de la primera acción de E/S, pero para 
@@ -3467,7 +3467,7 @@ instance Applicative ((->) r) where
 
 Cuando envolvemos un valor en un valor aplicativo con `pure`, el resultado que produce debe ser ese valor. 
 Un contexto mínimo debe producir ese valor, por ello devolvemos una función (lambda) que ignorará su 
-parámetro y devolverá el valor con el cual fue creada.
+argumento y devolverá el valor con el cual fue creada.
 
 El tipo de `pure` para `(->) r` es:
 
@@ -3556,8 +3556,8 @@ Como `ZipList` no es instancia de `Show`, si queremos imprimir sus valores debem
 que `\x y -> (x,y)`.
 
 Además de `zipWith`, la librería estándar tiene `zipWith3`,`zipWith4`,..., hasta `zipWith7`. `zipWith` 
-recibe una función con dos parámetros y "zipea" dos listas con ella. `zipWith3` recibe una función con 
-tres parámetros y "zipea" tres listas con ella, etc. Pero usando `ZipList` con estilo aplicativo no 
+recibe una función con dos argumentos y "zipea" dos listas con ella. `zipWith3` recibe una función con 
+tres argumentos y "zipea" tres listas con ella, etc. Pero usando `ZipList` con estilo aplicativo no 
 necesitamos tener muchas funciones distintas según el número de listas que queramos procesar, podemos 
 "zipear" un número arbitrario de listas con una función, lo cual es bastante cómodo.
 
@@ -3753,14 +3753,14 @@ Los kinds son el "tipo de los tipos". Los tipos son pequeñas etiquetas que los 
     Prelude> :k Int
     Int :: *
 
-¿Qué significa esa `*`? Indica que el tipo es un tipo concreto. Un **tipo concreto** es un tipo que que no recibe parámetros de tipo. Los valores **sólo** pueden tener tipos que sean tipos concretos.
+¿Qué significa esa `*`? Indica que el tipo es un tipo concreto. Un **tipo concreto** es un tipo que que no recibe argumentos de tipo. Los valores **sólo** pueden tener tipos que sean tipos concretos.
 
 Veamos cuál es el tipo de Maybe:
 
     Prelude> :k Maybe
     Maybe :: * -> *
 
-Este kind nos dice que el constructor de tipos `Maybe` recibe un tipo concreto (como `Int`) y devuelve otro tipo concreto (como `Maybe Int`). Como `Int -> Int` significa que una función recibe un `Int` y devuelve un `Int`, `* -> *` significa que el constructor de tipo recibe un tipo concreto y devuelve un tipo concreto. Apliquémosle un parámetro a `Maybe` y veamos qué tipo nos queda:
+Este kind nos dice que el constructor de tipos `Maybe` recibe un tipo concreto (como `Int`) y devuelve otro tipo concreto (como `Maybe Int`). Como `Int -> Int` significa que una función recibe un `Int` y devuelve un `Int`, `* -> *` significa que el constructor de tipo recibe un tipo concreto y devuelve un tipo concreto. Apliquémosle un argumento a `Maybe` y veamos qué tipo nos queda:
 
     Prelude> :k Maybe Bool
     Maybe Bool :: *
@@ -3777,7 +3777,7 @@ Veamos ahora el tipo de `Either`:
     Prelude> :k Either
     Either :: * -> * -> *
 
-Esto nos dice que `Either` recibe dos tipos concretos como parámetros de tipo para producir un 
+Esto nos dice que `Either` recibe dos tipos concretos como argumentos de tipo para producir un 
 tipo concreto. También parece la declaración de tipos de una función que recibe dos valores y 
 devuelve algo. Los constructores de tipos están currificados (como las funciones), así que 
 podemos aplicarlos parcialmente:
@@ -3816,7 +3816,7 @@ un requisito **necesario, pero no suficiente**.
 
 * `Either String :: * -> *`
 
-El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un parámetro 
+El tipo tiene que tener kind `* -> *` para poder ser instancia de Monad. Tener un argumento 
 libre, digamos `Bool` no podría, `Either`tampoco, `Either Bool` sí.
 
 Lo mismo pasa con la clase `Functor`.
@@ -3854,7 +3854,7 @@ class Functor f where
 ```
 
 Como se ve, en la definición aparece `Functor f`
-es en ese momento donde se especifica: en los métodos que voy a describir abajo, `f` es el tipo de cada instancia de esta clase, entonces, para hacer una instancia la clase, hay que escribir la definición de cada método, sustituyendo el parámetro `f` (en este caso) con el que estamos instanciando.
+es en ese momento donde se especifica: en los métodos que voy a describir abajo, `f` es el tipo de cada instancia de esta clase, entonces, para hacer una instancia la clase, hay que escribir la definición de cada método, sustituyendo el argumento `f` (en este caso) con el que estamos instanciando.
 
 El kind que hace falta lo calcula GHC a partir de la definición de la clase. En `fmap` se puede ver que `f` está siendo aplicado a un tipo. De ahí deduce que el kind tiene que ser `* -> *`.
 
@@ -3956,7 +3956,7 @@ Como vemos, se transforma en un bind, y por la definición de bind tenemos:
 
     (\_ -> Id 4) 3
 
-Lo cual ignora el parámetro y devuelve `Id 4` como resultado. Es importante remarcar que **no todas las mónadas** ignoran su primer parámetro y devuelven el segundo.
+Lo cual ignora el argumento y devuelve `Id 4` como resultado. Es importante remarcar que **no todas las mónadas** ignoran su primer argumento y devuelven el segundo.
 
 ## Notación do
 
@@ -4393,7 +4393,7 @@ donde `sequence_`:
 
 ## La función (=<<)
 
-Es en realidad `(>>=)` pero con el orden de los parámetros invertido:
+Es en realidad `(>>=)` pero con el orden de los argumentos invertido:
 
 ```haskell
     (=<<)            :: Monad m => (a -> m b) -> m a -> m b
@@ -4623,8 +4623,8 @@ como composición o anidamiento de funciones.
 En Haskell se definen las variables, no se asignan. Por ello, se hace sólo una vez, y eso no puede 
 cambiar a lo largo de la ejecución.
 
-Los nombres sólo se introducen como los parámetros formales de las funciones... Cuando un parámetro 
-formal se asocia con un valor de parámetro real, luego no hay manera de asocialo a un nuevo valor. No 
+Los nombres sólo se introducen como los argumentos formales de las funciones... Cuando un argumento 
+formal se asocia con un valor de argumento real, luego no hay manera de asocialo a un nuevo valor. No 
 hay concepto de orden que cambie el valor asociado a través de asignación. Por tanto, no hay concepto 
 de secuencia de instrucciones o repetición de órdenes para activar cambios sucesivos a valores 
 asociados con nombres.
@@ -4648,7 +4648,7 @@ nombres comunes. Por lo tanto, el orden en el cual se ejecutan las llamadas anid
 importa, porque las llamadas a funciones no pueden interactuar unas con otras.
 
 F (A(D), B(D), C(D)), el orden en el cual A(D), B(D) y C(D) se ejecutan no importa porque las 
-funciones A, B y C no pueden cambiar su parámetro real común D.
+funciones A, B y C no pueden cambiar su argumento real común D.
 
 En los lenguajes funcionales, no hay orden de ejecución necesario.
 
@@ -4672,8 +4672,8 @@ repetición de órdenes.
 Como no se pueden reusar nombres con valores diferentes, las funciones anidadas se usan para crear nuevas 
 versiones de los nombres para nuevos valores. Como no se puede usar la repetición de órdenes, se usan 
 llamadas recursivas para crear repetidamente nuevas versiones de nombres asociados a nuevos valores. Aquí, 
-una función se llama a sí misma para crear nuevas versiones de sus parámetros formales los cuales estarán 
-"ligados" a nuevos valores reales de parámetros.
+una función se llama a sí misma para crear nuevas versiones de sus argumentos formales los cuales estarán 
+"ligados" a nuevos valores reales de argumentos.
 
 # Estructuras de datos en lenguajes funcionales:
 
@@ -4693,15 +4693,15 @@ estándar para mostrar, almacenar y modificar estas estructuras de datos.
 
 No existen las estructuras globales en los lenguajes funcionales. No se pueden cambiar las sub-estructuras 
 independientemente. En lugar de ello, las estructuras de datos enteras son pasadas explícitamente como 
-parámetros reales a funciones para cambiar la sub-estructura, y luego devueltas a la función llamadora. 
+argumentos reales a funciones para cambiar la sub-estructura, y luego devueltas a la función llamadora. 
 Por tanto, las llamadas a funciones en los lenguajes funcionales son más grandes que sus equivalentes en 
-lenguajes imperativos por esos parámetros adicionales. Sin embargo, tiene la ventaja de asegurar que la 
+lenguajes imperativos por esos argumentos adicionales. Sin embargo, tiene la ventaja de asegurar que la 
 manipulación de estructuras mediante funciones es simpre explícita en la definición de la función y sus 
 llamadas. Esto hace más fácil seguir el flujo de los datos en los programas.
 
 # Funciones como valores:
 
-En muchos lenguajes imperativos, los subprogramas pueden ser pasados como parámetros reales a otros 
+En muchos lenguajes imperativos, los subprogramas pueden ser pasados como argumentos reales a otros 
 subprogramas pero es raro para un lenguaje imperativo permitir a los subprogramas ser pasados como 
 resultados.
 
@@ -4743,7 +4743,7 @@ Podemos evaluar la expresión:
 
     cuadrado (1+2)
 
-Reemplazando la parte izquierda de la definición de `cuadrado` con la de la derecha, y sustituyendo el parámetro `x` por su argumento real.
+Reemplazando la parte izquierda de la definición de `cuadrado` con la de la derecha, y sustituyendo el argumento `x` por su argumento real.
 
     cuadrado (1+2)
     => (1+2)*(1+2)
@@ -4783,7 +4783,7 @@ La aplicación de funciones tiene la máxima prioridad, 10.
 La evaluación perezosa significa: haz sólo lo que te pida un patrón a la izquierda de una 
 ecuación o cualificador (`where` o `let`).
 
-Todo lo que puede hacer una función en Haskell es recibir ciertos parámetros y devolver cierto 
+Todo lo que puede hacer una función en Haskell es recibir ciertos argumentos y devolver cierto 
 valor.
 
 Las cosas pueden actuar más como computaciones que como cajas: (`IO` y `(->) r`) pueden ser 
@@ -4812,7 +4812,7 @@ Luego el tipo de bind `(>>=)` es:
 
 En una expresión `do`, todo lo que no sea un `let` es un valor monádico.
 
-Por ello, los funtores aplicativos como mucho pueden ser parámetros de funciones usando el estilo 
+Por ello, los funtores aplicativos como mucho pueden ser argumentos de funciones usando el estilo 
 aplicativo.
 
 Las mónadas son superiores y nos permiten encadenar computaciones que podrían fallar, entre otras 
@@ -4955,5 +4955,4 @@ El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día 
 
 La principal aplicación de Haskell siempre han sido los parsers, tanto para compiladores como para propósito general.
 
-Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver parámetros que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: `true`, `false` y `null`.
-
+Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver argumentos que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: `true`, `false` y `null`.

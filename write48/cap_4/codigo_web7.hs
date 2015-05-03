@@ -12,12 +12,21 @@ import Text.ParserCombinators.Parsec hiding (spaces)
 -----------------Parte nueva-----------------
 
 -- nuevo, Control.Monad.Error está deprecated
-import Control.Monad.Except
+-- añade las funciones throwError y catchError
+-- podemos omitir la parte de hacer LispError instancia de Error
+import Control.Monad.Error.Class
 
 {-
-Ejemplos de ejecución
+Ejemplos de ejecución:
+
 ./eval "(char? #\a)"
 #t
+./codigo_web7 "(+ 2 \"two\")"
+Invalid type: expected number, found "two"
+./codigo_web7 "(+ 2)"
+Expected 2 args; found values 2
+./codigo_web7 "(what? 2)"
+Unrecognized primitive function args: "what?"
 -}
 
 data LispError = NumArgs Integer [LispVal]
@@ -37,6 +46,10 @@ showError (NumArgs expected found)      = "Expected " ++ show expected
 showError (TypeMismatch expected found) = "Invalid type: expected " ++ expected
                                        ++ ", found " ++ show found
 showError (Parser parseErr)             = "Parse error at " ++ show parseErr
+
+--instance Error LispError where
+--     noMsg = Default "An error has occurred"
+--     strMsg = Default
  
 instance Show LispError where show = showError
 
@@ -48,11 +61,17 @@ LispError, creating a type constructor ThrowsError that we can use on any data t
 -}
 type ThrowsError = Either LispError
 
+{-catchError, which takes an Either action and a function that turns an
+error into another Either action. If the action represents an error,
+it applies the function, which you can use to, e.g. turn the error
+value into a normal one via return or re-throw as a different error.-}
 trapError action = catchError action (return . show)
 
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
 
+-- throwError takes an Error value and lifts it into the Left (error) constructor of an Either
+-- es decir, pasa de (Error) a (Left LispError)
 readExpr :: String -> ThrowsError LispVal
 readExpr input = case parse parseExpr "lisp" input of
      Left err -> throwError $ Parser err

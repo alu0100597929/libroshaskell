@@ -50,11 +50,17 @@ main = do
      evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
      putStrLn $ extractValue $ trapError evaled
 
+{-catchError, which takes an Either action and a function that turns an
+error into another Either action. If the action represents an error,
+it applies the function, which you can use to, e.g. turn the error
+value into a normal one via return or re-throw as a different error.-}
 trapError action = catchError action (return . show)
 
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
 
+-- throwError takes an Error value and lifts it into the Left (error) constructor of an Either
+-- es decir, pasa de (Error) a (Left LispError)
 readExpr :: String -> ThrowsError LispVal
 readExpr input = case parse parseExpr "lisp" input of
      Left err -> throwError $ Parser err
