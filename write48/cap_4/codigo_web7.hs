@@ -29,6 +29,8 @@ Expected 2 args; found values 2
 Unrecognized primitive function args: "what?"
 -}
 
+-- importante, la función parse de Parsec devuelve ParseError, aquí lo encapsulamos
+-- en el constructor de valor Parser
 data LispError = NumArgs Integer [LispVal]
                | TypeMismatch String LispVal
                | Parser ParseError
@@ -71,7 +73,7 @@ extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
 
 -- throwError takes an Error value and lifts it into the Left (error) constructor of an Either
--- es decir, pasa de (Error) a (Left LispError)
+-- es decir, pasa de (LispError) a (Left LispError)
 readExpr :: String -> ThrowsError LispVal
 readExpr input = case parse parseExpr "lisp" input of
      Left err -> throwError $ Parser err

@@ -23,7 +23,7 @@ This is another example of a monad: in this case, the "extra information" that i
 
 Parsec (en realidad, genParser) es otro ejemplo de mónada: en este caso, la "información extra" que se encuentra "oculta" es toda aquella relativa a la posición en la cadena de entrada, registro de backtracking, conjuntos first y follow...etc.
 
-la función parse devuelve un Either, que tendremos que manejar según construya un Left (error) o Right (valor correcto).
+la función parse devuelve un Either, que tendremos que manejar según construya un Left (ParseError) o Right (valor correcto). parse :: (Stream s Identity t) => Parsec s () a -> SourceName -> s -> Either ParseError a
 
 -- Lección 3:
 
@@ -37,33 +37,6 @@ por ejemplo, many1 digit devuelve un Parser String, es decir, una mónada que co
 liftM lo que hace es elevar una función para que opere sólo con lo que hay dentro de la mónada.
 
 reads --> devuelve una lista con tuplas de la forma: (valor parseado, lo que queda de la cadena)
-
-Either es una mónada en la cual bind para cuando encuentra un "Left", devolviendo ese Left y ahorrando mucho tiempo de computación.
-
-La mónada Either también provee otras dos funciones a parte de las monádicas estándar:
-
-The Either monad also provides two other functions besides the standard monadic ones:
-
-throwError, which takes an Error value and lifts it into the Left (error) constructor of an Either
-
-catchError, which takes an Either action and a function that turns an error into another Either action. If the action represents an error, it applies the function, which you can use to, e.g. turn the error value into a normal one via return or re-throw as a different error.
-
-readExpr :: String -> ThrowsError LispVal
-eval :: LispVal -> ThrowsError LispVal
-showVal :: LispVal -> String
-
-catchError recibe un valor Either (una acción) y si es Right, la devuelve, si es Left,
-le aplica la función que recibe (en este caso está hardcoded), que en este caso lo que
-hace es pasar del Left a un valor normal de LispVal. El sentido de todo esto es que
-el Either resultado siempre tenga un valor Right:
-
-trapError action = catchError action (return . show)
-
-Ahora que tenemos asegurado que todos los valores van a ser Right, hagamos un accessor
-efectivo:
-
-extractValue :: ThrowsError a -> a
-extractValue (Right val) = val
 
 Estructura general del programa:
 
@@ -129,4 +102,68 @@ Añadimos a la función eval una ecuación que nos permitirá aplicar funciones 
 eval (List (Atom func : args)) = apply func $ map eval args
 
 Como vemos, tenemos hecha una ecuación que es recursiva, mapea eval sobre los argumentos, con lo cual ya tenemos resuelto el problema de evaluar listas anidadas de manera "gratuita".
+
+apply :: String -> [LispVal] -> LispVal
+apply func args = maybe (Bool False) ($ args) $ lookup func primitives
+
+La función maybe recibe un valor por defecto, una función, y un valor de tipo Maybe. Si el valor de tipo Maybe es Nothing, la función devuelve el valor por defecto. Si no, aplica la función al valor dentro del Just y devuelve el resultado.
+
+primitives :: [(String, [LispVal] -> LispVal)]
+primitives = [("+", numericBinop (+)),
+              ("-", numericBinop (-)),
+              ("*", numericBinop (*)),
+              ("/", numericBinop div),
+              ("mod", numericBinop mod),
+              ("quotient", numericBinop quot),
+              ("remainder", numericBinop rem)]
+
+numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> LispVal
+numericBinop op params = Number $ foldl1 op $ map unpackNum params
+ 
+unpackNum :: LispVal -> Integer
+unpackNum (Number n) = n
+unpackNum (String n) = let parsed = reads n :: [(Integer, String)] in 
+                           if null parsed 
+                              then 0
+                              else fst $ parsed !! 0
+unpackNum (List [n]) = unpackNum n
+unpackNum _ = 0
+
+Lección 4: Manejo de errores
+
+Crearemos una mónada llamada ThrowsError, que en realidad se comporta como la mónada Either:
+
+type ThrowsError = Either LispError
+
+la línea de arriba está currificada, se podría escribir así también:
+
+type ThrowsError b = Either LispError b
+
+readExpr :: String -> ThrowsError LispVal
+eval :: LispVal -> ThrowsError LispVal
+showVal :: LispVal -> String
+
+Either es una mónada en la cual bind para su ejecución cuando encuentra un "Left", devolviendo ese Left y ahorrando mucho tiempo de computación.
+
+La mónada Either también provee otras dos funciones a parte de las monádicas estándar:
+
+`throwsError`: recibe un valor de tipo Error y lo eleva al constructor Left (error) de un Either.
+
+¿Por qué se usa throwsError? Porque en realidad, no existe el constructor de valor LispError, sino que es un constructor de tipo. Por ello, mediante throwsError, creamos un Left (el LispError concreto que sea), lo cual es un resultado de tipo ThrowsError LispVal, el tipo retorno de readExpr.
+
+`catchError`: recibe un valor Either (una acción) y si es Right, la devuelve, si es Left,
+le aplica la función que recibe (en este caso está hardcoded, y lo que hace es pasar del Left a un valor normal de LispVal). El sentido de todo esto es que
+el Either resultado siempre tenga un valor Right:
+
+trapError action = catchError action (return . show)
+
+Ahora que tenemos asegurado que todos los valores van a ser Right, hagamos un accessor
+efectivo:
+
+extractValue :: ThrowsError a -> a
+extractValue (Right val) = val
+
+La función parse devuelve un Either, que tendremos que manejar según construya un Left (ParseError) o Right (valor correcto). parse :: (Stream s Identity t) => Parsec s () a -> SourceName -> s -> Either ParseError a
+
+Ahora `eval` va a devolver un valor monádico, con lo cual, en vez de map debemos usar mapM, y usar return para encapsular en valores monádicos los resultados de `eval`.
 

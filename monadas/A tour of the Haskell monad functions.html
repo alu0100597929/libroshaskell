@@ -1,0 +1,2760 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0054)http://members.chello.nl/hjgtuyl/tourdemonad.html#mapM -->
+<html hola_ext_inject="ready"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+<meta name="Author" content="H.J.G. van Tuyl">
+
+<title>A tour of the Haskell monad functions</title>
+
+<style type="text/css">
+<!--
+body         { color: black; font-size: 12pt; font-family: Times, serif; background-color: white }
+
+.name        { color: black; font-size: 16pt; font-weight: bold }
+.module      { color: black; font-family: Times, serif }
+.header      { color: black;                  font-family: serif;       font-style: italic }
+.type        { color: green; font: 12pt Courier, monospace }
+.description { color: black; font-family: Times, serif }
+.definition  { color: red   }
+.usage       { color: blue  }
+.seealso     { color: black }
+.code        { color: green; font: 12pt Courier, monospace; font-family: Courier, monospace}
+-->
+</style>
+
+</head>
+
+<body hola-ext-player="1">
+
+<!-- MOD 061227 inserted the following lines: -->
+<a href="http://van.tuyl.eu/">
+  Home
+</a>
+<br>
+<!-- End mod 061227 -->
+
+
+<h1>A tour of the Haskell Monad functions</h1>
+
+This reference guide describes monad and functor functions in the modules Prelude and Control.Monad.
+It describes functions of The Haskell 98 Library Report only; example code is limited to Haskell 2010.
+The lines in the "Usage" sections, starting with "&gt; " are commands/expressions typed in a Hugs 98 shell.
+For most of the examples, it is necessary to give the command <span class="code">:l Control.Monad</span> first;
+in some cases, source code must be entered in a file and the file must be loaded.
+<br>
+If you have any suggestions for improvement,
+<a href="mailto:zxcvbn@chello.REMOVE-THIS.nl" subject="About" 'a="" tour="" of="" the="" haskell="" monad="" functions'"="">
+    send me an e-mail
+</a>
+(remove "REMOVE-THIS." from the address.)
+
+<h3>Acknowledgements:</h3>
+<ul>
+  <li> For this reference manual, "A tour of the Haskell Prelude",
+       by Bernie Pope and Arjan van IJzendoorn was used as an example.
+  </li><li> The example at <a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fail"><span class="code">fail</span></a>, 
+       summing lists of two elements, was written by Yitzchak Gale.
+</li></ul>
+<br>
+Last updated:<br>
+2013-09-01<br>
+<br>
+Copyright 2005 - 2013, Henk-Jan van Tuyl
+<br>
+No part of this text may be sold, either seperately or as part of a product.
+<hr>
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(=<<)"><span class="link">(=&lt;&lt;)</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>)"><span class="link">(&gt;&gt;)</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>=)"><span class="link">(&gt;&gt;=)</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#ap"><span class="link">ap</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fail"><span class="link">fail</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#filterM"><span class="link">filterM</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#foldM"><span class="link">foldM</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#guard"><span class="link">guard</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#join"><span class="link">join</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mapAndUnzipM"><span class="link">mapAndUnzipM</span></a>,&nbsp;
+<a href="./A tour of the Haskell monad functions_files/A tour of the Haskell monad functions.html"><span class="link">mapM</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mapM_"><span class="link">mapM_</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mplus"><span class="link">mplus</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#msum"><span class="link">msum</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mzero"><span class="link">mzero</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#return"><span class="link">return</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence"><span class="link">sequence</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence_"><span class="link">sequence_</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#unless"><span class="link">unless</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#when"><span class="link">when</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#zipWithM"><span class="link">zipWithM</span></a>,&nbsp;
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#zipWithM_"><span class="link">zipWithM_</span></a>
+<p>
+</p><hr>
+<p>
+
+<!-- Books -->  
+</p><h2>Some books on Haskell:</h2>
+<iframe src="./A tour of the Haskell monad functions_files/saved_resource.html" style="width: 120px; height: 240px; display: none !important;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0">
+</iframe>
+<iframe src="./A tour of the Haskell monad functions_files/saved_resource.html" style="width: 120px; height: 240px; display: none !important;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0">
+</iframe>
+<iframe src="./A tour of the Haskell monad functions_files/saved_resource.html" style="width: 120px; height: 240px; display: none !important;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0">
+</iframe>
+<iframe src="./A tour of the Haskell monad functions_files/saved_resource.html" style="width: 120px; height: 240px; display: none !important;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0">
+</iframe>
+<iframe src="./A tour of the Haskell monad functions_files/saved_resource.html" style="width: 120px; height: 240px; display: none !important;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0">
+</iframe>
+
+<hr>
+
+<br>
+<br>
+<div class="name">
+  <a name="(=&lt;&lt;)">
+  (=&lt;&lt;)
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+(=&lt;&lt;) :: Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+This is the "reverse binder" function; the expression
+<pre class="code">  f =&lt;&lt; m
+</pre>
+takes the contents of monad <span class="code">m</span> and passes it
+to function <span class="code">f</span> as a parameter.
+It may be useful when used as a parameter of a higher order function, 
+or one can use it as a more readable way of coding, in some cases.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">infixr 1  =&lt;&lt;
+f =&lt;&lt; x  =  x &gt;&gt;= f
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; replicate 2 =&lt;&lt; [1, 2, 3]
+[1,1,2,2,3,3]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>=)"><span class="link">(&gt;&gt;=)</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>)"><span class="link">(&gt;&gt;)</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== -->
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="(&gt;&gt;)">
+  (&gt;&gt;)
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+(&gt;&gt;) :: m a -&gt; m b -&gt; m b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+This operator is essentially the same as 
+<span class="code">(&gt;&gt;=)</span>, but does
+not pass the contents of the monad to the function 
+specified as second parameter. It can be used to define
+the order in which actions take place.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">infixl 1  &gt;&gt;
+m &gt;&gt; k  =  m &gt;&gt;= \_ -&gt; k
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; putStrLn "asd" &gt;&gt; putStrLn "qwerty"
+asd
+qwerty
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>=)"><span class="link">(&gt;&gt;=)</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(=<<)"><span class="link">(=&lt;&lt;)</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="(&gt;&gt;=)">
+  (&gt;&gt;=)
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+(&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+This is the "bind" function; the expression
+<pre class="code">  m &gt;&gt;= f
+</pre>
+takes the contents of monad m and passes it to function f as a parameter.
+
+<span class="code">&gt;&gt;=</span> is one of the two basic operators of
+the Monad class (the other is <span class="code">return</span>).
+Any instantiation of <span class="code">&gt;&gt;=</span> and
+<span class="code">return</span> must obey the following laws: 
+<pre class="code">  return a &gt;&gt;= k                 = k a 	
+  m        &gt;&gt;= return            = m 	
+  m        &gt;&gt;= (\x -&gt; k x &gt;&gt;= h) = (m &gt;&gt;= k) &gt;&gt;= h	
+</pre>
+Sometimes a fourth law is mentioned, but not everybody agrees with this one:
+<pre class="code">  xs       &gt;&gt;= return . f        = fmap f xs	
+</pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">infixl 1  &gt;&gt;=
+
+instance Monad Maybe where
+  (Just x) &gt;&gt;= k   =  k x
+  Nothing  &gt;&gt;= k   =  Nothing
+
+instance Monad IO where
+  (&gt;&gt;=)  = ... -- No Haskell representation possible.
+
+instance  Monad []  where
+  m &gt;&gt;= k          = concat (map k m)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; Just 3 &gt;&gt;= Just
+Just 3
+
+&gt; Just 3 &gt;&gt;= return
+Just 3
+
+&gt; getLine &gt;&gt;= print . tail
+nice
+"ice"
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>)"><span class="link">(&gt;&gt;)</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(=<<)"><span class="link">(=&lt;&lt;)</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="ap">
+  ap
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+ap :: (Monad m) =&gt; m (a -&gt; b) -&gt; m a -&gt; m b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">ap</span> applies a function inside a monad to a value
+inside a monad of the same type.
+
+A call to <span class="code">liftMn</span> can often be replaced by one or more
+calls to <span class="code">ap</span>:
+<pre class="code">  return f `ap` x1 `ap` ... `ap` xn
+</pre>
+is the same as:
+<pre class="code">  liftMn f x1 x2 ... xn
+</pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">ap = liftM2 ($)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">Apply a list of functions to a list of values:
+&gt; [(+ 1), (+ 2)] `ap` [1, 2, 3]
+[2, 3, 4, 3, 4, 5] 
+
+Apply a function in the Maybe monad to a value 
+in the Maybe monad:
+&gt; Just (+ 1) `ap` Just 1
+Just 2
+
+Apply a function, with two parameters, in the 
+Maybe monad, to two values in the Maybe monad:
+&gt; Just (*) `ap` (Just 2) `ap` (Just 3)
+Just 6 
+
+&gt; return cos `ap` Just pi
+Just (-1.0)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="fail">
+  fail
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+fail :: String -&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">fail</span> is to be called in case a
+certain condition is not met. When using the <span class="code">IO ()</span> version of 
+<span class="code">fail</span>, the program is 
+interrupted; in other monads, the effect is less drastic; 
+the list version, for example, returns an empty list.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">class  Monad m  where
+  fail s = error s
+
+instance  Monad Maybe  where
+  fail s = Nothing
+
+instance  Monad IO  where
+  fail s = ioError (userError s)
+
+instance  Monad []  where
+  fail s = []
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; fail "Cannot do that" :: Maybe Int
+Nothing  
+
+&gt; fail "Cannot do that" :: [Int]
+[]
+
+&gt; fail "Cannot do that" :: IO ()
+
+Program error: user error (Cannot do that)
+
+&gt; if 'a' == 'b' then [333] else fail "'a' is not 'b'"
+[] 
+
+-- Begin source code --
+{-
+   Read a list of sublists, and return a list containing the sums
+   of only those sublists with exactly two elements, while
+   ignoring the rest of the sublists.
+-}
+
+f :: Num a =&gt; [[a]] -&gt; [a]
+f xs = 
+  do
+   [x, y] &lt;- xs
+   return (x + y)
+
+-- End source code --
+
+&gt; f [[1, 2], [3], [4, 5]]
+[3, 9]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#error"><span class="link">error</span></a>,&nbsp;ioError,&nbsp;userError
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="filterM">
+  filterM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+filterM :: Monad m =&gt; (a -&gt; m Bool) -&gt; [a] -&gt; m [a]
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">filterM p xs</span> filters out all elements
+of <span class="code">xs</span> that do not fulfill the
+predicate <span class="code">p</span>, where
+<span class="code">p</span> is a function that returns a value
+of type <span class="code">Monad m =&gt; m Bool</span>; the result
+is a list inside a monad of the same type.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">filterM p []       = return []
+filterM p (x : xs) = 
+  do 
+    b  &lt;- p x
+    ys &lt;- filterM p xs
+    return (if b then (x : ys) else ys)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; filterM (\x -&gt; Just (x &gt; 0)) [2, 1, 0, -1] 
+Just [2, 1] 
+
+&gt; filterM (\x -&gt; [x &gt; 0]) [2, 1, 0, -1]
+[[2, 1]] 
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#filter"><span class="link">filter</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="fmap">
+  fmap
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+fmap :: Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">fmap f x</span> lets function <span class="code">f</span> operate on
+<span class="code">x</span>, even though <span class="code">x</span> has a different type
+then <span class="code">f</span> was designed for. <span class="code">fmap</span> is
+defined for the types <span class="code">Maybe</span>, <span class="code">IO</span> and
+<span class="code">[]</span> in Prelude. In case of lists, 
+<span class="code">fmap</span> behaves exactly like <span class="code">map</span> and
+<span class="code">liftM</span>; in case of the Maybe monad, <span class="code">fmap</span>
+behaves like <span class="code">liftM</span>. 
+
+Every instance of <span class="code">fmap</span> should satisfy the following laws: 
+<pre class="code">fmap id      = id
+fmap (f . g) = fmap f . fmap g
+</pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">In module Control.Monad:
+instance Functor Maybe where
+  fmap f Nothing    =  Nothing
+  fmap f (Just x)   =  Just (f x)
+
+instance Functor IO where
+  fmap f x          =  x &gt;&gt;= (return . f)
+
+instance Functor [] where
+  fmap = map
+
+In module Data.Array:
+instance (Ix a) =&gt; Functor (Array a) where
+  fmap fn (MkArray b f) =  MkArray b (fn . f) 
+
+In modules Control.Monad.ST.Lazy and Control.Monad.ST:
+instance Functor (ST s) where
+  fmap = liftM
+
+Other modules with definitions exist.
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">Apply "negate" to a value in a Maybe monad:
+&gt; fmap negate (Just 1)
+Just (-1) 
+
+Take the square root of all elements in a list:
+&gt; fmap sqrt [1.0, 4.0, 9.0]
+[1.0, 2.0, 3.0] 
+
+Increment a value in a Maybe monad:
+&gt; let inc = fmap (+ 1) in inc (Just 2)
+Just 3 
+
+Increment a value in a Maybe monad, using liftM:
+&gt; let inc = liftM (+ 1) in inc (Just 2)
+Just 3 
+
+Increment all elements in a list:
+&gt; let inc = fmap (+ 1) in inc [2, 3]
+[3, 4] 
+
+Convert input to uppercase:
+&gt; putStr =&lt;&lt; fmap (fmap toUpper) getLine
+asdf
+ASDF
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#map"><span class="link">map</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="foldM">
+  foldM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+foldM :: (Monad m) =&gt; (a -&gt; b -&gt; m a) -&gt; a -&gt; [b] -&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">foldM</span> is the monadic version of <span class="code">foldl</span>, 
+whereas <span class="code">foldl</span> takes a function of type 
+<pre class="code">  a -&gt; b -&gt; a
+</pre>
+<span class="code">foldM</span> takes a function of type: 
+<pre class="code">  (Monad m) =&gt; (a -&gt; b -&gt; m a) 
+</pre>
+In  different words, it takes a function with two non-monadic parameters,
+resulting in a monadic value and folds a list with it. The expression:
+<pre class="code">  foldM f a [x1, x2, ..., xn]
+</pre>
+is equal to:
+<pre class="code">  f (... f (f (f a x1) x2 ...) xn
+</pre>
+The equivalent of <span class="code">foldr</span> can be achieved by:
+<pre class="code">  foldrM f a xs = foldM f a (reverse xs)
+</pre>
+<br>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">foldM f a []       =  return a
+foldM f a (x : xs) =  f a x &gt;&gt;= \ y -&gt; foldM f y xs
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">-- Begin source code --
+{-
+   Create a function that divides by a list of numbers,
+   similar to "sum" and "product"
+-}
+import Data.Maybe
+import Control.Monad
+
+-- A function that takes care of the "divide by zero" problem
+(./.) :: Fractional a =&gt; a -&gt; a -&gt; Maybe a
+x ./. 0 = Nothing
+x ./. y = Just (x / y)
+
+divide :: Fractional a =&gt; a -&gt; [a] -&gt; Maybe a
+divide x ys = foldM (./.) x ys
+
+-- End source code --
+
+
+&gt; divide 1 [2, 3]
+Just 0.166666666666667
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#foldl"><span class="link">foldl</span></a>,&nbsp;<a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#foldr"><span class="link">foldr</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="guard">
+  guard
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+guard :: MonadPlus m =&gt; Bool -&gt; m ()
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">guard p</span> returns <span class="code">()</span>
+if <span class="code">p</span> is <span class="code">True</span>, 
+otherwise <span class="code">mzero</span>; it can be used as follows:
+<pre class="code">myDiv :: Fractional a =&gt; a -&gt; a -&gt; Maybe a
+myDiv x y = 
+  do
+    guard (y /= 0)
+    return (x / y)
+</pre>
+Or:
+<pre class="code">myDiv :: Fractional a =&gt; a -&gt; a -&gt; Maybe a
+myDiv x y = guard (y /= 0) &gt;&gt; return (x / y)
+</pre>
+When <span class="code">y == 0</span>, The function returns
+<span class="code">Nothing</span>, otherwise <span class="code">Just (x / y)</span>.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">guard p = if p then return () else mzero
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; :l Monad
+&gt; guard True &gt;&gt; Just 3
+Just 3
+&gt; guard False &gt;&gt; Just 3
+Nothing
+
+&gt; guard True &gt;&gt; [1, 2, 3]
+[1,2,3]
+&gt; guard False &gt;&gt; [1, 2, 3]
+[]
+
+&gt; myDiv 1 0
+Nothing
+&gt; myDiv 1 1
+Just 1.0
+
+&gt; :m +Control.Monad.Error
+&gt; guard True &gt;&gt; print "OK"
+"OK"
+
+&gt; guard False &gt;&gt; print "OK"
+
+Program error: user error (mzero)
+
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mzero"><span class="link">mzero</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#when"><span class="link">when</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#unless"><span class="link">unless</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="join">
+  join
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+join :: (Monad m) =&gt; m (m a) -&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">join</span> removes one layer of nesting of a monadic value:
+<span class="code">join (m (m x))</span> changes
+<span class="code">m (m x)</span> to
+<span class="code">m x</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">join x  =  x &gt;&gt;= id
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; join (Just (Just 1))
+Just 1 
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso">
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="liftM">
+  liftM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+liftM :: (Monad m) =&gt; (a -&gt; b) -&gt; (m a -&gt; m b)
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">liftM f m</span> lets a non-monadic function
+<span class="code">f</span> operate on the contents of monad <span class="code">m</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">liftM f  =  \a -&gt; do { a' &lt;- a; return (f a') }
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; liftM sin (Just 0)
+Just 0.0
+
+&gt; liftM (replicate 10) ['a']
+["aaaaaaaaaa"]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="liftM2">
+  liftM2
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+liftM2 :: (Monad m) =&gt; (a -&gt; b -&gt; c) -&gt; (m a -&gt; m b -&gt; m c)
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">liftM2 f m1 m2</span> lets a non-monadic function
+<span class="code">f</span> operate on the contents of monads
+<span class="code">m1</span> and <span class="code">m2</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">liftM2 f  =  \a b -&gt; do { a' &lt;- a; b' &lt;- b; return (f a' b') }
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">-- Create the new operator ?- to subtract
+-- numbers encapsulated in monads:
+&gt; let (?-) = liftM2 (-) in Just 3 ?- (Just 2)
+Just 1 
+
+-- Create the new operator ?* to multiply
+-- numbers encapsulated in monads,
+-- multiply with "Nothing":
+&gt; let (?*) = liftM2 (*) in Just 3 ?* Nothing
+Nothing 
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="liftM3">
+  liftM3
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+liftM3 :: (Monad m) =&gt; (a -&gt; b -&gt; c -&gt; d) -&gt;
+                          (m a -&gt; m b -&gt; m c -&gt; m d)
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">liftM3 f m1 m2 m3</span> lets a non-monadic function
+<span class="code">f</span> operate on the contents of monads
+<span class="code">m1</span>, <span class="code">m2</span> and
+<span class="code">m3</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">liftM3 f  =  \a b c -&gt; do { a' &lt;- a
+                          ; b' &lt;- b
+                          ; c' &lt;- c
+                          ; return (f a' b' c')
+                          }
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; liftM3 flip (Just elem) (Just [1..10]) (Just 5)
+Just True
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="liftM4">
+  liftM4
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+liftM4           :: (Monad m) =&gt; (a -&gt; b -&gt; c -&gt; d -&gt; e) -&gt;
+                               (m a -&gt; m b -&gt; m c -&gt; m d -&gt; m e)
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">liftM4 f m1 m2 m3 m4</span> lets a non-monadic function
+<span class="code">f</span> operate on the contents of monads
+<span class="code">m1</span>,
+<span class="code">m2</span>,
+<span class="code">m3</span> and
+<span class="code">m4</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">liftM4 f  =  \a b c d -&gt; do { a' &lt;- a
+                            ; b' &lt;- b
+                            ; c' &lt;- c
+                            ; d' &lt;- d
+                            ; return (f a' b' c' d')
+                            }
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; let sum4 w x y z = w + x + y + z in liftM4 sum4 (Just 0) (Just 1) (Just 2) (Just 3)
+Just 6
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM5"><span class="link">liftM5</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="liftM5">
+  liftM5
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+liftM5           :: (Monad m) =&gt; (a -&gt; b -&gt; c -&gt; d -&gt; e -&gt; f) -&gt;
+                               (m a -&gt; m b -&gt; m c -&gt; m d -&gt; m e -&gt; m f)
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">liftM5 f m1 m2 m3 m4 m5</span> lets a non-monadic function
+<span class="code">f</span> operate on the contents of monads
+<span class="code">m1</span>,
+<span class="code">m2</span>,
+<span class="code">m3</span>,
+<span class="code">m4</span> and
+<span class="code">m5</span>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">liftM5 f  =  \a b c d e -&gt; do { a' &lt;- a
+                              ; b' &lt;- b
+                              ; c' &lt;- c
+                              ; d' &lt;- d
+                              ; e' &lt;- e
+                              ; return (f a' b' c' d' e')
+                              }
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; let sum5 v w x y z = v + w + x + y + z in liftM5 sum5 (Just 0) (Just 1) (Just 2) (Just 3) (Just 4)
+Just 10
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM"><span class="link">liftM</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM2"><span class="link">liftM2</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM3"><span class="link">liftM3</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#liftM4"><span class="link">liftM4</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#fmap"><span class="link">fmap</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="mapAndUnzipM">
+  mapAndUnzipM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+mapAndUnzipM :: (Monad m) =&gt; (a -&gt; m (b,c)) -&gt; [a] -&gt; m ([b], [c])
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">mapAndUnzipM mf xs</span> takes a monadic function
+<span class="code">mf</span> (having type
+<span class="code">(Monad m) =&gt; (a -&gt; m (b,c))</span>)
+and applies it to each element in list
+<span class="code">xs</span>; the resulting list of two-tuples
+is then unzipped, the final result is a two-tuple of lists inside a monad.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">mapAndUnzipM f xs  =  sequence (map f xs) &gt;&gt;= return . unzip
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; map (divMod 3) [1, 2, 3, 4, 5]
+[(3,0),(1,1),(1,0),(0,3),(0,3)]
+
+&gt; unzip (map (divMod 3) [1, 2, 3, 4, 5])
+([3,1,1,0,0],[0,1,0,3,3]) 
+
+&gt; mapAndUnzipM (Just . divMod 3) [1, 2, 3, 4, 5]
+Just ([3,1,1,0,0],[0,1,0,3,3])
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#map"><span class="link">map</span></a>,&nbsp;unzip
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="mapM">
+  mapM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+mapM :: Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m [b]
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">mapM mf xs</span> takes a monadic function
+<span class="code">mf</span> (having type
+<span class="code">Monad m =&gt; (a -&gt; m b)</span>)
+and applies it to each element in list
+<span class="code">xs</span>; the result is a list inside a monad.
+<br>
+The difference between <span class="code">mapM</span> and
+<span class="code">mapM_</span> is, that <span class="code">mapM</span>
+returns a list of the results, while <span class="code">mapM_</span>
+returns an empty result.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">mapM f as  =  sequence (map f as)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; mapM Just [0, 1, 2]
+Just [0,1,2]
+
+&gt; mapM print [0, 1, 2]
+0
+1
+2
+
+&gt; mapM (\x -&gt; [x]) [0, 1, 2]
+[[0,1,2]]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#map"><span class="link">map</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mapM_"><span class="link">mapM_</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence"><span class="link">sequence</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="mapM_">
+  mapM_
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+mapM_ :: Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m ()
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">mapM_ mf xs</span> takes a monadic function
+<span class="code">mf</span> (having type
+<span class="code">Monad m =&gt; (a -&gt; m b)</span>)
+and applies it to each element in list
+<span class="code">xs</span>; the result of each action is not stored.
+<br>
+The difference between <span class="code">mapM</span> and
+<span class="code">mapM_</span> is, that <span class="code">mapM</span>
+returns a list of the results, while <span class="code">mapM_</span>
+returns an empty result.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">mapM_ f as  =  sequence_ (map f as)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; mapM_ Just [0, 1, 2]
+Just ()
+
+&gt; mapM_ print [0, 1, 2]
+0
+1
+2
+ 
+&gt; mapM_ (\x -&gt; [x]) [0, 1, 2]
+[()]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#map"><span class="link">map</span></a>,&nbsp;<a href="./A tour of the Haskell monad functions_files/A tour of the Haskell monad functions.html"><span class="link">mapM</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence"><span class="link">sequence</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="mplus">
+  mplus
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+mplus :: MonadPlus a =&gt; a b -&gt; a b -&gt; a b
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+The method <span class="code">mplus</span> is the plus of the MonadPlus class.
+Any definition of <span class="code">mplus</span> must obey the following laws:
+<pre class="code">  m `mplus` mzero = m	
+  mzero `mplus` m = m	
+</pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">class  Monad m =&gt; MonadPlus m  where
+  mplus  :: m a -&gt; m a -&gt; m a
+
+instance  MonadPlus Maybe  where
+  Nothing `mplus` ys    = ys
+  xs      `mplus` ys    = xs
+
+instance  MonadPlus []  where
+  mplus = (++)
+
+-- Other instances can be found in other modules
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; "a" `mplus` "b"
+"ab"
+
+&gt; Just "a" `mplus` Just "b"
+Just "a"
+
+&gt; Nothing `mplus` Just "b"
+Just "b"
+
+&gt; undefined `mplus` Just 2
+
+Program error: Prelude.undefined
+
+&gt; Just 1 `mplus` undefined
+Just 1
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mzero"><span class="link">mzero</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#msum"><span class="link">msum</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="msum">
+  msum
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+msum  :: MonadPlus m =&gt; [m a] -&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">msum</span> is the monadic version of sum,
+it sums the elements of a list with <span class="code">mplus</span>,
+using <span class="code">mzero</span> as a starting value.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">msum xs = foldr mplus mzero xs
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; msum ["a", "b", "c"]
+"abc"
+
+&gt; msum [Just "a", Just "b", Just "c"]
+Just "a"
+
+&gt; msum [Nothing, Just "b", Just "c"]
+Just "b"
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mplus"><span class="link">mplus</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mzero"><span class="link">mzero</span></a>,&nbsp;<a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#foldr"><span class="link">foldr</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="mzero">
+  mzero
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+mzero :: MonadPlus m =&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">mzero</span> is the zero of the MonadPlus class.
+Any definition of <span class="code">mzero</span> must obey the following laws:
+<pre class="code">  m &gt;&gt;= \x -&gt; mzero = mzero
+  mzero &gt;&gt;= m = mzero
+</pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">class  Monad m =&gt; MonadPlus m  where
+  mzero  :: m a
+
+instance  MonadPlus Maybe  where
+  mzero  = Nothing
+
+instance  MonadPlus []  where
+  mzero  = []
+
+-- Other instances may be found in other modules
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; mzero :: [Int]
+[]
+
+&gt; mzero :: Maybe Int
+Nothing
+
+&gt; (mzero :: Maybe Int) &gt;&gt;= \x -&gt; Just (x * x)
+Nothing
+
+&gt; Just 1 `mplus` mzero
+Just 1
+
+&gt; mzero `mplus` Just 2
+Just 2
+
+&gt; mzero `mplus` [1]
+[1]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#mplus"><span class="link">mplus</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#msum"><span class="link">msum</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="return">
+  return
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+return :: Monad m =&gt; a -&gt; m a
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">return</span> is one of the two basic operators of the
+Monad class (the other is <span class="code">&gt;&gt;=</span> (called "bind")).
+One could say, it converts a value to a monad containing this value;
+the type of this monad depends on the type of the expression.
+<br>
+Any instantiation of <span class="code">&gt;&gt;=</span> and
+<span class="code">return</span> must obey the laws mentioned at the desciption of
+<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>=)"><span class="link">(&gt;&gt;=)</span></a>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">class  Monad m  where
+  return :: a -&gt; m a
+
+instance  Monad Maybe  where
+  return  =  Just
+
+instance  Monad IO  where
+  return  =  ...  -- This cannot be expressed in Haskell
+
+instance  Monad []  where
+  return x  =  [x]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; (return 3) :: Maybe Int
+Just 3
+
+&gt; (return 3) :: [Int]
+[3]
+
+&gt; getLine &gt;&gt;= \x -&gt; return (x ++ x) &gt;&gt;= print
+haha
+"hahahaha"
+
+&gt; do {x &lt;- getLine; y &lt;- return (x ++ x); print y}
+qwerty
+"qwertyqwerty"
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#(>>=)"><span class="link">(&gt;&gt;=)</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="sequence">
+  sequence
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+sequence :: Monad m =&gt; [m a] -&gt; m [a] 
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">sequence xs</span> evaluates all monadic
+values in the list <span class="code">xs</span>,
+from left to right, and returns a list of the "contents" of
+these monads, placing this list in a monad of the same type.
+Note, that "evaluating" can be interpreted as "performing an
+action", for example in the case of <span class="code">print</span>.
+<br>
+The difference between <span class="code">sequence</span> and
+<span class="code">sequence_</span> is that <span class="code">sequence</span>
+returns a list of the results, while <span class="code">sequence_</span>
+returns an empty result.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">sequence = foldr mcons (return [])
+  where
+    mcons p q = p &gt;&gt;= \x -&gt; q &gt;&gt;= \y -&gt; return (x : y)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; sequence [print 1, print 2, print 3]
+1
+2
+3
+
+&gt; sequence [print 1, print 2, print 3] &gt;&gt;= print
+1
+2
+3
+[(),(),()]
+
+&gt; sequence [Just 1, Just 2, Just 3]
+Just [1,2,3]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence_"><span class="link">sequence_</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="sequence_">
+  sequence_
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Prelude
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+sequence_ :: Monad m =&gt; [m a] -&gt; m () 
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">sequence_ xs</span> evaluates all monadic
+values in the list <span class="code">xs</span>,
+from left to right, and returns <span class="code">()</span> inside a monad.
+Note, that "evaluating" can be read as "performing an action".
+<br>
+The difference between <span class="code">sequence</span> and
+<span class="code">sequence_</span> is that <span class="code">sequence</span>
+returns a list of the results, while <span class="code">sequence_</span>
+returns an empty result.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">sequence_  =  foldr (&gt;&gt;) (return ())
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; sequence_ [print 1, print 2, print 3]
+1
+2
+3
+
+&gt; sequence_ [print 1, print 2, print 3] &gt;&gt;= print
+1
+2
+3
+()
+
+&gt; sequence_ [Just 1, Just 2, Just 3]
+Just ()
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#sequence"><span class="link">sequence</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="unless">
+  unless
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+unless :: (Monad m) =&gt; Bool -&gt; m () -&gt; m ()
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">unless p me</span> executes monadic expression
+<span class="code">me</span> when <span class="code">p</span> is False. 
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">unless p s = when (not p) s
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; unless (0 == 1) (print "OK")
+"OK"
+
+&gt; unless (1 == 1) (print "This is the end of logic")
+
+&gt; let simulation = True in unless simulation (putStrLn "Launching Ariane 5 now")
+
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#when"><span class="link">when</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#guard"><span class="link">guard</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="when">
+  when
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+when :: (Monad m) =&gt; Bool -&gt; m () -&gt; m ()
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">when p me</span> executes monadic expression
+<span class="code">me</span> when <span class="code">p</span> is True. 
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">when p s = if p then s else return ()
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; when (1 == 1) (print "OK")
+"OK"
+
+&gt; when (0 == 1) (print "This is the end of logic")
+
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#unless"><span class="link">unless</span></a>,&nbsp;<a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#guard"><span class="link">guard</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="zipWithM">
+  zipWithM
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+zipWithM :: (Monad m) =&gt; (a -&gt; b -&gt; m c) -&gt; [a] -&gt; [b] -&gt; m [c]
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">zipWithM</span> is the monadic version of <span class="code">zipWith</span>;
+<span class="code">zipWithM me xs ys</span> uses monadic expression
+<span class="code">me</span> to zip the lists
+<span class="code">xs</span> and <span class="code">ys</span>.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">zipWithM f xs ys = sequence (zipWith f xs ys)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; zipWithM (\x y -&gt; Just (x + y)) [1, 2, 3] [4, 5, 6]
+Just [5,7,9]
+
+&gt; zipWithM (\x y -&gt; print (x + y)) [1, 2, 3] [4, 5, 6]
+5
+7
+9
+
+&gt; zipWithM (\x y -&gt; print (x + y)) [1, 2, 3] [4, 5, 6] &gt;&gt;= print
+5
+7
+9
+[(),(),()]
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#zipWithM_"><span class="link">zipWithM_</span></a>,&nbsp;<a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#zipWith"><span class="link">zipWith</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+
+<br>
+<br>
+<div class="name">
+  <a name="zipWithM_">
+  zipWithM_
+  </a>
+</div>
+
+<table cellspacing="5">
+
+  <tbody><tr valign="top">
+    <td class="header">
+      module:
+    </td>
+    <td class="module">
+Control.Monad
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      type:
+    </td>
+    <td class="type">
+zipWithM_ :: (Monad m) =&gt; (a -&gt; b -&gt; m c) -&gt; [a] -&gt; [b] -&gt; m ()
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      description:
+    </td>
+    <td class="description">
+<span class="code">zipWithM_</span> is the monadic version of <span class="code">zipWith</span>;
+<span class="code">zipWithM_ me xs ys</span> uses monadic expression
+<span class="code">me</span> to zip the lists
+<span class="code">xs</span> and <span class="code">ys</span>;
+it returns <span class="code">m ()</span>, where
+<span class="code">m</span> is a monad of the same type as the
+result of <span class="code">me</span>.
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      definition:
+    </td>
+    <td>
+      <pre class="definition">zipWithM_ f xs ys  =  sequence_ (zipWith f xs ys)
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      usage:
+    </td>
+    <td>
+      <pre class="usage">&gt; zipWithM_ (\x y -&gt; Just (x + y)) [1, 2, 3] [4, 5, 6]
+Just ()
+
+&gt; zipWithM_ (\x y -&gt; print (x + y)) [1, 2, 3] [4, 5, 6]
+5
+7
+9
+
+&gt; zipWithM_ (\x y -&gt; print (x + y)) [1, 2, 3] [4, 5, 6] &gt;&gt;= print
+5
+7
+9
+()
+      </pre>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td class="header">
+      see also:
+    </td>
+    <td>
+      <pre class="seealso"><a href="http://members.chello.nl/hjgtuyl/tourdemonad.html#zipWithM"><span class="link">zipWithM</span></a>,&nbsp;<a href="http://undergraduate.csse.uwa.edu.au/units/CITS1211/Documentation/tourofprelude.html#zipWith"><span class="link">zipWith</span></a>
+      </pre>
+    </td>
+  </tr>
+</tbody></table>
+
+<!-- ==== --> 
+
+
+<!-- MOD 061227 inserted the following lines: -->
+<a href="http://van.tuyl.eu/">
+  Home
+</a>
+<!-- End mod 061227 -->
+
+<p>
+  <a href="http://validator.w3.org/check?uri=referer">
+    <img border="0" src="./A tour of the Haskell monad functions_files/valid-html401" alt="Valid HTML 4.01!" height="31" width="88">
+  </a>
+</p>
+
+<p>
+  <a href="http://jigsaw.w3.org/css-validator/check/referer">
+    <img style="border:0;width:88px;height:31px" src="./A tour of the Haskell monad functions_files/vcss" alt="Valid CSS!">
+  </a>
+</p>
+
+
+<!-- MOD 090119 deleted the following lines: -->
+<!-- Begin Motigo Webstats counter code -->
+<!-- <a id="mws3577806" href="http://webstats.motigo.com/"> -->
+  <!-- <img width = "18" height="18" border="0" alt="Free counter and web stats" -->
+       <!-- src   = "http://m1.webstats.motigo.com/n.gif?id=ADaXzgzX4w3ErNh9RDbWiSuwLAiw"> -->
+<!-- </a> -->
+<!-- <script src="http://m1.webstats.motigo.com/c.js?id=3577806" type="text/javascript"></script> -->
+<!-- End Motigo Webstats counter code -->
+<!-- End mod 090119 -->
+
+<!-- MOD 090119 replaced (new counter) -->
+<!-- MOD 061228 inserted -->
+<!-- Start of belstat.nl Counter -->
+<script type="text/javascript">
+                <!--
+                d=document;
+                pag="";col="";scr=0;b=navigator.appName;
+                scr=screen.width+"*"+screen.height;
+                ref=escape(document.referrer);
+                pag=escape(d.URL);
+                if (b != "Netscape") {col=screen.colorDepth}
+                else {col=screen.pixelDepth}
+                if(col=="undefined"){col="";}
+                d.write("<a href=http://www.belstat.nl/viewstat.asp?UserID=alquantor\&lang=nl target=_blank><img border=0 src=\"http://www.belstat.nl/regstat.aspx?");
+                d.write("UserID=alquantor&BColor=purple&refer=" + ref + "&pag=" + pag + "&b=" + b + "&col=" + col + "&scr=" + scr);
+                d.write("\" align=center width=16 height=16 alt=\"Monitored by BelStat - Your Site Counts\"><\/a>");
+                // -->
+</script><a href="http://www.belstat.nl/viewstat.asp?UserID=alquantor&lang=nl" target="_blank"><img border="0" src="./A tour of the Haskell monad functions_files/regstat.aspx" align="center" width="16" height="16" alt="Monitored by BelStat - Your Site Counts"></a>
+<!-- End of belstat.nl Counter -->
+<!-- End mod 061228 -->
+<!-- End mod 090119 -->
+
+
+<!-- MOD 090119 inserted the following lines: -->
+<br>
+<a href="http://webstats.motigo.com/s?id=3577806">
+  Statistics from 2005-06-05 until 2009-01-19
+</a>
+<!-- End mod 090119 -->
+
+
+<!-- MOD 081015 inserted -->
+<!-- MOD 071227 inserted -->
+<!-- <iframe  -->
+<!--    src ="http://s3.bitefight.org/c.php?uid=93420" -->
+<!--    width="0" -->
+<!--    height="0" -->
+<!-- > -->
+<!-- End mod 071227 -->
+<!-- End mod 081015 -->
+
+<!-- MOD 090807 inserted -->
+<!-- Google Analytics code toegevoegd dd 090708 -->
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="./A tour of the Haskell monad functions_files/ga.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+ try {
+       var pageTracker = _gat._getTracker("UA-9688383-1");
+       pageTracker._trackPageview();
+     } catch(err) {}
+</script>
+<!-- End mod 090807 -->
+
+
+
+</body></html>
