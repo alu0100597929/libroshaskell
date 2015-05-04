@@ -99,8 +99,34 @@ Lección 3: evaluación, parte 1
 
 Lo primero de todo es hacer LispVal instancia de Show para poder imprimir por pantalla los valores de tipo LispVal.
 
-Para ello se crea la función showVal y se iguala a show (show = showVal para el tipo LispVal). Para los dos tipos de listas, List y DottedList, se usa la función unwordsList:
+Para ello se crea la función showVal :: LispVal -> String y se iguala a show (instance Show LispVal where show = showVal). Para los dos tipos de listas, List y DottedList, se usa la función unwordsList:
 
 unwordsList :: [LispVal] -> String
 unwordsList = unwords . map showVal
+
+Ahora empezamos con el evaluador propiamente dicho:
+
+eval :: LispVal -> LispVal
+eval val@(String _) = val
+eval val@(Number _) = val
+eval val@(Bool _) = val
+eval (List [Atom "quote", val]) = val
+
+LispVal se puede ver como una expresión, y cambiaremos LispVal para que devuelva una expresión en vez de su valor de cadena de carácteres.
+
+readExpr :: String -> LispVal
+readExpr input = case parse parseExpr "lisp" input of
+    Left err -> String $ "No match: " ++ show err
+    Right val -> val
+
+Cambiamos el código de la función main para que evalúe las expresiones en vez de sólo imprimirlas por pantalla:
+
+main :: IO ()
+main = getArgs >>= print . eval . readExpr . head
+
+Añadimos a la función eval una ecuación que nos permitirá aplicar funciones a sus argumentos (para aplicar funciones se debe poner una lista cuyo primer elemento es el nombre de la función y luego los demás elementos serán los argumentos de dicha función):
+
+eval (List (Atom func : args)) = apply func $ map eval args
+
+Como vemos, tenemos hecha una ecuación que es recursiva, mapea eval sobre los argumentos, con lo cual ya tenemos resuelto el problema de evaluar listas anidadas de manera "gratuita".
 
