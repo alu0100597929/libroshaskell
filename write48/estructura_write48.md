@@ -201,9 +201,9 @@ Aquí lo más complicado es saber el tipo de evaled, así que vayamos por partes
 
 5) `extrackValue` nos devuelve un `String`
 
-main :: IO ()
-main = do
-     args <- getArgs
-     evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-     putStrLn $ extractValue $ trapError evaled
+    main :: IO ()
+    main = do
+         args <- getArgs
+         evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+         putStrLn $ extractValue $ trapError evaled
 
