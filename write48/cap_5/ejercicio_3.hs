@@ -89,6 +89,9 @@ eval (List [Atom "if", pred, conseq, alt]) =
              _          -> throwError $ TypeMismatch "boolean predicate" pred
 -- de lecciones anteriores
 eval (List (Atom func : args)) = mapM eval args >>= apply func
+--nuevo
+--eval (CaseExpr LispVal LispVal) = do
+
 eval badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
 
 --ejercicio 3: nuevo parser para expresiones case
@@ -100,11 +103,19 @@ parseCaseResult = do
     rest <- many (digit <|> letter <|> symbol)
     return $ String (first:rest)
 
+parseCasePair :: Parser LispVal
+parseCasePair = do
+    list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
+    result <- lexeme $ parseCaseResult
+    return $ CasePair (list, result)
+
 parseCaseExpr :: Parser LispVal
 parseCaseExpr = do
-    list <- lexeme $ char '(' *> parseList <* char ')'
-    result <- lexeme $ parseCaseResult
-    return $ CaseExpr list result
+    lexeme $ char '('
+    lexeme $ string "case"
+    conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
+    lista <- sepBy parseCasePair $ newline
+    return $ CaseExpr conditional_expr lista
 
 -- parte nueva
 
@@ -253,6 +264,8 @@ unpackNum notNum     = throwError $ TypeMismatch "number" notNum
 
 --newtype ListaLispVal = ListaLispVal [LispVal]
 
+--data CasePair = 
+
 data LispVal = Atom String
              | List [LispVal]
              | DottedList [LispVal] LispVal
@@ -265,7 +278,11 @@ data LispVal = Atom String
              | Bool Bool
              | Vector (Array Int LispVal)
              -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
-             | CaseExpr LispVal LispVal
+             -- primer LispVal, expr a evaluar
+             -- luego, "lista claves" "resultado"
+             --molaría forzar que los LispVal de la lista fueran de tipo CasePair
+             | CasePair (LispVal, LispVal)
+             | CaseExpr LispVal [LispVal]
 
 instance Show LispVal where show = showVal
 
@@ -423,7 +440,8 @@ showVal (Bool True) = "#t"
 showVal (Bool False) = "#f"
 showVal (List xs) = "(" ++ unwordsList xs ++ ")"
 showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
-showVal (CaseExpr list result) = "(" ++ showVal list ++ " " ++ showVal result ++ ")"
+showVal (CasePair (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
+showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " " ++ concat (map showVal lista_pares) ++ ")"
 
 --
 -- Unary primitive defs all have type
@@ -465,8 +483,10 @@ string2symbol _ = error "Expecting a String"
 --
 
 -- nuevo helper, lexeme
+-- TODO: gran armada...lexeme se come cosas que luego usamos como separador...
 ws :: Parser String
-ws = many (oneOf " \t\n")
+--ws = many (oneOf " \t\n")
+ws = many (oneOf " \t")
 
 -- mi propio combinador lexeme
 lexeme :: Parser a -> Parser a
