@@ -50,14 +50,42 @@ cometido algún error, ruego que me lo comuniques a la sección [Issues](https:/
 
 # Referencias indispensables
 
-El [informe oficial revisado de Haskell 98](https://www.haskell.org/onlinereport/index98.html) 
+[Informe oficial revisado de Haskell 98](https://www.haskell.org/onlinereport/index98.html):
 nos permite ver la implementación que en su momento se hizo de las funciones predefinidas. Es muy 
 importante [la sección del módulo `Prelude`](https://www.haskell.org/onlinereport/standard-prelude.html#sect8). Puedes entrar [aquí](https://www.haskell.org/onlinereport/index98.html) para ver el 
 índice completo.
 
-En las [Haskell Hierarchical Libraries](http://downloads.haskell.org/~ghc/latest/docs/html/libraries/) podemos ir al módulo que queramos y una vez dentro de él ver las definiciones de las 
+[Haskell Hierarchical Libraries](http://downloads.haskell.org/~ghc/latest/docs/html/libraries/): podemos ir al módulo que queramos y una vez dentro de él ver las definiciones de las 
 funciones. Además, pulsando el botón *source* podemos ver el código real de las mismas, y 
 aprender mucho.
+
+[reddit](http://www.reddit.com/r/haskell/): un sitio impresionante, muy actualizado y completo, en el que te enterarás de muchas novedades y proyectos interesantes en Haskell, así como de tutoriales, vídeos y mucho más.
+
+[dohaskell.com](http://dohaskell.com/): contiene enlaces muy interesantes a tutoriales, vídeos, conferencias, documentación...etc. Imprescindible.
+
+# Consejos para el lector
+
+1. Si no entiendes algo, probablemente creas que entiendes todo lo anterior, sin ser esto cierto. Repasa y fortalece tus conocimientos.
+
+2. Si no entiendes algo a la primera, sigue adelante (o aplica el punto 2) y retómalo un poco más tarde.
+
+3. El mejor medio para aprender no es este tutorial, es Internet. En Internet tienes muchísima información actualizada minuto a minuto, ¡úsala! (ver "Referencias Indispensables").
+
+4. Pasa tu primera etapa de aprendizaje resolviendo problemas de juguete, más adelante, pasa a programas del mundo real.
+
+5. Si alguna vez te aburres de leer tutoriales y/o libros, pasa a programar, escribe código que te haga ver utilidad a lo que estás aprendiendo.
+
+# Estado del tutorial
+
+- [x] Sintaxis resaltada con colores
+
+- [x] Ortografía
+
+- [x] Pruebas del código incluido
+
+- [] Reorganización del contenido
+
+- [ ] Completado
 
 <!--inicio de la parte más básica del tutorial-->
 
