@@ -11,10 +11,14 @@ import Numeric (readOct, readHex)
 import System.Environment
 import Text.ParserCombinators.Parsec hiding (spaces)
 
+
 -----------------Parte nueva-----------------
 
 -- nuevo, Control.Monad.Error está deprecated
 import Control.Monad.Except -- cabal install mtl
+import Data.List
+import Debug.Trace
+import Data.Either.Unwrap
 
 data LispError = NumArgs Integer [LispVal]
                | TypeMismatch String LispVal
@@ -37,18 +41,16 @@ showError (Parser parseErr)             = "Parse error at " ++ show parseErr
 instance Show LispError where show = showError
 
 {-
-Type constructors are curried just like functions, and can also be partially applied.
-A full type would be Either LispError Integer or Either LispError LispVal, but we
-want to say ThrowsError LispVal and so on. We only partially apply Either to
-LispError, creating a type constructor ThrowsError that we can use on any data type.
+La línea de código está currificada, se podría escribir así también:
+type ThrowsError b = Either LispError b
 -}
 type ThrowsError = Either LispError
 
 main :: IO ()
 main = do
-     args <- getArgs
-     evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-     putStrLn $ extractValue $ trapError evaled
+    args <- getArgs
+    evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+    putStrLn $ extractValue $ trapError evaled
 
 {-catchError, which takes an Either action and a function that turns an
 error into another Either action. If the action represents an error,
@@ -63,12 +65,48 @@ extractValue (Right val) = val
 -- es decir, pasa de (Error) a (Left LispError)
 readExpr :: String -> ThrowsError LispVal
 readExpr input = case parse parseExpr "lisp" input of
-     Left err -> throwError $ Parser err
-     Right val -> return val
+                   Left err -> throwError $ Parser err
+                   Right val -> return val
+
+-- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
+-- primer LispVal, expr a evaluar
+-- luego, "lista claves" "resultado"
+-- | CasePair' CasePair
+-- | CaseExpr LispVal [CasePair]
+
+-- nuevo helper que busca un elemento en una lista, probada.
+findList :: LispVal -> LispVal -> ThrowsError LispVal
+findList el (List [])     = Right (Bool False)
+findList el (List (x:xs)) = case eqv [el,x] of
+                              Right (Bool True) -> Right (Bool True)
+                              _ -> findList el (List xs)
+
+-- nuevo: ayudante de eval que busca coincidencias en expresiones case
+-- recibe una clave y la busca en cada lista, si está, devuelve el resultado
+findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
+findLispVal clave []     = trace ("vacía") Nothing
+findLispVal clave toda@(x:xs) = case trace (showVal clave ++ " " ++ showVal (fst x)) findList clave (fst x) of
+                                  Right (Bool True) -> Just (snd x)
+                                  _ -> findLispVal clave xs
 
 --
 -- Evaluador
 --
+
+{-
+*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 2 2) ((4 9 2 1 2) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
+4 (4 9 2 1 2)
+Right "d64"
+*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 1 1) ((4 9 1) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
+2 (4 9 1)
+2 (1 2)
+Right "pepito"
+*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 5 5) ((4 9 1) 'd64\n((1 2) 'pepito\n((10) 'jorgito)"
+10 (4 9 1)
+10 (1 2)
+10 (10)
+Right "jorgito"
+-}
 
 eval :: LispVal -> ThrowsError LispVal
 eval val@(String _) = return val
@@ -76,10 +114,11 @@ eval val@(Number _) = return val
 eval val@(Bool _) = return val
 eval (List [Atom "quote", val]) = return val
 -- nuevo
---eval (List [Atom "case", key, expres]) =
---     do result <- eval key
---        find result expres
-
+eval (CaseExpr expr lista_pares) = do
+    result <- eval expr --TRACE, en la línea siguiente: trace (showVal result) 
+    case findLispVal result lista_pares of
+      Nothing -> return (String "undefined")
+      Just x -> return x
 
 eval (List [Atom "if", pred, conseq, alt]) = 
      do result <- eval pred
@@ -89,9 +128,6 @@ eval (List [Atom "if", pred, conseq, alt]) =
              _          -> throwError $ TypeMismatch "boolean predicate" pred
 -- de lecciones anteriores
 eval (List (Atom func : args)) = mapM eval args >>= apply func
---nuevo
---eval (CaseExpr LispVal LispVal) = do
-
 eval badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
 
 --ejercicio 3: nuevo parser para expresiones case
@@ -103,11 +139,11 @@ parseCaseResult = do
     rest <- many (digit <|> letter <|> symbol)
     return $ String (first:rest)
 
-parseCasePair :: Parser LispVal
+parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
     result <- lexeme $ parseCaseResult
-    return $ CasePair (list, result)
+    return (list, result)
 
 parseCaseExpr :: Parser LispVal
 parseCaseExpr = do
@@ -264,7 +300,7 @@ unpackNum notNum     = throwError $ TypeMismatch "number" notNum
 
 --newtype ListaLispVal = ListaLispVal [LispVal]
 
---data CasePair = 
+type CasePair = (LispVal, LispVal)
 
 data LispVal = Atom String
              | List [LispVal]
@@ -277,12 +313,11 @@ data LispVal = Atom String
              | Char Char
              | Bool Bool
              | Vector (Array Int LispVal)
+             | Nil () -- usarlo cuando convenga
              -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
+             | CasePair' CasePair
              -- primer LispVal, expr a evaluar
-             -- luego, "lista claves" "resultado"
-             --molaría forzar que los LispVal de la lista fueran de tipo CasePair
-             | CasePair (LispVal, LispVal)
-             | CaseExpr LispVal [LispVal]
+             | CaseExpr LispVal [CasePair]
 
 instance Show LispVal where show = showVal
 
@@ -431,6 +466,9 @@ parseVector = do string "#("
 -- Show functions
 --
 
+-- | CasePair' CasePair
+-- | CaseExpr LispVal [CasePair]
+
 showVal :: LispVal -> String
 showVal (String s) = "\"" ++ s ++ "\""
 showVal (Atom name) = name
@@ -440,8 +478,12 @@ showVal (Bool True) = "#t"
 showVal (Bool False) = "#f"
 showVal (List xs) = "(" ++ unwordsList xs ++ ")"
 showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
-showVal (CasePair (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
-showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " " ++ concat (map showVal lista_pares) ++ ")"
+showVal (CasePair' (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
+showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " "
+                                      ++ unwords (map casePair2Str lista_pares) ++ ")"
+
+casePair2Str :: CasePair -> String
+casePair2Str (a,b) = showVal a ++ ", " ++ showVal b
 
 --
 -- Unary primitive defs all have type
