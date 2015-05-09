@@ -19,6 +19,7 @@ import Control.Monad.Except -- cabal install mtl
 import Data.List
 import Debug.Trace
 import Data.Either.Unwrap
+--import Data.String.Utils (replace) --para las Strings
 
 data LispError = NumArgs Integer [LispVal]
                | TypeMismatch String LispVal
@@ -49,12 +50,14 @@ type ThrowsError = Either LispError
 main :: IO ()
 main = do
     args <- getArgs
-    --evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-    --putStrLn $ extractValue $ trapError evaled
-    exp <- return $ readExpr (args !! 0)
-    putStrLn $ showVal $ extractValue exp
+    let procesada = {-show $-} unlines $ lines (args !! 0)
+    print procesada
+    evaled <- return $ liftM show $ readExpr procesada >>= eval
+    putStrLn $ extractValue $ trapError evaled
+    --exp <- return $ readExpr (args !! 0)
+    --putStrLn $ showVal $ extractValue exp
 
-{-recibe un valor Either (una acción) y si es Right, lo devuelve, si es Left,
+{-catchError: recibe un valor Either (una acción) y si es Right, lo devuelve, si es Left,
 le aplica la función que recibe (en este caso está hardcoded, y lo que hace es
 pasar del Left a un valor normal de LispVal). El sentido de todo esto es que
 el Either resultado siempre tenga un valor Right:.-}
@@ -86,8 +89,9 @@ findList el (List (x:xs)) = case eqv [el,x] of
 -- nuevo: ayudante de eval que busca coincidencias en expresiones case
 -- recibe una clave y la busca en cada lista, si está, devuelve el resultado
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
-findLispVal clave []     = trace ("vacía") Nothing
-findLispVal clave toda@(x:xs) = case trace (showVal clave ++ " " ++ showVal (fst x)) findList clave (fst x) of
+findLispVal clave []     = trace ("findLispVal vacía") Nothing
+-- trace ("findLispVal " ++ showVal clave ++ " " ++ showVal (fst x))
+findLispVal clave (x:xs) = case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> findLispVal clave xs
 
@@ -121,7 +125,6 @@ eval (CaseExpr expr lista_pares) = do
     case findLispVal result lista_pares of
       Nothing -> return (String "undefined")
       Just x -> return x
-
 eval (List [Atom "if", pred, conseq, alt]) = 
      do result <- eval pred
         case result of
@@ -144,7 +147,7 @@ parseCaseResult = do
 parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
-    result <- lexeme $ parseCaseResult
+    result <- lexeme $ parseCaseResult <* char ')'
     return (list, result)
 
 parseCaseExpr :: Parser LispVal
@@ -152,7 +155,8 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy parseCasePair $ newline
+    -- armada en las nuevas líneas, solucionado con un parser más trabajado
+    lista <- sepBy parseCasePair newline -- $ try (string "\\\\\n") <|> try (string "\n") <|> string "\r"
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva

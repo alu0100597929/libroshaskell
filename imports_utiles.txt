@@ -27,3 +27,7 @@ cabal install parsectools
 # Debuguear funciones estilo printf
 
 import Debug.Trace
+
+# para las Strings
+
+import Data.String.Utils (replace)
