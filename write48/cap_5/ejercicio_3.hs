@@ -49,13 +49,15 @@ type ThrowsError = Either LispError
 main :: IO ()
 main = do
     args <- getArgs
-    evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-    putStrLn $ extractValue $ trapError evaled
+    --evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+    --putStrLn $ extractValue $ trapError evaled
+    exp <- return $ readExpr (args !! 0)
+    putStrLn $ showVal $ extractValue exp
 
-{-catchError, which takes an Either action and a function that turns an
-error into another Either action. If the action represents an error,
-it applies the function, which you can use to, e.g. turn the error
-value into a normal one via return or re-throw as a different error.-}
+{-recibe un valor Either (una acción) y si es Right, lo devuelve, si es Left,
+le aplica la función que recibe (en este caso está hardcoded, y lo que hace es
+pasar del Left a un valor normal de LispVal). El sentido de todo esto es que
+el Either resultado siempre tenga un valor Right:.-}
 trapError action = catchError action (return . show)
 
 extractValue :: ThrowsError a -> a
