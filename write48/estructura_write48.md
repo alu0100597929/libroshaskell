@@ -253,3 +253,5 @@ Luego lo que está haciendo `const` es permitir una currificación que, da igual
     equal badArgList = throwError $ NumArgs 2 badArgList
 
 El tipo de `unpackEquals arg1 arg2` es `Unpacker -> ThrowsError Bool`, por tanto, `mapM (unpackEquals arg1 arg2)` sobre la lista `[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]` dará una mónada `ThrowsError` conteniendo una lista de `Bool`, es decir, `ThrowsError [Bool]`. A dicha lista le aplicaremos la función `or` mediante `liftM`.
+
+Menuda muerte en las expresiones case, pero ya funcionan. Haskell no es capaz, y mira que he preguntado en internet, de cambiar en una string los carácteres doblemente escapados por los simplemente escapados.

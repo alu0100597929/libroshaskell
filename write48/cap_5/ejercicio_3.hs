@@ -47,15 +47,16 @@ type ThrowsError b = Either LispError b
 -}
 type ThrowsError = Either LispError
 
+-- helper que cambia las dobles backslashes por una sola 
+foo :: String -> String
+foo s = read $ "\"" ++ s ++ "\""
+
 main :: IO ()
 main = do
     args <- getArgs
-    let procesada = {-show $-} unlines $ lines (args !! 0)
-    print procesada
+    let procesada = foo (args !! 0)
     evaled <- return $ liftM show $ readExpr procesada >>= eval
     putStrLn $ extractValue $ trapError evaled
-    --exp <- return $ readExpr (args !! 0)
-    --putStrLn $ showVal $ extractValue exp
 
 {-catchError: recibe un valor Either (una acción) y si es Right, lo devuelve, si es Left,
 le aplica la función que recibe (en este caso está hardcoded, y lo que hace es
@@ -140,9 +141,8 @@ eval badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
 parseCaseResult :: Parser LispVal
 parseCaseResult = do
     char '\''
-    first <- (letter <|> symbol) --de momento será una String
-    rest <- many (digit <|> letter <|> symbol)
-    return $ String (first:rest)
+    result <- parseExpr
+    return result
 
 parseCasePair :: Parser CasePair
 parseCasePair = do
@@ -150,13 +150,15 @@ parseCasePair = do
     result <- lexeme $ parseCaseResult <* char ')'
     return (list, result)
 
+-- las posibles acciones de un case se separan por líneas obligatoriamente, luego hubo
+-- que arreglar el error de parseo derivado de que |n se lee como \\n, es decir,
+-- una barra escapada y luego una n
 parseCaseExpr :: Parser LispVal
 parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    -- armada en las nuevas líneas, solucionado con un parser más trabajado
-    lista <- sepBy parseCasePair newline -- $ try (string "\\\\\n") <|> try (string "\n") <|> string "\r"
+    lista <- sepBy parseCasePair newline -- (char '\\' >> char 'n')
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva
@@ -480,6 +482,7 @@ showVal (String s) = "\"" ++ s ++ "\""
 showVal (Atom name) = name
 showVal (Char c) = show c -- faltaba
 showVal (Number n) = show n
+showVal (Float f) = show f -- faltaba
 showVal (Bool True) = "#t"
 showVal (Bool False) = "#f"
 showVal (List xs) = "(" ++ unwordsList xs ++ ")"
