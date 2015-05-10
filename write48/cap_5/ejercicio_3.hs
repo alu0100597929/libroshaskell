@@ -91,7 +91,11 @@ findList el (List (x:xs)) = case eqv [el,x] of
 -- recibe una clave y la busca en cada lista, si está, devuelve el resultado
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
 findLispVal clave []     = trace ("findLispVal vacía") Nothing
--- trace ("findLispVal " ++ showVal clave ++ " " ++ showVal (fst x))
+findLispVal clave [x]    = case fst x of
+                             List [Atom "else"] -> Just (snd x)
+                             _ -> case findList clave (fst x) of
+                                  Right (Bool True) -> Just (snd x)
+                                  _ -> Nothing
 findLispVal clave (x:xs) = case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> findLispVal clave xs
@@ -126,6 +130,7 @@ eval (CaseExpr expr lista_pares) = do
     case findLispVal result lista_pares of
       Nothing -> return (String "undefined")
       Just x -> return x
+      
 eval (List [Atom "if", pred, conseq, alt]) = 
      do result <- eval pred
         case result of
@@ -152,7 +157,8 @@ parseCasePair = do
 
 -- las posibles acciones de un case se separan por líneas obligatoriamente, luego hubo
 -- que arreglar el error de parseo derivado de que |n se lee como \\n, es decir,
--- una barra escapada y luego una n
+-- una barra escapada y luego una n, esto se hizo con la función foo, encima
+-- de main
 parseCaseExpr :: Parser LispVal
 parseCaseExpr = do
     lexeme $ char '('
