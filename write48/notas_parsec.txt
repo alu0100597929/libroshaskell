@@ -19,7 +19,7 @@ parseNumber = liftM (Number . read) $ many1 digit
 
 many1 digit devuelve una Parser String, y luego liftM (Number . read) aplica read a esa String dentro de la mónada, y consigue un Integer (que es lo que recibe el constructor de tipo de LispVal, Number). Por tanto partimos de una Parser String para llegar a una Parser LispVal.
 
-- noneOf no consume aquella entrada que no debe, dicha entrada es una condición de parada.
+- noneOf NO consume aquella entrada que no debe, dicha entrada es una condición de parada.
 
 <|> es el operador de elección. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
 

@@ -31,13 +31,14 @@ readExpr utiliza la función parse, que devuelve un Either, que readExpr maneja 
 
 Luego se trata de ir parseando los diferentes tokens de Scheme y luego construir, mediante un constructor de valor para el tipo LispVal, un valor determinado.
 
-Para ello se aplican parsers de Parsec y se extrae su información oculta de aquello que han parseado mediante el constructo <-, o se usa liftM funcion valor_monadico (explicado en notas_parser.txt).
+Para ello se aplican parsers de Parsec y se extrae su información oculta de aquello que han parseado mediante el constructo <-, o se usa liftM funcion valor\_monadico (explicado en notas\_parser.txt).
 
 Parsers recursivos:
 
 En un lenguaje funcional la recursividad es uno de los métodos más interesantes. En un lenguaje como Scheme y muchos otros, encontramos estructuras de datos que pueden contener a otras, por ejemplo, una lista puede contener:
 
 * otras listas (sean normales o dotted)
+
 * cualquier otra expresión.
 
 Por tanto, en el intérprete se llama recursivamente al parser principal, parseExpr :: Parser LispVal, para ir parseando lo que hay dentro de cada expresión.

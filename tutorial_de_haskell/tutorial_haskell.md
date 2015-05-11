@@ -4941,7 +4941,7 @@ el operador `<-` (que es en realidad bind (>>=)) liga a un nombre lo que hay den
 
 * `char`...ligará un `Char`
 
-* `noneOf` no consume aquella entrada que no debe, dicha entrada es una condición de parada.
+* `noneOf` NO consume aquella entrada que no debe, dicha entrada es una condición de parada.
 
 `<|>` es el operador de elección. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
 
@@ -4949,11 +4949,13 @@ el operador `<-` (que es en realidad bind (>>=)) liga a un nombre lo que hay den
 
 2. intenta el parser de la derecha.
 
-Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de <|>, es decir, si queremos encadenar varios `try`, deben estar a la izquierda de la cadena de <|>. `try` es como un lookahead, y se puede ver como algo para procesar cosas de manera atómica. `try` es backtracking, y por ello no es demasiado eficiente.
+Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de `<|>`, es decir, si queremos encadenar varios `try`, deben estar a la izquierda de la cadena de `<|>`.
+
+`try` es como un lookahead, y se puede ver como algo para procesar cosas de manera atómica, `try` es realmente backtracking, y por ello no es demasiado eficiente.
 
 `char`, `string`...consumen entrada, si pueden.
 
-`(>>)` lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a >> no ligará su resultado a ningún nombre. >> consume entrada, y falla si ambos argumentos (parsers) fallan.
+`(>>)` lo que hace es encadenar parsers, si tienen éxito, se ejecuta el siguiente. El parser que preceda a `>>` no ligará su resultado a ningún nombre. `>>` consume entrada, y falla si ambos argumentos (parsers) fallan.
 
     type CharParser st a = GenParser Char st a
 
@@ -4968,6 +4970,18 @@ Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ej
 <!--TODO: ver la mónada GenParser en la documentación oficial de Parsec. -->
 
 ## Parsec en acción: un parser de JSON
+
+### Librerías necesarias
+
+```haskell
+import Text.ParserCombinators.Parsec hiding ((<|>), many)
+import Text.Parsec.Numbers (parseFloat)
+import Control.Applicative
+import Control.Monad
+import Prelude hiding (Null,null)
+```
+
+### Formato a parsear
 
 El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día para el intercambio de información a través de la red. Es un formato sencillo y fácil de parsear, y por ello está ganando terreno frente a su competidor principal, XML. Sus principales elementos son:
 
@@ -4986,3 +5000,78 @@ El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día 
 La principal aplicación de Haskell siempre han sido los parsers, tanto para compiladores como para propósito general.
 
 Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver argumentos que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: `true`, `false` y `null`.
+
+```haskell
+alwaysTrue :: Parser Bool
+alwaysTrue = pure True
+
+alwaysFalse :: Parser Bool
+alwaysFalse = pure False
+
+alwaysNull :: Parser String
+alwaysNull = pure "null"
+```
+
+La misión de `pure :: a -> f a` (donde en este caso `f` es la mónada `Parser`) no es otra que envolver los dos `Bool` y la `String` en un valor monádico, devolviendo de este modo un `Parser Bool` o un `Parser String`. Por tanto, estas funciones devuelven un `Parser`, que cuando se ejecuta (mediante la función parse) devuelve un `Bool` o una `String`.
+
+Ahora lo que debemos hacer es usar el parser `string`, que intenta casar con una cadena dada, devolviéndola en caso de que consiga casar:
+
+```haskell
+matchTrue :: Parser String
+matchTrue = string "true"
+
+matchFalse :: Parser String
+matchFalse = string "false"
+
+matchNull :: Parser String
+matchNull = string "null"
+```
+
+Por último, no devolveremos la cadena propiamente dicha, sino un valor puro (por ello antes definimos funciones que usan `pure`):
+
+```haskell
+boolTrue :: Parser Bool
+boolTrue = matchTrue *> alwaysTrue
+
+boolFalse :: Parser Bool
+boolFalse = matchFalse *> alwaysFalse
+
+null :: Parser String
+null = matchNull *> alwaysNull
+```
+
+Aquí usamos un operador de la clase de tipos `Applicative`, que en inglés se suele llamar "star arrow". Este operador ejecuta primero el parser de la izquierda, luego el de la derecha, y devuelve sólo lo que parsee el de la derecha (el sitio al que apunta la flecha).
+
+Ahora veamos qué pasa si un token puede pertenecer a un tipo aún más general:
+
+```haskell
+bool :: Parser Bool
+bool = boolTrue <|> boolFalse
+```
+
+`<|>` es el operador de elección, y se parece mucho a la barra vertical `|` de las expresiones regulares. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
+
+1. intenta el parser de la izquierda, que no debería consumir entrada...(ver `try`)
+
+2. intenta el parser de la derecha.
+
+Si el parser de la izquierda consume entrada, podríamos usar `try`...intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de `<|>`, es decir, si queremos encadenar varios `try`, deben estar a la izquierda de la cadena de `<|>`.
+
+`try` es como un lookahead, y se puede ver como algo para procesar cosas de manera atómica, `try` es realmente backtracking, y por ello no es demasiado eficiente.
+
+Como en este caso las string que vamos a parsear no tienen prefijos coincidentes, no hace falta usar `try` por si hay que volver a empezar.
+
+Ahora empezaremos a ver algo que se parece aún más a las expresiones regulares:
+
+```haskell
+stringLiteral :: Parser String
+stringLiteral = char '"' *> (many (noneOf ['"'])) <* char '"'
+```
+
+Aquí vemos que Parsec puede leerse casi en "inglés plano", ya que esta línea casi se autodescribe. Primero, debe encontrarse un carácter `"`, luego vemos la función `many`, que equivale a la estrella `*` de las expresiones regulares, es decir, podría haber muchos, uno o ninguna ocurrencia del parser que reciba `many`.
+
+Luego vemos una función `noneOf`, que es un parser que acepta todo menos los carácteres que pertenezcan a una lista determinada, en este caso acepta todo menos las comillas dobles, en caso de toparse con comillas dobles (la cadena ha acabado), deja de consumir entrada.
+
+Para terminar, se vuelve a parsear un carácter `"`, que debe estar obligatoriamente. Ahora vemos que nuestra combinación monádica sigue una estructura `a >* b <* c`, esto indica que los parsers `a`, `b` y `c` deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado `b`, que en este caso corresponde a `(many (noneOf ['"']))`.
+
+De modo que Parsec, como la programación funcional, se basa en hacer sencillas funciones que sean buenas en lo suyo, e irlas combinando para realizar tareas cada vez más complejas. Esta es la base de la filosofía KISS tan popular en los sistemas POSIX.
