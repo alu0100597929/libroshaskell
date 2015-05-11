@@ -77,8 +77,8 @@ readExpr input = case parse parseExpr "lisp" input of
 -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
 -- primer LispVal, expr a evaluar
 -- luego, "lista claves" "resultado"
--- | CasePair' CasePair
--- | CaseExpr LispVal [CasePair]
+-- | CondCasePair' CondCasePair
+-- | CaseExpr LispVal [CondCasePair]
 
 -- nuevo helper que busca un elemento en una lista, probada.
 findList :: LispVal -> LispVal -> ThrowsError LispVal
@@ -88,9 +88,10 @@ findList el (List (x:xs)) = case eqv [el,x] of
                               _ -> findList el (List xs)
 
 -- nuevo: ayudante de eval que busca coincidencias en expresiones case
--- recibe una clave y la busca en cada lista, si está, devuelve el resultado
+-- recibe una clave y la busca en cada lista, si está, o si es un else,
+-- devuelve el resultado
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
-findLispVal clave []     = trace ("findLispVal vacía") Nothing
+findLispVal clave []     = Nothing
 findLispVal clave [x]    = case fst x of
                              List [Atom "else"] -> Just (snd x)
                              _ -> case findList clave (fst x) of
@@ -100,6 +101,22 @@ findLispVal clave (x:xs) = case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> findLispVal clave xs
 
+-- nuevo helper que verifica si una condición es verdadera
+checkCondition :: CasePair -> ThrowsError LispVal
+checkCondition cond_expr = do
+    result <- eval (fst cond_expr)
+    return $ proccessResult cond_expr result
+    
+-- TODO: añadir mensajes de error
+proccessResult cond_expr result = case result of
+                                    Bool True -> snd cond_expr
+                                    _ -> Bool False
+
+checkConds :: [CasePair] -> LispVal
+checkConds []     = String "undefined"
+checkConds (x:xs) = case checkCondition x of
+                      Right (Bool False) -> checkConds xs
+                      y -> extractValue y
 --
 -- Evaluador
 --
@@ -117,20 +134,36 @@ Right "pepito"
 10 (1 2)
 10 (10)
 Right "jorgito"
+
+*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater))"
+Right ((> 3 2), greater)
+*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less)"
+Left "jeje" (line 2, column 16):
+unexpected end of input
+expecting lf new-line or ")"
+*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less))"
+Right ((> 3 2), greater (< 3 2), less)
+
+./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))"
+jorgito
+./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((else) 'jorgito))"
+jorgito
 -}
 
 eval :: LispVal -> ThrowsError LispVal
 eval val@(String _) = return val
 eval val@(Number _) = return val
 eval val@(Bool _) = return val
+-- hack!!! TODO: usar este hack en otras funciones
+eval (List [Atom "else"]) = return $ Bool True
 eval (List [Atom "quote", val]) = return val
 -- nuevo
 eval (CaseExpr expr lista_pares) = do
-    result <- eval expr --TRACE, en la línea siguiente: trace (showVal result) 
+    result <- eval expr
     case findLispVal result lista_pares of
       Nothing -> return (String "undefined")
       Just x -> return x
-      
+eval (CondExpr list_conds) = return $ checkConds list_conds
 eval (List [Atom "if", pred, conseq, alt]) = 
      do result <- eval pred
         case result of
@@ -154,6 +187,14 @@ parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
     result <- lexeme $ parseCaseResult <* char ')'
     return (list, result)
+
+parseCondExpr :: Parser LispVal
+parseCondExpr = do
+    lexeme $ char '('
+    lexeme $ string "cond"
+    lista <- sepBy parseCasePair newline -- (char '\\' >> char 'n')
+    lexeme $ char ')'
+    return $ CondExpr lista
 
 -- las posibles acciones de un case se separan por líneas obligatoriamente, luego hubo
 -- que arreglar el error de parseo derivado de que |n se lee como \\n, es decir,
@@ -330,7 +371,9 @@ data LispVal = Atom String
              | Nil () -- usarlo cuando convenga
              -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
              | CasePair' CasePair
-             -- primer LispVal, expr a evaluar
+             -- primer lispVal, expr booleana a evaluar
+             | CondExpr [CasePair]
+             -- primer LispVal, expr a evaluar, segundo, lista de pares de casos
              | CaseExpr LispVal [CasePair]
 
 instance Show LispVal where show = showVal
@@ -347,6 +390,7 @@ parseExpr = parseAtom
         <|> try parseFloat
         <|> try parseRatio
         <|> try parseNumber
+        <|> try parseCondExpr
         <|> try parseCaseExpr
         <|> parseBool
         <|> parseQuoted
@@ -480,8 +524,8 @@ parseVector = do string "#("
 -- Show functions
 --
 
--- | CasePair' CasePair
--- | CaseExpr LispVal [CasePair]
+-- | CondCasePair' CondCasePair
+-- | CaseExpr LispVal [CondCasePair]
 
 showVal :: LispVal -> String
 showVal (String s) = "\"" ++ s ++ "\""
@@ -494,6 +538,7 @@ showVal (Bool False) = "#f"
 showVal (List xs) = "(" ++ unwordsList xs ++ ")"
 showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
 showVal (CasePair' (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
+showVal (CondExpr lista_conds) = "(" ++ unwords (map casePair2Str lista_conds) ++ ")"
 showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " "
                                       ++ unwords (map casePair2Str lista_pares) ++ ")"
 
