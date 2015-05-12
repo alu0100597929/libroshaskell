@@ -35,6 +35,7 @@
 *.lof
 *.lot
 *.toc
+*.out
 
 # Dia diagrams #
 ################
