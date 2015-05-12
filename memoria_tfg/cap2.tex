@@ -7,16 +7,290 @@
 \section{Introducción a Parsec}
 \label{:sec1}
 
-En el capítulo anterior se ha realizado una introducción a la programación funcional con Haskell, y ahora se describirá un módulo muy útil en la creación del intérprete, Parsec.
+En el capítulo anterior se ha realizado una introducción a la programación funcional con Haskell, y ahora se describirá un módulo muy útil en la creación del intérprete, Parsec.\\
 
-Parsec es un módulo de Haskell, un conjunto de funciones exportables que suelen tener una finalidad común y se pueden importar en otros programas. En nuestro intérprete hemos importado Parsec, pues es el módulo utilizado en el tutorial que seguimos, Write Yourself a Scheme in 48 hours.
+Parsec es un módulo de Haskell, un conjunto de funciones exportables que suelen tener una finalidad común y se pueden importar en otros programas. En nuestro intérprete hemos importado Parsec, pues es el módulo utilizado en el tutorial que seguimos, Write Yourself a Scheme in 48 hours.\\
 
-Parsec se diseñó desde cero como una librería de parsers con capacidades industriales. Es simple, segura, está bien documentada, provee de buenos mensajes de error y es rápida. Se define como un transformador de mónadas que puede ser apilado sobre mónadas arbitrarias, y también es paramétrico en el tipo de flujo de entrada. La documentación de la versión usada en el presente Trabajo Fin de Grado se puede consultar online en https://hackage.haskell.org/package/parsec-3.1.9
+Parsec se diseñó desde cero como una librería de parsers con capacidades industriales. Es simple, segura, está bien documentada, provee de buenos mensajes de error y es rápida. Se define como un transformador de mónadas que puede ser apilado sobre mónadas arbitrarias, y también es paramétrico en el tipo de flujo de entrada. La documentación de la versión usada en el presente Trabajo Fin de Grado se puede consultar online en \url{https://hackage.haskell.org/package/parsec-3.1.9}\\
 
-La mejor manera de describir el módulo es mediante un ejemplo, un parser del conocido formato JSON.
+Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los nombres adecuados). Se pueden hacer analogías entre las funciones de Parsec y las expresiones regulares, como veremos en el ejemplo de código de este capítulo.\\
+
+La mejor manera de describir el módulo es mediante un ejemplo, un parser del conocido formato JSON.\\
+
+\section{Librerías necesarias}
+
+\begin{lstlisting}[frame=single]
+import Text.ParserCombinators.Parsec hiding ((<|>), many)
+import Text.Parsec.Numbers (parseFloat)
+import Control.Applicative
+import Control.Monad
+import Prelude hiding (Null,null)
+\end{lstlisting}
+
+\section{Formato a parsear}
+
+El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día para el intercambio de información a través de la red. Es un formato sencillo y fácil de parsear, y por ello está ganando terreno frente a su competidor principal, XML. Sus principales elementos son:
+
+\begin{itemize}
+  \item Number
+  \item String
+  \item Boolean
+  \item Array
+  \item Object
+  \item Null
+\end{itemize}
+
+La principal aplicación de Haskell siempre han sido los parsers, tanto para compiladores como para propósito general.\\
+
+Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver argumentos que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: \textbf{true}, \textbf{false} y \textbf{null}.\\
+
+\begin{lstlisting}[frame=single]
+alwaysTrue :: Parser Bool
+alwaysTrue = pure True
+
+alwaysFalse :: Parser Bool
+alwaysFalse = pure False
+
+alwaysNull :: Parser String
+alwaysNull = pure "null"
+\end{lstlisting}
+
+La misión de \textbf{$pure :: a \-\> f a$} (donde en este caso \textbf{f} es la mónada \textbf{Parser}) no es otra que envolver los dos \textbf{Bool} y la \textbf{String} en un valor monádico, devolviendo de este modo un \textbf{Parser Bool} o un \textbf{Parser String}. Por tanto, estas funciones devuelven un \textbf{Parser}, que cuando se ejecuta (mediante la función \textbf{parse}) devuelve un \textbf{Bool} o una \textbf{String}.\\
+
+Ahora lo que debemos hacer es usar el parser \textbf{string}, que intenta casar con una cadena dada, devolviéndola en caso de que consiga casar:\\
+
+\begin{lstlisting}[frame=single]
+matchTrue :: Parser String
+matchTrue = string "true"
+
+matchFalse :: Parser String
+matchFalse = string "false"
+
+matchNull :: Parser String
+matchNull = string "null"
+\end{lstlisting}
+
+Por último, no devolveremos la cadena propiamente dicha, sino un valor puro (por ello antes definimos funciones que usan \textbf{pure}):\\
+
+\begin{lstlisting}[frame=single]
+boolTrue :: Parser Bool
+boolTrue = matchTrue *> alwaysTrue
+
+boolFalse :: Parser Bool
+boolFalse = matchFalse *> alwaysFalse
+
+null :: Parser String
+null = matchNull *> alwaysNull
+\end{lstlisting}
+
+Aquí usamos un operador de la clase de tipos \textbf{Applicative}, que en inglés se suele llamar ``star arrow''. Este operador ejecuta primero el parser de la izquierda, luego el de la derecha, y devuelve sólo lo que parsee el de la derecha (el sitio al que apunta la flecha).\\
+
+Ahora veamos qué pasa si un token puede pertenecer a un tipo aún más general:\\
+
+\begin{lstlisting}[frame=single]
+bool :: Parser Bool
+bool = boolTrue <|> boolFalse
+\end{lstlisting}
+
+\textbf{$<|>$} es el operador de elección, y se parece mucho a la barra vertical \textbf{$|$} de las expresiones regulares. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:
+
+\begin{itemize}
+  \item 1. intenta el parser de la izquierda, que no debería consumir entrada...(ver \textbf{try})
+  \item 2. intenta el parser de la derecha.
+\end{itemize}
+
+Si el parser de la izquierda consume entrada, podríamos usar \textbf{try}, el cual intenta ejecutar ese Parser, y, si falla, vuelve al estado anterior, es decir, deja la entrada sin consumir. Sólo funciona a la izquierda de \textbf{$<|>$}, es decir, si queremos encadenar varios \textbf{try}, deben estar a la izquierda de la cadena de \textbf{$<|>$}.\\
+
+\textbf{try} es como un lookahead, y se puede ver como algo para procesar cosas de manera atómica, \textbf{try} es realmente backtracking, y por ello no es demasiado eficiente.\\
+
+Como en este caso las string que vamos a parsear no tienen prefijos coincidentes, no hace falta usar \textbf{try} por si hay que volver a empezar.\\
+
+Ahora empezaremos a ver algo que se parece aún más a las expresiones regulares:\\
+
+\begin{lstlisting}[frame=single]
+stringLiteral :: Parser String
+stringLiteral = char '"' *> (many (noneOf ['"'])) <* char '"'
+\end{lstlisting}
+
+Aquí vemos que Parsec puede leerse casi en "inglés plano", ya que esta línea casi se autodescribe. Primero, debe encontrarse un carácter \textbf{\"}, luego vemos la función \textbf{many}, que equivale a la estrella \textbf{*} de las expresiones regulares, es decir, podría haber muchos, uno o ninguna ocurrencia del parser que reciba \textbf{many}.\\
+
+Luego vemos una función {noneOf}, que es un parser que acepta todo menos los carácteres que pertenezcan a una lista determinada, en este caso acepta todo menos las comillas dobles, en caso de toparse con comillas dobles (la cadena ha acabado), deja de consumir entrada.\\
+
+Para terminar, se vuelve a parsear un carácter \textbf{\"}, que debe estar obligatoriamente. Ahora vemos que nuestra combinación aplicativa sigue una estructura \textbf{a $>*$ b $<*$ c}, esto indica que los parsers \textbf{a}, \textbf{b} y \textbf{c} deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado {b}, que en este caso corresponde a \textbf{(many (noneOf ['"']))}.\\
+
+De modo que Parsec, como la programación funcional, se basa en hacer sencillas funciones que sean buenas en lo suyo, e irlas combinando para realizar tareas cada vez más complejas. Esta es la base de la filosofía KISS tan popular en los sistemas POSIX.\\
+
+La siguiente línea da error de tipos:\\
+
+\begin{lstlisting}[frame=single]
+value = bool <|> stringLiteral
+\end{lstlisting}
+
+Solución: crear un tipo algebraico que contenga Bool y String (entre otros). Los tipos de datos algebraicos son una herramienta muy útil para los parsers, ya que permiten saber exactamente a qué tipo pertenece el token que hemos parseado.\\
+
+\begin{lstlisting}[frame=single]
+data JSONValue = B Bool
+               | S String
+               | N Double --número de JSON
+               | A [JSONValue] --array de JSON
+               | O [(String, JSONValue)] --objeto de JSON
+               | Null String
+               deriving Show
+\end{lstlisting}
+
+Como vemos, tenemos un sólo constructor de tipo, \textbf{JSONValue}, es decir, nuestros parsers tendrán tipo \textbf{Parser JSONValue}. Sin embargo, tenemos 6 constructores de valor, que por simplicidad son simplemente las letras Iniciales de cada tipo de valor a parsear, salvo \textbf{Null}, en el cual se usó el nombre completo ya que \textbf{N} se usó para el tipo Number de JavaScript.\\
+
+Veamos ahora el parser principal, es decir, un parser genérico capaz de parsear cualquier valor de JSON:\\
+
+\begin{lstlisting}[frame=single]
+jsonValue :: Parser JSONValue
+jsonValue = spaces >> (jsonNull
+                   <|> jsonBool
+                   <|> jsonStringLiteral
+                   <|> jsonArray
+                   <|> jsonObject
+                   <|> jsonNumber
+                   <?> "JSON value")
+\end{lstlisting}
+
+No te preocupes demasiado por el parser \textbf{spaces}, lo explicaré más adelante en conjunto con \textbf{lexeme}. Pero, ¿qué es esa interrogación? \textbf{$<?>$} es un combinador que permite dar mensajes de error en caso de parseo fallido. En este caso, se le pasa una {String} con el mensaje de error que queremos que aparezca. En caso de error, saldrá algo como "expected JSON value", pues ese es el argumento de \textbf{$<?>$} para cuando falle el parser \textbf{jsonValue}.\\
+
+Lo malo de esto es que seguimos teniendo error de tipos porque:\\
+
+\begin{lstlisting}[frame=single]
+bool :: Parser Bool
+stringLiteral :: Parser String
+\end{lstlisting}
+
+Lo bueno es que con \textbf{$(<\$>) :: Functor f => (a -> b) -> f a -> f b$}, que en este caso tendría el tipo: \textbf{$(<\$>) :: (a -> b) -> Parser a -> Parser b$}, podemos solucionarlo.\\
+
+Recordemos que los constructores de valor son en realidad funciones como otra cualquiera (salvo que empiezan por mayúscula). Por ejemplo, el tipo de \textbf{B} es \textbf{$B :: Bool -> JSONValue$}. Por tanto, si hacemos \textbf{B <\$> bool} tendremos como resultado un \textbf{Parser JSONValue}, y eso haremos en todos nuestros parsers anteriormente nombrados.\\
+
+\begin{lstlisting}[frame=single]
+jsonBool'' :: Parser JSONValue
+jsonBool'' = B <$> bool
+
+matchNull'' = lexeme matchNull'
+
+jsonStringLiteral :: Parser JSONValue
+jsonStringLiteral = lexeme (S <$> stringLiteral)
+\end{lstlisting}
+
+Aquí lo único que nos llama la atención es el parser \textbf{lexeme}. \textbf{lexeme} está definido en Parsec por defecto, pero nosotros lo programaremos más que nada por razones didácticas.\\
+
+\textbf{lexeme} es un parser que, recibiendo otro parser, devuelve un parser del mismo tipo, pero que consume todos los espacios (incluyendo tabuladores y newlines) que haya detrás del token parseado.\\
+
+\begin{lstlisting}[frame=single]
+ws :: Parser String -- whitespace
+ws = many (oneOf " \t\n")
+
+lexeme :: Parser a -> Parser a
+lexeme p = p <* ws
+\end{lstlisting}
+
+De este modo, con aplicar lexeme a cada uno de los parsers que vayamos a usar, tenemos resuelto el problema de los espacios entre tokens.\\
+
+Bueno, ahora que el problema de los espacios está resuelto...¡sorpresa! no lo está del todo...Como hemos dicho, el combinador \textbf{lexeme} se "come" todos los espacios, tabuladores o newlines que encuentre después del token parseado. Pero, ¿y si esos espacios estuvieran antes del primer token que llegamos a parsear? Probablemente se produciría un error.\\
+
+Solución: añadir el parser {spaces} a nuestro parser principal \textbf{jsonValue}. Esto se hizo mediante el operador monádico $>>$, que en la mónada de Parsec tiene el efecto de ejecutar ese parser, y si tiene éxito no guardar el resultado del parsing, sino pasar al siguiente. Se ha usado $>>$ para ilustrar el uso de esta función, ya que se había introducido antes: $* \! >$, también llamado ``star arrow''.\\ %evitamos los espacios entre símbolos del modo matemático
+
+A continuación creemos un parser que permita parsear números. Para ello usaremos la función \textbf{parseFloat}, que permite parsear cualquier tipo de número, incluso con signo, exponente, parte decimal...es decir, el formato de coma flotante.\\
+
+\begin{lstlisting}[frame=single]
+jsonNumber :: Parser JSONValue
+jsonNumber = N <$> parseFloat
+\end{lstlisting}
+
+¡Listo! ya tenemos un parser más. Ahora veamos algo un poco más complejo, los arrays de JSON. Un array de JSON tiene el siguiente formato:\\
+
+\begin{lstlisting}[frame=single]
+[
+    {"firstName":"John", "lastName":"Doe"}, 
+    {"firstName":"Anna", "lastName":"Smith"}, 
+    {"firstName":"Peter","lastName":"Jones"}
+]
+\end{lstlisting}
+
+Como vemos, tenemos:
+
+\begin{itemize}
+  \item 1. Un carácter abrir corchetes \textbf{[}
+  \item 2. Un conjunto de tokens de JSON, separados por comas.
+  \item 3. Un carácter cerrar corchetes \textbf{]}
+\end{itemize}
+
+Sabido esto, lo único nuevo que tenemos que introducir aquí es el parser \textbf{sepBy}. \textbf{sepBy} recibe dos argumentos, el primero es el parser que se usará para cada token, y el segundo es el parser que se usará para el separador o separadores. Veamos el parser completo.\\
+
+\begin{lstlisting}[frame=single]
+array :: Parser [JSONValue]
+array =
+  (lexeme $ char '[')
+  *>
+  ( jsonValue `sepBy` (lexeme $ char ',') )
+  <*
+  (lexeme $ char ']')
+\end{lstlisting}
+
+Como los arrays contienen tokens de JSON, lo que hacemos es una llamada recursiva a \textbf{jsonValue}. De este modo, vemos que dentro de un array de JSON puede haber "lo que sea" (siempre que esté correctamente escrito y formateado) pero el array debe empezar por el carácter $[$ y terminar con $]$ para garantizar que dicho formato sea correcto. Como vemos, este parser nos devuelve una lista de \textbf{JSONValue}, y eso no es un tipo \textbf{JSONValue}. Por tanto, debemos aplicar \textbf{$fmap (<\$>)$}, en este caso de manera infija:\\
+
+\begin{lstlisting}[frame=single]
+jsonArray :: Parser JSONValue
+jsonArray = A <$> array
+\end{lstlisting}
+
+Ahora parsearemos algo parecido pero no del todo igual, los objetos de JSON. El formato de los objetos es:
+
+\begin{itemize}
+  \item 1. Un carácter abrir llaves \textbf{\{}
+  \item 2. Una lista de pares separador por el carácter dos puntos ':'
+  \item 3. Un carácter cerrar llaves \textbf{\}}
+\end{itemize}
+
+\begin{lstlisting}[frame=single]
+jsonObject :: Parser JSONValue
+jsonObject = O <$> ((lexeme $ char '{') *>
+                    (objectEntry `sepBy` (lexeme $ char ','))
+                    <* (lexeme $ char '}'))
+
+objectEntry :: Parser (String, JSONValue)
+objectEntry = do
+  key <- lexeme stringLiteral
+  char ':'
+  value <- lexeme jsonValue
+  return (key, value)
+\end{lstlisting}
+
+Ahora consigamos que el parser \textbf{jsonBool'} sea capaz de lidiar con espacios, tabuladores y nuevas líneas después del token que parsea:\\
+
+\begin{lstlisting}[frame=single]
+jsonBool' = lexeme jsonBool''
+\end{lstlisting}
+
+Ya casi hemos terminado, pero aún falta un pequeño detalle. ¿Y si alguien se equivoca y escribe por ejemplo "falseee", o "nullpointer", o cualquier otra cosa siguiendo a las palabras reservadas \textbf{true}, \textbf{false} o \textbf{null}? Nuestro parser lo aceptaría, cuando eso no debería ser así. Queremos exactamente esas palabras, ni un carácter más ni uno menos, para que nuestro parser sea correcto. Para ello, Parsec nos provee con un parser que falla en caso de que otro esté seguido de ciertos carácteres, es \textbf{notFollowedBy}. \textbf{notFollowedBy} recibe un parser, y si éste tiene éxito, falla. Un ingenioso truco que nos saca del atolladero de manera muy sencilla y casi autoexplicativa.\\
+
+\begin{lstlisting}[frame=single]
+jsonBool :: Parser JSONValue
+jsonBool = jsonBool' <* notFollowedBy alphaNum
+
+jsonNull :: Parser JSONValue
+jsonNull = matchNull'' <* notFollowedBy alphaNum
+\end{lstlisting}
+
+Por último, creemos la función \textbf{main} que nos permitirá compilar el programa. Para ello seguiremos los siguientes pasos:
+
+\begin{itemize}
+  \item 1. Mostrar por pantalla qué queremos.
+  \item 2. Obtener el nombre del fichero por entrada estándar (teclado) y ligarlo al nombre \textbf{filename}.
+  \item 3. Aplicar nuestro parser principal (\textbf{jsonValue}) a nuestro fichero \textbf{filename} mediante la función \textbf{parseFromFile}. 
+\end{itemize}
+
+\begin{lstlisting}[frame=single]
+main = do
+  putStr "Nombre_fichero: "
+  filename <- getLine
+  parseFromFile jsonValue filename
+\end{lstlisting}
+
+Y listo, ya tenemos nuestro parser de JSON funcionando.\\
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-\section{ Fundamentos básicos de Parsec}
-\label{:sec2}
-

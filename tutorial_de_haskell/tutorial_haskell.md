@@ -4993,6 +4993,8 @@ El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día 
 
 * Array
 
+* Object
+
 * null
 
 <!--fin lista-->
@@ -5072,6 +5074,177 @@ Aquí vemos que Parsec puede leerse casi en "inglés plano", ya que esta línea 
 
 Luego vemos una función `noneOf`, que es un parser que acepta todo menos los carácteres que pertenezcan a una lista determinada, en este caso acepta todo menos las comillas dobles, en caso de toparse con comillas dobles (la cadena ha acabado), deja de consumir entrada.
 
-Para terminar, se vuelve a parsear un carácter `"`, que debe estar obligatoriamente. Ahora vemos que nuestra combinación monádica sigue una estructura `a >* b <* c`, esto indica que los parsers `a`, `b` y `c` deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado `b`, que en este caso corresponde a `(many (noneOf ['"']))`.
+Para terminar, se vuelve a parsear un carácter `"`, que debe estar obligatoriamente. Ahora vemos que nuestra combinación aplicativa sigue una estructura `a >* b <* c`, esto indica que los parsers `a`, `b` y `c` deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado `b`, que en este caso corresponde a `(many (noneOf ['"']))`.
 
 De modo que Parsec, como la programación funcional, se basa en hacer sencillas funciones que sean buenas en lo suyo, e irlas combinando para realizar tareas cada vez más complejas. Esta es la base de la filosofía KISS tan popular en los sistemas POSIX.
+
+La siguiente línea da error de tipos:
+
+```haskell
+value = bool <|> stringLiteral
+```
+
+Solución: crear un tipo algebraico que contenga Bool y String (entre otros). Los tipos de datos algebraicos son una herramienta muy útil para los parsers, ya que permiten saber exactamente a qué tipo pertenece el token que hemos parseado.
+
+```haskell
+data JSONValue = B Bool
+               | S String
+               | N Double --número de JSON
+               | A [JSONValue] --array de JSON
+               | O [(String, JSONValue)] --objeto de JSON
+               | Null String
+               deriving Show
+```
+
+Como vemos, tenemos un sólo constructor de tipo, `JSONValue`, es decir, nuestros parsers tendrán tipo `Parser JSONValue`. Sin embargo, tenemos 6 constructores de valor, que por simplicidad son simplemente las letras Iniciales de cada tipo de valor a parsear, salvo `Null`, en el cual se usó el nombre completo ya que `N` se usó para el tipo Number de JavaScript.
+
+Veamos ahora el parser principal, es decir, un parser genérico capaz de parsear cualquier valor de JSON:
+
+```haskell
+jsonValue :: Parser JSONValue
+jsonValue = spaces >> (jsonNull
+                   <|> jsonBool
+                   <|> jsonStringLiteral
+                   <|> jsonArray
+                   <|> jsonObject
+                   <|> jsonNumber
+                   <?> "JSON value")
+```
+
+No te preocupes demasiado por el parser `spaces`, lo explicaré más adelante en conjunto con `lexeme`. Pero, ¿qué es esa interrogación? `<?>` es un combinador que permite dar mensajes de error en caso de parseo fallido. En este caso, se le pasa una `String` con el mensaje de error que queremos que aparezca. En caso de error, saldrá algo como "expected JSON value", pues ese es el argumento de `<?>` para cuando falle el parser `jsonValue`. 
+
+Lo malo de esto es que seguimos teniendo error de tipos porque:
+
+```haskell
+bool :: Parser Bool
+stringLiteral :: Parser String
+```
+
+Lo bueno es que con `(<$>) :: Functor f => (a -> b) -> f a -> f b`, que en este caso tendría el tipo: `(<$>) :: (a -> b) -> Parser a -> Parser b`, podemos solucionarlo.
+
+Recordemos que los constructores de valor son en realidad funciones como otra cualquiera (salvo que empiezan por mayúscula). Por ejemplo, el tipo de `B` es `B :: Bool -> JSONValue`. Por tanto, si hacemos `B <$> bool` tendremos como resultado un `Parser JSONValue`, y eso haremos en todos nuestros parsers anteriormente nombrados.
+
+```haskell
+jsonBool'' :: Parser JSONValue
+jsonBool'' = B <$> bool
+
+matchNull'' = lexeme matchNull'
+
+jsonStringLiteral :: Parser JSONValue
+jsonStringLiteral = lexeme (S <$> stringLiteral)
+```
+
+Aquí lo único que nos llama la atención es el parser `lexeme`. `lexeme` está definido en Parsec por defecto, pero nosotros lo programaremos más que nada por razones didácticas.
+
+`lexeme` es un parser que, recibiendo otro parser, devuelve un parser del mismo tipo, pero que consume todos los espacios (incluyendo tabuladores y newlines) que haya detrás del token parseado.
+
+```haskell
+ws :: Parser String -- whitespace
+ws = many (oneOf " \t\n")
+
+lexeme :: Parser a -> Parser a
+lexeme p = p <* ws
+```
+
+De este modo, con aplicar lexeme a cada uno de los parsers que vayamos a usar, tenemos resuelto el problema de los espacios entre tokens.
+
+Bueno, ahora que el problema de los espacios está resuelto...¡sorpresa! no lo está del todo...Como hemos dicho, el combinador `lexeme` se "come" todos los espacios, tabuladores o newlines que encuentre después del token parseado. Pero, ¿y si esos espacios estuvieran antes del primer token que llegamos a parsear? Probablemente se produciría un error.
+
+Solución: añadir el parser `spaces` a nuestro parser principal `jsonValue`. Esto se hizo mediante el operador monádico `>>`, que en la mónada de Parsec tiene el efecto de ejecutar ese parser, y si tiene éxito no guardar el resultado del parsing, sino pasar al siguiente. Se ha usado `>>` para ilustrar el uso de esta función, ya que se había introducido antes `*>`.
+
+A continuación creemos un parser que permita parsear números. Para ello usaremos la función `parseFloat`, que permite parsear cualquier tipo de número, incluso con signo, exponente, parte decimal...es decir, el formato de coma flotante.
+
+```haskell
+jsonNumber :: Parser JSONValue
+jsonNumber = N <$> parseFloat
+```
+
+¡Listo! ya tenemos un parser más. Ahora veamos algo un poco más complejo, los arrays de JSON. Un array de JSON tiene el siguiente formato:
+
+```haskell
+[
+    {"firstName":"John", "lastName":"Doe"}, 
+    {"firstName":"Anna", "lastName":"Smith"}, 
+    {"firstName":"Peter","lastName":"Jones"}
+]
+```
+
+Como vemos, tenemos:
+
+1. Un carácter abrir corchetes `[`
+
+2. Un conjunto de tokens de JSON, separados por comas.
+
+3. Un carácter cerrar corchetes `]`
+
+Sabido esto, lo único nuevo que tenemos que introducir aquí es el parser `sepBy`. `sepBy` recibe dos argumentos, el primero es el parser que se usará para cada token, y el segundo es el parser que se usará para el separador o separadores. Veamos el parser completo.
+
+```haskell
+array :: Parser [JSONValue]
+array =
+  (lexeme $ char '[')
+  *>
+  ( jsonValue `sepBy` (lexeme $ char ',') )
+  <*
+  (lexeme $ char ']')
+```
+
+Como los arrays contienen tokens de JSON, lo que hacemos es una llamada recursiva a `jsonValue`. De este modo, vemos que dentro de un array de JSON puede haber "lo que sea" (siempre que esté correctamente escrito y formateado) pero el array debe empezar por el carácter `[` y terminar con `]` para garantizar que dicho formato sea correcto. Como vemos, este parser nos devuelve una lista de `JSONValue`, y eso no es un tipo `JSONValue`. Por tanto, debemos aplicar `fmap`, en este caso de manera infija:
+
+```haskell
+jsonArray :: Parser JSONValue
+jsonArray = A <$> array
+```
+
+Ahora parsearemos algo parecido pero no del todo igual, los objetos de JSON. El formato de los objetos es:
+
+1. Un carácter abrir llaves `{`
+2. Una lista de pares separador por el carácter dos puntos ':'
+3. Un carácter cerrar llaves `}`
+
+```haskell
+jsonObject :: Parser JSONValue
+jsonObject = O <$> ((lexeme $ char '{') *>
+                    (objectEntry `sepBy` (lexeme $ char ','))
+                    <* (lexeme $ char '}'))
+
+objectEntry :: Parser (String, JSONValue)
+objectEntry = do 
+  key <- lexeme stringLiteral -- >>=
+  char ':'                    -- >>
+  value <- lexeme jsonValue
+  return (key, value)
+```
+
+Ahora consigamos que el parser `jsonBool'` sea capaz de lidiar con espacios, tabuladores y nuevas líneas después del token que parsea:
+
+```haskell
+jsonBool' = lexeme jsonBool''
+```
+
+Ya casi hemos terminado, pero aún falta un pequeño detalle. ¿Y si alguien se equivoca y escribe por ejemplo "falseee", o "nullpointer", o cualquier otra cosa siguiendo a las palabras reservadas `true`, `false` o `null`? Nuestro parser lo aceptaría, cuando eso no debería ser así. Queremos exactamente esas palabras, ni un carácter más ni uno menos, para que nuestro parser sea correcto. Para ello, Parsec nos provee con un parser que falla en caso de que otro esté seguido de ciertos carácteres, es `notFollowedBy`. `notFollowedBy` recibe un parser, y si éste tiene éxito, falla. Un ingenioso truco que nos saca del atolladero de manera muy sencilla y casi autoexplicativa.
+
+```haskell
+jsonBool :: Parser JSONValue
+jsonBool = jsonBool' <* notFollowedBy alphaNum
+
+jsonNull :: Parser JSONValue
+jsonNull = matchNull'' <* notFollowedBy alphaNum
+```
+
+Por último, creemos la función `main` que nos permitirá compilar el programa. Para ello seguiremos los siguientes pasos:
+
+1. Mostrar por pantalla qué queremos.
+2. Obtener el nombre del fichero por entrada estándar (teclado) y ligarlo al nombre `filename`.
+3. Aplicar nuestro parser principal (`jsonValue`) a nuestro fichero `filename` mediante la función `parseFromFile`. 
+
+```haskell
+main = do
+  putStr "Nombre_fichero: "
+  filename <- getLine
+  parseFromFile jsonValue filename
+```
+
+Y listo, ya tenemos nuestro parser de JSON funcionando.
+
+Felicidades por haber completado el tutorial (o por haber saltado a la última página! que nos conocemos xD) y espero que haya sido de tu agrado. Si tienes cualquier duda o sugerencia, estoy disponible en freinn@gmail.com.
