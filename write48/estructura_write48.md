@@ -4,7 +4,7 @@ Estructura general del programa:
 
 ## Lección 1:
 
-El tipo IO es instancia de la clase de tipos Monad, mónada es un concepto, decir que un valor pertenece a la clase de tipos Monad es decir:
+El tipo `IO` es instancia de la clase de tipos `Monad`, mónada es un concepto, decir que un valor pertenece a la clase de tipos `Monad` es decir:
 
 1) Hay (un cierto tipo de) información oculta adjunta a este valor.
 2) La mayoría de funciones no se tienen que preocupar de esa información.
@@ -29,9 +29,9 @@ readExpr: recibe una String (la cadena de entrada) y devuelve otra String con in
 
 readExpr utiliza la función parse, que devuelve un Either, que readExpr maneja según construya un Left (error) o Right (valor correcto).
 
-Luego se trata de ir parseando los diferentes tokens de Scheme y luego construir, mediante un constructor de valor para el tipo LispVal, un valor determinado.
+Luego se trata de ir parseando los diferentes tokens de Scheme y luego construir, mediante un constructor de valor para el tipo `LispVal`, un valor determinado.
 
-Para ello se aplican parsers de Parsec y se extrae su información oculta de aquello que han parseado mediante el constructo <-, o se usa liftM funcion valor\_monadico (explicado en notas\_parser.txt).
+Para ello se aplican parsers de Parsec y se extrae su información oculta de aquello que han parseado mediante el constructo `<-`, o se usa `liftM función valor\_monadico` (explicado en notas\_parser.txt).
 
 Parsers recursivos:
 
@@ -43,12 +43,12 @@ En un lenguaje funcional la recursividad es uno de los métodos más interesante
 
 Por tanto, en el intérprete se llama recursivamente al parser principal, parseExpr :: Parser LispVal, para ir parseando lo que hay dentro de cada expresión.
 
-Por ejemplo, en parseList y parseDottedList se usan, respectivamente:
+Por ejemplo, en `parseList` y `parseDottedList` se usan, respectivamente:
 
-sepBy parseExpr spaces
-endBy parseExpr spaces
+    sepBy parseExpr spaces
+    endBy parseExpr spaces
 
-Los cuales van a devolver una [LispVal], justo el argumento que necesita el constructor de tipo List y el primero que necesita DottedList.
+Los cuales van a devolver una `[LispVal]`, justo el argumento que necesita el constructor de tipo `List` y el primero que necesita `DottedList`.
 
 Por tanto, vemos que mediante el uso de sepBy y endBy estamos haciendo llamadas recursivas a readExpr y por ello nuestro parser es recursivo.
 
@@ -255,6 +255,9 @@ Luego lo que está haciendo `const` es permitir una currificación que, da igual
 
 El tipo de `unpackEquals arg1 arg2` es `Unpacker -> ThrowsError Bool`, por tanto, `mapM (unpackEquals arg1 arg2)` sobre la lista `[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]` dará una mónada `ThrowsError` conteniendo una lista de `Bool`, es decir, `ThrowsError [Bool]`. A dicha lista le aplicaremos la función `or` mediante `liftM`.
 
-Menuda muerte en las expresiones case, pero ya funcionan. Haskell no es capaz, y mira que he preguntado en internet, de cambiar en una string los carácteres doblemente escapados por los simplemente escapados.
+Menuda muerte en las expresiones case, pero ya funcionan. Para cambiar en una string los carácteres doblemente escapados por los simplemente escapados, debemos usar la función:
+
+    foo :: String -> String
+    foo s = read $ "\"" ++ s ++ "\""
 
 Hack del else, cada vez que `eval` se encuentra un else, devuelve un `Bool True` para que siempre se ejecute esa expresión.
