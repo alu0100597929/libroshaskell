@@ -132,6 +132,9 @@ Right "pepito"
 10 (10)
 Right "jorgito"
 
+Esto funcionaba porque la cadena que recibían era exacta, cuando lo poníamos en el main las '\n' se cambiaban
+por '\\n', fastidiándolo todo
+
 *Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater))"
 Right ((> 3 2), greater)
 *Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less)"
@@ -143,7 +146,7 @@ Right ((> 3 2), greater (< 3 2), less)
 
 ./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))"
 jorgito
-./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((else) 'jorgito))"
+./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n(else 'jorgito))"
 jorgito
 -}
 
@@ -179,6 +182,12 @@ parseCaseResult = do
     result <- parseExpr
     return result
 
+parseCondElse :: Parser CasePair
+parseCondElse = do
+    atom_else <- lexeme (char '(') *> lexeme (parseAtom)
+    result <- parseCaseResult <* lexeme (char ')')
+    return (atom_else, result)
+
 parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
@@ -189,7 +198,7 @@ parseCondExpr :: Parser LispVal
 parseCondExpr = do
     lexeme $ char '('
     lexeme $ string "cond"
-    lista <- sepBy parseCasePair newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
     lexeme $ char ')'
     return $ CondExpr lista
 
