@@ -17,7 +17,11 @@ IO [String] e IO () pertenecen al mismo tipo, el de lamónada IO, pero tienen di
 
 Los "valores con información oculta adjunta" son llamados "valores monádicos". 
 
-Los "valores monádicos" se suele llamar "acciones", porque la manera más fácil de pensar en el uso de la mónada IO es pensar en una secuencia de acciones afectando al mundo exterior. Cada acción de la mencionada secuencia de acciones podría actuar sobre valores básicos (no monádicos).
+Los "valores monádicos" se suele llamar "acciones", porque la manera más fácil de pensar en el uso de la mónada IO es pensar en una secuencia de acciones afectando al mundo exterior. Cada acción de la mencionada secuencia de acciones podría actuar sobre valores básicos (no monádicos). Por tanto:
+
+* `m a` es una acción
+
+* `(a -> m ())` es una función que devuelve una acción que contiene la tupla vacía o unidad `()`. 
 
 ## Lección 2:
 
