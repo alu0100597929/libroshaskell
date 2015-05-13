@@ -19,6 +19,17 @@ import Debug.Trace
 -----------------Parte nueva-----------------
 import System.IO
 
+{-
+Ejemplos de uso: tener en cuenta que no van las comillas en el modo intérprete!!!
+
+Lisp>>> (case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))
+jorgito
+Lisp>>> (cond ((> 3 2) 'greater)\n((< 3 2) 'less))
+greater
+Lisp>>> (cond ((> 3 3) 'greater)\n((< 3 3) 'less)\n(else 'equal))
+equal
+-}
+
 data LispError = NumArgs Integer [LispVal]
                | TypeMismatch String LispVal
                | Parser ParseError
@@ -57,7 +68,7 @@ readPrompt :: String -> IO String
 readPrompt prompt = flushStr prompt >> getLine
 
 evalString :: String -> IO String
-evalString expr = return $ extractValue $ trapError (liftM show $ readExpr expr >>= eval)
+evalString expr = return $ extractValue $ trapError (liftM show $ readExpr (foo expr) >>= eval)
 
 evalAndPrint :: String -> IO ()
 evalAndPrint expr =  evalString expr >>= putStrLn
@@ -142,41 +153,12 @@ checkConds (x:xs) = case checkCondition x of
 -- Evaluador
 --
 
-{-
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 2 2) ((4 9 2 1 2) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
-4 (4 9 2 1 2)
-Right "d64"
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 1 1) ((4 9 1) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
-2 (4 9 1)
-2 (1 2)
-Right "pepito"
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 5 5) ((4 9 1) 'd64\n((1 2) 'pepito\n((10) 'jorgito)"
-10 (4 9 1)
-10 (1 2)
-10 (10)
-Right "jorgito"
-
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater))"
-Right ((> 3 2), greater)
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less)"
-Left "jeje" (line 2, column 16):
-unexpected end of input
-expecting lf new-line or ")"
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less))"
-Right ((> 3 2), greater (< 3 2), less)
-
-./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))"
-jorgito
-./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((else) 'jorgito))"
-jorgito
--}
-
 eval :: LispVal -> ThrowsError LispVal
 eval val@(String _) = return val
 eval val@(Number _) = return val
 eval val@(Bool _) = return val
 -- hack!!! TODO: usar este hack en otras funciones
-eval (List [Atom "else"]) = return $ Bool True
+eval (Atom "else") = return $ Bool True
 eval (List [Atom "quote", val]) = return val
 -- nuevo
 eval (CaseExpr expr lista_pares) = do
@@ -203,6 +185,12 @@ parseCaseResult = do
     result <- parseExpr
     return result
 
+parseCondElse :: Parser CasePair
+parseCondElse = do
+    atom_else <- lexeme (char '(') *> lexeme (parseAtom)
+    result <- parseCaseResult <* lexeme (char ')')
+    return (atom_else, result)
+
 parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
@@ -213,7 +201,7 @@ parseCondExpr :: Parser LispVal
 parseCondExpr = do
     lexeme $ char '('
     lexeme $ string "cond"
-    lista <- sepBy parseCasePair newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
     lexeme $ char ')'
     return $ CondExpr lista
 

@@ -152,7 +152,7 @@ eval val@(String _) = return val
 eval val@(Number _) = return val
 eval val@(Bool _) = return val
 -- hack!!! TODO: usar este hack en otras funciones
-eval (List [Atom "else"]) = return $ Bool True
+eval (Atom "else") = return $ Bool True
 eval (List [Atom "quote", val]) = return val
 -- nuevo
 eval (CaseExpr expr lista_pares) = do
