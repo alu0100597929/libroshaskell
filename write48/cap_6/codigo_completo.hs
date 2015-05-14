@@ -28,6 +28,8 @@ Lisp>>> (cond ((> 3 2) 'greater)\n((< 3 2) 'less))
 greater
 Lisp>>> (cond ((> 3 3) 'greater)\n((< 3 3) 'less)\n(else 'equal))
 equal
+Lisp>>> (cond ((> 3 3) 'greater)\n((< 3 3) 'less)\n(else 'equal))
+equal
 -}
 
 data LispError = NumArgs Integer [LispVal]
@@ -67,8 +69,13 @@ flushStr str = putStr str >> hFlush stdout
 readPrompt :: String -> IO String
 readPrompt prompt = flushStr prompt >> getLine
 
+quitSpaces :: String -> String
+quitSpaces toda@(x:xs) = case x of
+                      ' ' -> quitSpaces xs
+                      _ -> toda
+
 evalString :: String -> IO String
-evalString expr = return $ extractValue $ trapError (liftM show $ readExpr (foo expr) >>= eval)
+evalString expr = return $ extractValue $ trapError (liftM show $ readExpr (quitSpaces (foo expr)) >>= eval)
 
 evalAndPrint :: String -> IO ()
 evalAndPrint expr =  evalString expr >>= putStrLn

@@ -18,7 +18,7 @@ Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los 
 La mejor manera de describir el módulo es mediante un ejemplo, un parser del conocido formato JSON.\\
 
 \section{Librerías necesarias}
-
+\begin{small}
 \begin{lstlisting}[frame=single]
 import Text.ParserCombinators.Parsec hiding ((<|>), many)
 import Text.Parsec.Numbers (parseFloat)
@@ -26,6 +26,7 @@ import Control.Applicative
 import Control.Monad
 import Prelude hiding (Null,null)
 \end{lstlisting}
+\end{small}
 
 \section{Formato a parsear}
 
