@@ -18,7 +18,7 @@ import Debug.Trace
 
 -----------------Parte nueva-----------------
 import System.IO
-import System.Console.Readline
+-- import System.Console.Readline
 
 {-
 Ejemplos de uso: tener en cuenta que no van las comillas en el modo intérprete!!!
@@ -67,13 +67,21 @@ foo s = read $ "\"" ++ s ++ "\""
 flushStr :: String -> IO ()
 flushStr str = putStr str >> hFlush stdout
 
+{-
 readPrompt :: String -> IO String
-readPrompt prompt = case readline prompt of
-                      Just str -> return str
-                      Nothing -> return ""
+readPrompt prompt = do
+    may <- readline prompt
+    case may of
+      Just str -> return str
+      Nothing -> return ""
+-}
+
+readPrompt :: String -> IO String
+readPrompt prompt = flushStr prompt >> getLine
 
 -- hay que arreglar esto mejor
 quitSpaces :: String -> String
+quitSpaces [] = []
 quitSpaces toda@(x:xs) = case x of
                       ' ' -> quitSpaces xs
                       _ -> toda
@@ -409,7 +417,7 @@ instance Show LispVal where show = showVal
 --
 
 parseExpr :: Parser LispVal
-parseExpr = parseAtom
+parseExpr = (many spaces) >> (parseAtom
         <|> parseString
         <|> try parseChar
         <|> try parseComplex
@@ -426,7 +434,7 @@ parseExpr = parseAtom
         <|> do char '('
                x <- try parseList <|> parseDottedList
                char ')'
-               return x
+               return x)
 
 parseAtom :: Parser LispVal
 parseAtom = do first <- letter <|> symbol
