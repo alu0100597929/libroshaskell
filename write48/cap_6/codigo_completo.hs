@@ -18,6 +18,7 @@ import Debug.Trace
 
 -----------------Parte nueva-----------------
 import System.IO
+import System.Console.Readline
 
 {-
 Ejemplos de uso: tener en cuenta que no van las comillas en el modo intérprete!!!
@@ -67,8 +68,11 @@ flushStr :: String -> IO ()
 flushStr str = putStr str >> hFlush stdout
 
 readPrompt :: String -> IO String
-readPrompt prompt = flushStr prompt >> getLine
+readPrompt prompt = case readline prompt of
+                      Just str -> return str
+                      Nothing -> return ""
 
+-- hay que arreglar esto mejor
 quitSpaces :: String -> String
 quitSpaces toda@(x:xs) = case x of
                       ' ' -> quitSpaces xs

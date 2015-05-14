@@ -27,3 +27,8 @@ cabal install parsectools
 # Debuguear funciones estilo printf
 
 import Debug.Trace
+
+# Leer líneas con la consola de GNU
+
+cabal install readline
+import System.Console.Readline
