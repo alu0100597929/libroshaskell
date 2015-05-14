@@ -761,6 +761,20 @@ segundo el penúltimo, etc. No hay problema en ejecutarla sobre la lista vacía.
     Prelude> reverse []
     []
 
+## Span
+
+```haskell
+span :: (a -> Bool) -> [a] -> ([a], [a])
+```
+
+`span`, aplicada a un predicado `p` y a una lista `xs`, devuelve una tupla cuyo primer elemento es una lista con el mayor prefijo (posiblemente vacío) de `xs` de elementos que satisfacen `p` y su segundo elemento es el resto de la lista
+
+    span (< 3) [1,2,3,4,1,2,3,4] == ([1,2],[3,4,1,2,3,4])
+    span (< 9) [1,2,3] == ([1,2,3],[])
+    span (< 0) [1,2,3] == ([],[1,2,3])
+
+`span p xs` es equivalente a `(takeWhile p xs, dropWhile p xs)`
+
 ## Recursividad en listas:
 
 En programación funcional, hablar de "iteraciones" es hablar de recursividad. Las listas se suelen 
@@ -5247,4 +5261,4 @@ main = do
 
 Y listo, ya tenemos nuestro parser de JSON funcionando.
 
-Felicidades por haber completado el tutorial (o por haber saltado a la última página! que nos conocemos xD) y espero que haya sido de tu agrado. Si tienes cualquier duda o sugerencia, estoy disponible en freinn@gmail.com.
+Felicidades por haber completado el tutorial (o por haber saltado a la última página, que nos conocemos xD) y espero que haya sido de tu agrado. Si tienes cualquier duda o sugerencia, estoy disponible en freinn@gmail.com.

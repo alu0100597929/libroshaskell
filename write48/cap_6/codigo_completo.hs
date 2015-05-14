@@ -79,15 +79,17 @@ readPrompt prompt = do
 readPrompt :: String -> IO String
 readPrompt prompt = flushStr prompt >> getLine
 
+{-
 -- hay que arreglar esto mejor
 quitSpaces :: String -> String
 quitSpaces [] = []
 quitSpaces toda@(x:xs) = case x of
                       ' ' -> quitSpaces xs
                       _ -> toda
+-}
 
 evalString :: String -> IO String
-evalString expr = return $ extractValue $ trapError (liftM show $ readExpr (quitSpaces (foo expr)) >>= eval)
+evalString expr = return $ extractValue $ trapError (liftM show $ readExpr (foo expr) >>= eval)
 
 evalAndPrint :: String -> IO ()
 evalAndPrint expr =  evalString expr >>= putStrLn
