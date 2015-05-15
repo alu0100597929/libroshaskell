@@ -111,10 +111,12 @@ isBound :: Env -> String -> IO Bool
 isBound envRef var = readIORef envRef >>= return . maybe False (const True) . lookup var
 
 getVar :: Env -> String -> IOThrowsError LispVal
-getVar envRef var  =  do env <- liftIO $ readIORef envRef
-                         maybe (throwError $ UnboundVar "Getting an unbound variable" var)
-                               (liftIO . readIORef)
-                               (lookup var env)
+getVar envRef var  = if var /= "else"
+                       then do env <- liftIO $ readIORef envRef
+                               maybe (throwError $ UnboundVar "Getting an unbound variable" var)
+                                     (liftIO . readIORef)
+                                     (lookup var env)
+                       else return $ Bool True
 
 setVar :: Env -> String -> LispVal -> IOThrowsError LispVal
 setVar envRef var value = do env <- liftIO $ readIORef envRef
@@ -128,11 +130,13 @@ defineVar envRef var value = do
      alreadyDefined <- liftIO $ isBound envRef var
      if alreadyDefined
         then setVar envRef var value >> return value
-        else liftIO $ do
-             valueRef <- newIORef value
-             env <- readIORef envRef
-             writeIORef envRef ((var, valueRef) : env)
-             return value
+        else case value of
+               Atom "else" -> return $ Bool True
+               _ -> liftIO $ do
+                    valueRef <- newIORef value
+                    env <- readIORef envRef
+                    writeIORef envRef ((var, valueRef) : env)
+                    return value
 
 bindVars :: Env -> [(String, LispVal)] -> IO Env
 bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
