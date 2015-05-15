@@ -147,11 +147,13 @@ evalAndPrint env expr =  evalString env (foo expr) >>= putStrLn
 evalString :: Env -> String -> IO String
 evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr (foo expr)) >>= eval env
 
+-- nuevos
+
 runOne :: String -> IO ()
-runOne expr = nullEnv >>= flip evalAndPrint expr
+runOne expr = primitiveBindings >>= flip evalAndPrint expr
  
 runRepl :: IO ()
-runRepl = nullEnv >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
+runRepl = primitiveBindings >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
 
 main :: IO ()
 main = do args <- getArgs
@@ -225,6 +227,11 @@ checkConds env (x:xs) = do result <- checkCondition env x
 
 -- type IOThrowsError = ErrorT LispError IO
 
+-- nuevos helpers
+makeFunc varargs env params body = return $ Func (map showVal params) varargs body env
+makeNormalFunc = makeFunc Nothing
+makeVarArgs = makeFunc . Just . showVal
+
 --
 -- Evaluador, actualizado
 --
@@ -234,26 +241,32 @@ eval env val@(String _) = return val
 eval env val@(Number _) = return val
 eval env val@(Bool _) = return val
 eval env (Atom id) = getVar env id
--- hack!!! TODO: usar este hack en otras funciones
-eval env (Atom "else") = return $ Bool True
 eval env (List [Atom "quote", val]) = return val
--- nuevo
-eval env (CaseExpr expr lista_pares) = do
-    result <- eval env expr
-    case findLispVal result lista_pares of
-      Nothing -> return (String "undefined")
-      Just x -> return x
-eval env (CondExpr list_conds) = checkConds env list_conds
 eval env (List [Atom "if", pred, conseq, alt]) =
-     do result <- eval env pred
-        case result of
-          Bool False -> eval env alt
-          otherwise -> eval env conseq
+    do result <- eval env pred
+       case result of
+         Bool False -> eval env alt
+         otherwise -> eval env conseq
 eval env (List [Atom "set!", Atom var, form]) =
      eval env form >>= setVar env var
+-- nuevo
+-- Esta ecuación faltaba, es parecido a set! pero definiendo variable
 eval env (List [Atom "define", Atom var, form]) =
-     eval env form >>= defineVar env var
-eval env (List (Atom func : args)) = mapM (eval env) args >>= liftThrows . apply func
+    eval env form >>= defineVar env var
+eval env (List (Atom "define" : List (Atom var : params) : body)) =
+    makeNormalFunc env params body >>= defineVar env var
+eval env (List (Atom "define" : DottedList (Atom var : params) varargs : body)) =
+    makeVarArgs varargs env params body >>= defineVar env var
+eval env (List (Atom "lambda" : List params : body)) =
+    makeNormalFunc env params body
+eval env (List (Atom "lambda" : DottedList params varargs : body)) =
+    makeVarArgs varargs env params body
+eval env (List (Atom "lambda" : varargs@(Atom _) : body)) =
+    makeVarArgs varargs env [] body
+eval env (List (function : args)) = do
+    func <- eval env function
+    argVals <- mapM (eval env) args
+    apply func argVals
 eval env badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
 
 --ejercicio 3: nuevo parser para expresiones case
@@ -355,12 +368,26 @@ equal [arg1, arg2] = do
     return $ Bool $ (primitiveEquals || let (Bool x) = eqvEquals in x)
 equal badArgList = throwError $ NumArgs 2 badArgList
 
--- parte de lecciones anteriores
+-- nueva definición de apply
 
-apply :: String -> [LispVal] -> ThrowsError LispVal
-apply func args = maybe (throwError $ NotFunction "Unrecognized primitive function args" func)
-                        ($ args)
-                        (lookup func primitives)
+apply :: LispVal -> [LispVal] -> IOThrowsError LispVal
+apply (PrimitiveFunc func) args = liftThrows $ func args
+apply (Func params varargs body closure) args =
+      if num params /= num args && varargs == Nothing
+         then throwError $ NumArgs (num params) args
+         else (liftIO $ bindVars closure $ zip params args) >>= bindVarArgs varargs >>= evalBody
+      where remainingArgs = drop (length params) args
+            num = toInteger . length
+            evalBody env = liftM last $ mapM (eval env) body
+            bindVarArgs arg env = case arg of
+                Just argName -> liftIO $ bindVars env [(argName, List $ remainingArgs)]
+                Nothing -> return env
+
+-- nueva función
+
+primitiveBindings :: IO Env
+primitiveBindings = nullEnv >>= (flip bindVars $ map makePrimitiveFunc primitives)
+     where makePrimitiveFunc (var, func) = (var, PrimitiveFunc func)
 
 --
 -- Primitive functions lookup table
@@ -469,6 +496,9 @@ data LispVal = Atom String
              | CondExpr [CasePair]
              -- primer LispVal, expr a evaluar, segundo, lista de pares de casos
              | CaseExpr LispVal [CasePair]
+             | PrimitiveFunc ([LispVal] -> ThrowsError LispVal)
+             | Func { params :: [String], vararg :: (Maybe String),
+                      body :: [LispVal], closure :: Env }
 
 instance Show LispVal where show = showVal
 
@@ -635,6 +665,13 @@ showVal (CasePair' (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
 showVal (CondExpr lista_conds) = "(" ++ unwords (map casePair2Str lista_conds) ++ ")"
 showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " "
                                       ++ unwords (map casePair2Str lista_pares) ++ ")"
+--nuevas ecuaciones
+showVal (PrimitiveFunc _) = "<primitive>"
+showVal (Func {params = args, vararg = varargs, body = body, closure = env}) =
+   "(lambda (" ++ unwords (map show args) ++
+      (case varargs of
+         Nothing -> ""
+         Just arg -> " . " ++ arg) ++ ") ...)"
 
 casePair2Str :: CasePair -> String
 casePair2Str (a,b) = showVal a ++ ", " ++ showVal b
