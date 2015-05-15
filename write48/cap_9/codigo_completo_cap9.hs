@@ -152,7 +152,7 @@ runOne :: [String] -> IO ()
 runOne args = do
     env <- primitiveBindings >>= flip bindVars [("args", List $ map String $ drop 1 args)] 
     (runIOThrows $ liftM show $ eval env (List [Atom "load", String (args !! 0)])) 
-        >>= hPutStrLn stderr
+        >>= hPutStrLn stdout
  
 runRepl :: IO ()
 runRepl = primitiveBindings >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
