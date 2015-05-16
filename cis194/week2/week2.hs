@@ -1,99 +1,182 @@
-data Thing = Shoe 
-           | Ship 
-           | SealingWax 
-           | Cabbage 
-           | King
-  deriving Show
-  
-shoe :: Thing
-shoe = Shoe
+strLength :: String -> Int
+strLength [] = 0
+strLength (_:xs) = let len_rest = strLength xs in
+                   len_rest + 1
 
-listO'Things :: [Thing]
-listO'Things = [Shoe, SealingWax, King, Cabbage, King]
+-- los nombres del where sólo valen para la segunda ecuación
+frob :: String -> Char
+frob [] = 'a'
+frob str
+  | len > 5 = 'x'
+  | len < 3 = 'y'
+  | otherwise = 'z'
+  where
+    len = strLength str
 
-isSmall :: Thing -> Bool
-isSmall Shoe       = True
-isSmall Ship       = False
-isSmall SealingWax = True
-isSmall Cabbage    = True
-isSmall King       = False
+sumTo20 :: [Int] -> Int
+sumTo20 nums = go 0 nums
+  where go :: Int -> [Int] -> Int
+        go acc [] = acc
+        go acc (x:xs)
+          | acc >= 20 = acc
+          | otherwise = go (acc+x) xs
 
-isSmall2 :: Thing -> Bool
-isSmall2 Ship = False
-isSmall2 King = False
-isSmall2 _    = True
+notEmpty :: [a] -> Bool
+notEmpty []    = False
+notEmpty (_:_) = True
 
-data FailableDouble = Failure
-                    | OK Double
-  deriving Show
-  
-ex01 = Failure
-ex02 = OK 3.4
+strange :: a -> b
+strange = error "imposible de definir"
 
-safeDiv :: Double -> Double -> FailableDouble
-safeDiv _ 0 = Failure
-safeDiv x y = OK (x / y)
+limited :: a -> a
+limited x = x
+-- limited = id
 
-failureToZero :: FailableDouble -> Double
-failureToZero Failure = 0
-failureToZero (OK d)  = d
+doStuff1 :: [Int] -> Int
+doStuff1 []  = 0
+doStuff1 [_] = 0
+doStuff1 xs  = head xs + (head (tail xs))
 
--- Store a person's name, age, and favourite Thing.
-data Person = Person String Int Thing
-  deriving Show
+doStuff2 :: [Int] -> Int
+doStuff2 []        = 0
+doStuff2 [_]       = 0
+doStuff2 (x1:x2:_) = x1 + x2
 
-brent :: Person
-brent = Person "Brent" 31 SealingWax
+addOneToAll :: [Int] -> [Int]
+addOneToAll []     = []
+addOneToAll (x:xs) = (x + 1) : addOneToAll xs
 
-stan :: Person
-stan  = Person "Stan" 94 Cabbage
+absToAll :: [Int] -> [Int]
+absToAll []     = []
+absToAll (x:xs) = abs x : absToAll xs
 
-getAge :: Person -> Int
-getAge (Person _ a _) = a
+squareAll :: [Int] -> [Int]
+squareAll []     = []
+squareAll (x:xs) = x^2 : squareAll xs
 
-getName :: Person -> String
-getName (Person a _ _) = a
+map' :: (a -> b) -> [a] -> [b]
+map' _ []     = []
+map' f (x:xs) = f x : map' f xs
 
---los constructores de tipos y datos deben empezar siempre con mayúscula
---mientras que las variables y funciones lo deben hacer con minúscula, 
---así Haskell los diferencia
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' _ [] = []
+filter' p (x:xs) = case p x of
+                    True -> x : filter' p xs
+                    _    -> filter' p xs
+
+sum' :: [Int] -> Int
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+
+product' :: [Int] -> Int
+product' [] = 1
+product' (x:xs) = x * product' xs
+
+length' :: [a] -> Int
+length' []     = 0
+length' (_:xs) = 1 + length' xs
+
+myFoldl :: (a -> b -> a) -> a -> [b] -> a
+myFoldl f acc [] = acc
+myFoldl f acc (x:xs) = myFoldl f (f acc x) xs
 
 {-
-data AlgDataType = Constr1 Type11 Type12
-                 | Constr2 Type21
-                 | Constr3 Type31 Type32 Type33
-                 | Constr4
+*Main> myFoldl (\x y -> x+y) 0 [1..50]
+1275
+*Main> sum [1..50]
+1275
+*Main> myFoldl (\x y -> x*y) 1 [1..50]
+30414093201713378043612608166064768844377641568960512000000000000
+*Main> product [1..50]
+30414093201713378043612608166064768844377641568960512000000000000
+*Main> myFoldl (\x _ -> x+1) 0 [1..50]
+50
+*Main> myFoldl (\x y -> x+y) 0 [1..50]
+1275
+*Main> sum [1..50]
+1275
 -}
 
---p, la variable antes de la arroba se queda con TODO lo que casa con el
---patter matching
-baz :: Person -> String
-baz p@(Person n _ _) = "The name field of (" ++ show p ++ ") is " ++ n
+-- para más adelante, implementar foldr
 
-checkFav :: Person -> String
-checkFav (Person n _ SealingWax) = n ++ ", you're my kind of person!"
-checkFav (Person n _ _)          = n ++ ", your favorite thing is lame."
+-- (.) :: (b -> c) -> (a -> b) -> a -> (a -> c)
+-- (.) f g x = f (g x)
 
-ex03 = case "Hello" of
-           []      -> 3
-           ('H':s) -> length s
-           _       -> 7
-	   
-failureToZero' :: FailableDouble -> Double
-failureToZero' x = case x of
-                     Failure -> 0
-                     OK d    -> d
+add1Mult4 :: [Int] -> [Int]
+add1Mult4 = map ((*4) . (+1))
 
-data IntList = Empty | Cons Int IntList
+-- el dólar se parsea como u operador, y es útil para evitar poner paréntesis
+-- ($) :: (a -> b) -> a -> b
+-- f $ x = f x
 
-intListProd :: IntList -> Int
-intListProd Empty      = 1
-intListProd (Cons x l) = x * intListProd l
+negateNumEvens1 :: [Int] -> Int
+negateNumEvens1 xs = negate (length (filter even xs))
 
-data Tree = Leaf Char
-          | Node Tree Int Tree
-  deriving Show
+negateNumEvens2 :: [Int] -> Int
+negateNumEvens2 xs = negate $ length $ filter even xs
 
-tree :: Tree
-tree = Node (Leaf 'x') 1 (Node (Leaf 'y') 2 (Leaf 'z'))
+-- lambdas
+duplicate1 :: [String] -> [String]
+duplicate1 = map dup
+  where dup x = x ++ x
 
+duplicate2 :: [String] -> [String]
+duplicate2 = map (\x -> x ++ x)
+
+-- currying and partial application
+-- las flechas de función asocian a la derecha
+f :: Int -> Int -> Int
+f x y = 2*x + y
+
+-- esta función es equivalente a f
+f' :: Int -> (Int -> Int)
+f' x y = 2*x + y
+
+-- la aplicación de funciones asocia a la izquierda
+-- por tanto f 3 2 es realmente (f 3) 2
+
+{-
+The “multi-argument” lambda abstraction
+
+\x y z -> ... 
+is really just syntax sugar for
+
+\x -> (\y -> (\z -> ...)).  
+Likewise, the function definition
+
+f x y z = ... 
+is syntax sugar for
+
+f = \x -> (\y -> (\z -> ...)).
+-}
+
+-- If we want to actually represent a function of two arguments we can use a single argument which is a tuple. That is, the function
+
+f'' :: (Int,Int) -> Int
+f'' (x,y) = 2*x + y
+-- can also be thought of as taking “two arguments”, although in another sense it really only takes one argument which happens to be a pair. In order to convert between the two representations of a two-argument function, the standard library defines functions called curry and uncurry, defined like this (except with different names):
+
+schönfinkel :: ((a,b) -> c) -> a -> b -> c
+schönfinkel f x y = f (x,y)
+
+unschönfinkel :: (a -> b -> c) -> (a,b) -> c
+unschönfinkel f (x,y) = f x y
+
+-- uncurry in particular can be useful when you have a pair and want to apply a function to it. For example:
+
+-- Prelude> uncurry (+) (2,3)
+-- 5
+
+-- ordenar los argumentos "de menor a mayor variación" para hacer
+-- la aplicación parcial lo más útil posible
+
+-- ver la parte de secciones del capítulo 1
+
+foobar :: [Integer] -> Integer
+foobar []     = 0
+foobar (x:xs)
+  | x > 3     = (7*x + 2) + foobar xs
+  | otherwise = foobar xs
+
+foobar' :: [Integer] -> Integer
+foobar' = sum . map ((+2) . (*7)). filter (>3)

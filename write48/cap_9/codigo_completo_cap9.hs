@@ -416,8 +416,12 @@ writeProc [obj, Port port] = liftIO $ hPrint port obj >> (return $ Bool True)
 readContents :: [LispVal] -> IOThrowsError LispVal
 readContents [String filename] = liftM String $ liftIO $ readFile filename
 
+addSpace :: String -> String
+addSpace []  = []
+addSpace str = if last str /= ' ' then str ++ [' '] else str 
+
 load :: String -> IOThrowsError [LispVal]
-load filename = (liftIO $ liftM foo $ readFile filename) >>= liftThrows . readExprList
+load filename = (liftIO $ liftM (addSpace . foo) $ readFile filename) >>= liftThrows . readExprList
 
 readAll :: [LispVal] -> IOThrowsError LispVal
 readAll [String filename] = liftM List $ load filename
