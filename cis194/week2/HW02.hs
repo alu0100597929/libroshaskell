@@ -43,7 +43,10 @@ matches cod1 cod2 = (sum $ zipWith min (countColors cod1) (countColors cod2)) ::
 
 -- Construct a Move from a guess given the actual code
 getMove :: Code -> Code -> Move
-getMove = undefined
+getMove cod1 cod2 = Move cod2 exact nonexact
+  where
+    nonexact = (matches cod1 cod2) - exact
+    exact = exactMatches cod1 cod2
 
 -- Exercise 4 -----------------------------------------
 
