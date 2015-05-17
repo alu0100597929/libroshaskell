@@ -199,7 +199,7 @@ findList el (List (x:xs)) = case eqv [el,x] of
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
 findLispVal clave []     = Nothing
 findLispVal clave [x]    = case fst x of
-                             List [Atom "else"] -> Just (snd x)
+                             Atom "else" -> Just (snd x)
                              _ -> case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> Nothing
@@ -312,7 +312,7 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy (try parseCasePair <|> parseCondElse) parseCasePair newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva

@@ -25,6 +25,8 @@ Ejemplos de uso: tener en cuenta que no van las comillas en el modo intérprete!
 
 Lisp>>> (case (+ 5 5) ((4 9 1) 'd64) ((1 2) 'pepito) ((10) 'jorgito))
 jorgito
+Lisp>>> (case (+ 5 5) ((4 9 1) 'd64) ((1 2) 'pepito) (else 'jorgito))
+jorgito
 Lisp>>> (cond ((> 3 2) 'greater) ((< 3 2) 'less))
 greater
 Lisp>>> (cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))
@@ -224,9 +226,9 @@ extractValue (Right val) = val
 -- nuevo helper que busca un elemento en una lista, probada.
 findList :: LispVal -> LispVal -> ThrowsError LispVal
 findList el (List [])     = Right (Bool False)
-findList el (List (x:xs)) = case eqv [el,x] of
-                              Right (Bool True) -> Right (Bool True)
-                              _ -> findList el (List xs)
+findList el (List (x:xs)) = trace (showVal x) $ case eqv [el,x] of
+                                                  Right (Bool True) -> Right (Bool True)
+                                                  _ -> findList el (List xs)
 
 -- nuevo: ayudante de eval que busca coincidencias en expresiones case
 -- recibe una clave y la busca en cada lista, si está, o si es un else,
@@ -234,7 +236,7 @@ findList el (List (x:xs)) = case eqv [el,x] of
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
 findLispVal clave []     = Nothing
 findLispVal clave [x]    = case fst x of
-                             List [Atom "else"] -> Just (snd x)
+                             Atom "else" -> Just (snd x)
                              _ -> case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> Nothing
@@ -342,7 +344,7 @@ parseCaseExpr = do
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
     lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
-    char ')'
+    lexeme $ char ')'
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva

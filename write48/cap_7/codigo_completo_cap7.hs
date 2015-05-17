@@ -197,7 +197,7 @@ findList el (List (x:xs)) = case eqv [el,x] of
 findLispVal :: LispVal -> [CasePair] -> Maybe LispVal
 findLispVal clave []     = Nothing
 findLispVal clave [x]    = case fst x of
-                             List [Atom "else"] -> Just (snd x)
+                             Atom "else" -> Just (snd x)
                              _ -> case findList clave (fst x) of
                                   Right (Bool True) -> Just (snd x)
                                   _ -> Nothing
