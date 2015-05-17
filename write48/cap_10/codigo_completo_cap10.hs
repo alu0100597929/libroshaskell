@@ -14,7 +14,7 @@ import Control.Monad.Error -- está deprecated
 import Control.Monad.Except -- cabal install mtl, deberíamos usar esta
 import Data.List
 import Debug.Trace
-import System.IO
+import System.IO hiding (try)
 
 -----------------Parte nueva-----------------
 import Data.IORef
@@ -29,7 +29,40 @@ Lisp>>> (cond ((> 3 2) 'greater) ((< 3 2) 'less))
 greater
 Lisp>>> (cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))
 equal
+
+Para usar la "librería estándar" que hemos creado, hacer:
+Lisp>>> (load "stdlib.scm")
 -}
+
+type CasePair = (LispVal, LispVal)
+
+data LispVal = Atom String
+             | List [LispVal]
+             | DottedList [LispVal] LispVal
+             | Number Integer
+             | Ratio Rational
+             | Float Double
+             | Complex (Complex Double)
+             | String String
+             | Char Char
+             | Bool Bool
+             | Vector (Array Int LispVal)
+             | Nil () -- usarlo cuando convenga
+             -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
+             | CasePair' CasePair
+             -- primer lispVal, expr booleana a evaluar
+             | CondExpr [CasePair]
+             -- primer LispVal, expr a evaluar, segundo, lista de pares de casos
+             | CaseExpr LispVal [CasePair]
+             | PrimitiveFunc ([LispVal] -> ThrowsError LispVal)
+             | Func { params :: [String]
+                    , vararg :: (Maybe String)
+                    , body :: [LispVal]
+                    , closure :: Env }
+             | IOFunc ([LispVal] -> IOThrowsError LispVal)
+             | Port Handle
+
+instance Show LispVal where show = showVal
 
 data LispError = NumArgs Integer [LispVal]
                | TypeMismatch String LispVal
@@ -60,14 +93,39 @@ La línea de código está currificada, se podría escribir así también:
 type ThrowsError b = Either LispError b
 -}
 type ThrowsError = Either LispError
+type Env = IORef [(String, IORef LispVal)]
+type IOThrowsError = ErrorT LispError IO
 
--- helper que cambia las dobles backslashes por una sola 
-foo :: String -> String
-foo s = read $ "\"" ++ s ++ "\""
-
+data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
 -- nuevos helpers
 flushStr :: String -> IO ()
 flushStr str = putStr str >> hFlush stdout
+
+main :: IO ()
+main = do args <- getArgs
+          if null args then runRepl else runOne $ args
+
+-- type IOThrowsError = ErrorT LispError IO
+
+readOrThrow :: Parser a -> String -> ThrowsError a
+readOrThrow parser input = case parse parser "lisp" input of
+    Left err  -> throwError $ Parser err
+    Right val -> return val
+
+-- se quita la cabecera porque si no, falla el compilador
+readExpr = readOrThrow parseExpr
+
+readExprList = readOrThrow (endBy parseExpr spaces)
+
+-- Nueva implementación
+runOne :: [String] -> IO ()
+runOne args = do
+    env <- primitiveBindings >>= flip bindVars [("args", List $ map String $ drop 1 args)] 
+    (runIOThrows $ liftM show $ eval env (List [Atom "load", String (args !! 0)])) 
+        >>= hPutStrLn stdout
+ 
+runRepl :: IO ()
+runRepl = primitiveBindings >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
 
 {-
 readPrompt :: String -> IO String
@@ -90,12 +148,8 @@ until_ pred prompt action = do
 
 -- código nuevo
 
-type Env = IORef [(String, IORef LispVal)]
-
 nullEnv :: IO Env
 nullEnv = newIORef []
-
-type IOThrowsError = ErrorT LispError IO
 
 liftThrows :: ThrowsError a -> IOThrowsError a
 liftThrows (Left err) = throwError err
@@ -108,7 +162,7 @@ isBound :: Env -> String -> IO Bool
 isBound envRef var = readIORef envRef >>= return . maybe False (const True) . lookup var
 
 getVar :: Env -> String -> IOThrowsError LispVal
-getVar envRef var  = if var /= "else"
+getVar envRef var  = if var /= "else" && var /= "cond" && var /= "case"
                        then do env <- liftIO $ readIORef envRef
                                maybe (throwError $ UnboundVar "Getting an unbound variable" var)
                                      (liftIO . readIORef)
@@ -142,23 +196,10 @@ bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
                                         return (var, ref)
 
 evalAndPrint :: Env -> String -> IO ()
-evalAndPrint env expr =  evalString env (foo expr) >>= putStrLn
+evalAndPrint env expr =  evalString env expr >>= putStrLn
  
 evalString :: Env -> String -> IO String
-evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr (foo expr)) >>= eval env
-
-runOne :: String -> IO ()
-runOne expr = nullEnv >>= flip evalAndPrint expr
- 
-runRepl :: IO ()
-runRepl = nullEnv >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
-
-main :: IO ()
-main = do args <- getArgs
-          case length args of
-               0 -> runRepl
-               1 -> runOne $ args !! 0
-               otherwise -> putStrLn "Program takes only 0 or 1 argument"
+evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
 
 -- código viejo
 
@@ -171,12 +212,8 @@ trapError action = catchError action (return . show)
 extractValue :: ThrowsError a -> a
 extractValue (Right val) = val
 
--- throwError takes an Error value and lifts it into the Left (error) constructor of an Either
+-- throwError recibe un valor Error y lo eleva al constructor Left (error) de un Either
 -- es decir, pasa de (Error) a (Left LispError)
-readExpr :: String -> ThrowsError LispVal
-readExpr input = case parse parseExpr "lisp" input of
-                   Left err -> throwError $ Parser err
-                   Right val -> return val
 
 -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
 -- primer LispVal, expr a evaluar
@@ -223,8 +260,6 @@ checkConds env (x:xs) = do result <- checkCondition env x
                              Bool False -> checkConds env xs
                              y -> return y
 
--- type IOThrowsError = ErrorT LispError IO
-
 --
 -- Evaluador, actualizado
 --
@@ -234,10 +269,7 @@ eval env val@(String _) = return val
 eval env val@(Number _) = return val
 eval env val@(Bool _) = return val
 eval env (Atom id) = getVar env id
--- hack!!! TODO: usar este hack en otras funciones
-eval env (Atom "else") = return $ Bool True
 eval env (List [Atom "quote", val]) = return val
--- nuevo
 eval env (CaseExpr expr lista_pares) = do
     result <- eval env expr
     case findLispVal result lista_pares of
@@ -245,18 +277,34 @@ eval env (CaseExpr expr lista_pares) = do
       Just x -> return x
 eval env (CondExpr list_conds) = checkConds env list_conds
 eval env (List [Atom "if", pred, conseq, alt]) =
-     do result <- eval env pred
-        case result of
-          Bool False -> eval env alt
-          otherwise -> eval env conseq
+    do result <- eval env pred
+       case result of
+         Bool False -> eval env alt
+         otherwise -> eval env conseq
 eval env (List [Atom "set!", Atom var, form]) =
      eval env form >>= setVar env var
+-- nuevo
+-- Esta ecuación faltaba, es parecido a set! pero definiendo variable
 eval env (List [Atom "define", Atom var, form]) =
-     eval env form >>= defineVar env var
-eval env (List (Atom func : args)) = mapM (eval env) args >>= liftThrows . apply func
+    eval env form >>= defineVar env var
+eval env (List (Atom "define" : List (Atom var : params) : body)) =
+    makeNormalFunc env params body >>= defineVar env var
+eval env (List (Atom "define" : DottedList (Atom var : params) varargs : body)) =
+    makeVarArgs varargs env params body >>= defineVar env var
+eval env (List (Atom "lambda" : List params : body)) =
+    makeNormalFunc env params body
+eval env (List (Atom "lambda" : DottedList params varargs : body)) =
+    makeVarArgs varargs env params body
+eval env (List (Atom "lambda" : varargs@(Atom _) : body)) =
+    makeVarArgs varargs env [] body
+-- nueva ecuación
+eval env (List [Atom "load", String filename]) = 
+     load filename >>= liftM last . mapM (eval env)
+eval env (List (function : args)) = do
+    func <- eval env function
+    argVals <- mapM (eval env) args
+    apply func argVals
 eval env badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
-
---ejercicio 3: nuevo parser para expresiones case
 
 parseCaseResult :: Parser LispVal
 parseCaseResult = do
@@ -273,14 +321,14 @@ parseCondElse = do
 parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
-    result <- lexeme $ parseCaseResult <* char ')'
+    result <- parseCaseResult <* char ')' -- no puede ser lexeme
     return (list, result)
 
 parseCondExpr :: Parser LispVal
 parseCondExpr = do
     lexeme $ char '('
     lexeme $ string "cond"
-    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
     lexeme $ char ')'
     return $ CondExpr lista
 
@@ -293,7 +341,8 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
+    char ')'
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva
@@ -336,8 +385,6 @@ eqv [l1@(List arg1), l2@(List arg2)]       = eqvList eqv [l1, l2]
 eqv [_, _]                                 = return $ Bool False
 eqv badArgList                             = throwError $ NumArgs 2 badArgList
 
-data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
-
 unpackEquals :: LispVal -> LispVal -> Unpacker -> ThrowsError Bool
 unpackEquals arg1 arg2 (AnyUnpacker unpacker) = 
              do unpacked1 <- unpacker arg1
@@ -355,12 +402,68 @@ equal [arg1, arg2] = do
     return $ Bool $ (primitiveEquals || let (Bool x) = eqvEquals in x)
 equal badArgList = throwError $ NumArgs 2 badArgList
 
--- parte de lecciones anteriores
+-- nueva definición de apply
 
-apply :: String -> [LispVal] -> ThrowsError LispVal
-apply func args = maybe (throwError $ NotFunction "Unrecognized primitive function args" func)
-                        ($ args)
-                        (lookup func primitives)
+apply :: LispVal -> [LispVal] -> IOThrowsError LispVal
+apply (PrimitiveFunc func) args = liftThrows $ func args
+apply (Func params varargs body closure) args =
+      if num params /= num args && varargs == Nothing
+         then throwError $ NumArgs (num params) args
+         else (liftIO $ bindVars closure $ zip params args) >>= bindVarArgs varargs >>= evalBody
+      where remainingArgs = drop (length params) args
+            num = toInteger . length
+            evalBody env = liftM last $ mapM (eval env) body
+            bindVarArgs arg env = case arg of
+                Just argName -> liftIO $ bindVars env [(argName, List $ remainingArgs)]
+                Nothing -> return env
+-- nueva ecuación
+apply (IOFunc func) args = func args
+
+-- nuevas funciones
+
+applyProc :: [LispVal] -> IOThrowsError LispVal
+applyProc [func, List args] = apply func args
+applyProc (func : args)     = apply func args
+
+makePort :: IOMode -> [LispVal] -> IOThrowsError LispVal
+makePort mode [String filename] = liftM Port $ liftIO $ openFile filename mode
+
+closePort :: [LispVal] -> IOThrowsError LispVal
+closePort [Port port] = liftIO $ hClose port >> (return $ Bool True)
+closePort _           = return $ Bool False
+
+readProc :: [LispVal] -> IOThrowsError LispVal
+readProc []          = readProc [Port stdin]
+readProc [Port port] = (liftIO $ hGetLine port) >>= liftThrows . readExpr
+
+writeProc :: [LispVal] -> IOThrowsError LispVal
+writeProc [obj]            = writeProc [obj, Port stdout]
+writeProc [obj, Port port] = liftIO $ hPrint port obj >> (return $ Bool True)
+
+readContents :: [LispVal] -> IOThrowsError LispVal
+readContents [String filename] = liftM String $ liftIO $ readFile filename
+
+-- helper que hace que no haya que poner espacios al final de cada sentencia
+addSpace :: String -> String
+addSpace []  = []
+addSpace str = if last str /= ' ' then str ++ [' '] else str 
+
+load :: String -> IOThrowsError [LispVal]
+load filename = (liftIO $ liftM (addSpace) $ readFile filename) >>= liftThrows . readExprList
+
+readAll :: [LispVal] -> IOThrowsError LispVal
+readAll [String filename] = liftM List $ load filename
+
+makeFunc varargs env params body = return $ Func (map showVal params) varargs body env
+makeNormalFunc = makeFunc Nothing
+makeVarArgs = makeFunc . Just . showVal
+
+primitiveBindings :: IO Env
+primitiveBindings = nullEnv >>= (flip bindVars $ map (makeFunc IOFunc) ioPrimitives
+                                               ++ map (makeFunc PrimitiveFunc) primitives)
+     where makeFunc constructor (var, func) = (var, constructor func)
+
+-- código de lecciones anteriores
 
 --
 -- Primitive functions lookup table
@@ -404,6 +507,18 @@ primitives = [("+", numericBinop (+))
              ,("eqv?", eqv)
              ,("equal?", equal)]
 
+-- nueva función
+ioPrimitives :: [(String, [LispVal] -> IOThrowsError LispVal)]
+ioPrimitives = [("apply", applyProc),
+                ("open-input-file", makePort ReadMode),
+                ("open-output-file", makePort WriteMode),
+                ("close-input-port", closePort),
+                ("close-output-port", closePort),
+                ("read", readProc),
+                ("write", writeProc),
+                ("read-contents", readContents),
+                ("read-all", readAll)]
+
 numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> ThrowsError LispVal
 numericBinop op           []  = throwError $ NumArgs 2 []
 numericBinop op singleVal@[_] = throwError $ NumArgs 2 singleVal
@@ -444,33 +559,6 @@ unpackNum (String n) = let parsed = reads n in
                              else return $ fst $ parsed !! 0
 unpackNum (List [n]) = unpackNum n
 unpackNum notNum     = throwError $ TypeMismatch "number" notNum
-
------------------Parte nueva-----------------
-
---newtype ListaLispVal = ListaLispVal [LispVal]
-
-type CasePair = (LispVal, LispVal)
-
-data LispVal = Atom String
-             | List [LispVal]
-             | DottedList [LispVal] LispVal
-             | Number Integer
-             | Ratio Rational
-             | Float Double
-             | Complex (Complex Double)
-             | String String
-             | Char Char
-             | Bool Bool
-             | Vector (Array Int LispVal)
-             | Nil () -- usarlo cuando convenga
-             -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
-             | CasePair' CasePair
-             -- primer lispVal, expr booleana a evaluar
-             | CondExpr [CasePair]
-             -- primer LispVal, expr a evaluar, segundo, lista de pares de casos
-             | CaseExpr LispVal [CasePair]
-
-instance Show LispVal where show = showVal
 
 --
 -- LispVal Parsers
@@ -635,6 +723,15 @@ showVal (CasePair' (a,b)) = "(" ++ show a ++ ", " ++ show b ++ ")"
 showVal (CondExpr lista_conds) = "(" ++ unwords (map casePair2Str lista_conds) ++ ")"
 showVal (CaseExpr expr lista_pares) = "(" ++ showVal expr ++ " "
                                       ++ unwords (map casePair2Str lista_pares) ++ ")"
+showVal (PrimitiveFunc _) = "<primitive>"
+showVal (Func {params = args, vararg = varargs, body = body, closure = env}) =
+   "(lambda (" ++ unwords (map show args) ++
+      (case varargs of
+         Nothing -> ""
+         Just arg -> " . " ++ arg) ++ ") ...)"
+--nuevas ecuaciones
+showVal (Port _)   = "<IO port>"
+showVal (IOFunc _) = "<IO primitive>"
 
 casePair2Str :: CasePair -> String
 casePair2Str (a,b) = showVal a ++ ", " ++ showVal b

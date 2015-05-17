@@ -26,6 +26,18 @@ data LispError = NumArgs Integer [LispVal]
                | UnboundVar String String
                | Default String
 
+{-
+Esto funcionaba porque la cadena que recibían era exacta, cuando lo poníamos en el main las '\n' se cambiaban
+por '\\n', fastidiándolo todo
+
+./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64) ((1 2) 'pepito) ((10) 'jorgito))"
+jorgito
+./ejercicio_3 "(cond ((> 3 2) 'greater) ((< 3 2) 'less))"
+greater
+./ejercicio_3 "(cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))"
+equal
+-}
+
 showError :: LispError -> String
 showError (UnboundVar message varname)  = message ++ ": " ++ varname
 showError (BadSpecialForm message form) = message ++ ": " ++ show form
@@ -44,15 +56,10 @@ type ThrowsError b = Either LispError b
 -}
 type ThrowsError = Either LispError
 
--- helper que cambia las dobles backslashes por una sola 
-foo :: String -> String
-foo s = read $ "\"" ++ s ++ "\""
-
 main :: IO ()
 main = do
     args <- getArgs
-    let procesada = foo (args !! 0)
-    evaled <- return $ liftM show $ readExpr procesada >>= eval
+    evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
     putStrLn $ extractValue $ trapError evaled
 
 {-catchError: recibe un valor Either (una acción) y si es Right, lo devuelve, si es Left,
@@ -70,6 +77,9 @@ readExpr :: String -> ThrowsError LispVal
 readExpr input = case parse parseExpr "lisp" input of
                    Left err -> throwError $ Parser err
                    Right val -> return val
+
+-- throwError recibe un valor Error y lo eleva al constructor Left (error) de un Either
+-- es decir, pasa de (Error) a (Left LispError)
 
 -- ejercicio 3, case, molaría forzar que el primer LispVal fuera List
 -- primer LispVal, expr a evaluar
@@ -109,46 +119,15 @@ proccessResult cond_expr result = case result of
                                     Bool True -> snd cond_expr
                                     _ -> Bool False
 
-checkConds :: [CasePair] -> LispVal
-checkConds []     = String "undefined"
-checkConds (x:xs) = case checkCondition x of
-                      Right (Bool False) -> checkConds xs
-                      y -> extractValue y
+checkConds :: [CasePair] -> ThrowsError LispVal
+checkConds []     = return $ String "undefined"
+checkConds (x:xs) = do result <- checkCondition x
+                       case result of
+                         Bool False -> checkConds xs
+                         y -> return y
 --
 -- Evaluador
 --
-
-{-
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 2 2) ((4 9 2 1 2) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
-4 (4 9 2 1 2)
-Right "d64"
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 1 1) ((4 9 1) 'd64\n((1 2) 'pepito\n((1) 'jorgito)"
-2 (4 9 1)
-2 (1 2)
-Right "pepito"
-*Main> eval $ fromRight $ parse parseExpr "jaja" "(case (+ 5 5) ((4 9 1) 'd64\n((1 2) 'pepito\n((10) 'jorgito)"
-10 (4 9 1)
-10 (1 2)
-10 (10)
-Right "jorgito"
-
-Esto funcionaba porque la cadena que recibían era exacta, cuando lo poníamos en el main las '\n' se cambiaban
-por '\\n', fastidiándolo todo
-
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater))"
-Right ((> 3 2), greater)
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less)"
-Left "jeje" (line 2, column 16):
-unexpected end of input
-expecting lf new-line or ")"
-*Main> parse parseCondExpr "jeje" "(cond ((> 3 2) 'greater)\n((< 3 2) 'less))"
-Right ((> 3 2), greater (< 3 2), less)
-
-./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))"
-jorgito
-./ejercicio_3 "(case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n(else 'jorgito))"
-jorgito
--}
 
 eval :: LispVal -> ThrowsError LispVal
 eval val@(String _) = return val
@@ -163,7 +142,7 @@ eval (CaseExpr expr lista_pares) = do
     case findLispVal result lista_pares of
       Nothing -> return (String "undefined")
       Just x -> return x
-eval (CondExpr list_conds) = return $ checkConds list_conds
+eval (CondExpr list_conds) = checkConds list_conds
 eval (List [Atom "if", pred, conseq, alt]) = 
      do result <- eval pred
         case result of
@@ -191,14 +170,14 @@ parseCondElse = do
 parseCasePair :: Parser CasePair
 parseCasePair = do
     list <- lexeme (char '(') >> (lexeme (char '(')) *> parseList <* (lexeme $ char ')')
-    result <- lexeme $ parseCaseResult <* char ')'
+    result <- parseCaseResult <* char ')' -- no puede ser lexeme
     return (list, result)
 
 parseCondExpr :: Parser LispVal
 parseCondExpr = do
     lexeme $ char '('
     lexeme $ string "cond"
-    lista <- sepBy (try parseCasePair <|> parseCondElse) newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
     lexeme $ char ')'
     return $ CondExpr lista
 
@@ -211,7 +190,8 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy parseCasePair newline -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
+    char ')'
     return $ CaseExpr conditional_expr lista
 
 -- parte nueva

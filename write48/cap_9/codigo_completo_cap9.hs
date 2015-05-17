@@ -23,11 +23,11 @@ import Data.IORef
 {-
 Ejemplos de uso: tener en cuenta que no van las comillas en el modo intérprete!!!
 
-Lisp>>> (case (+ 5 5) ((4 9 1) 'd64)\n((1 2) 'pepito)\n((10) 'jorgito))
+Lisp>>> (case (+ 5 5) ((4 9 1) 'd64) ((1 2) 'pepito) ((10) 'jorgito))
 jorgito
-Lisp>>> (cond ((> 3 2) 'greater)\n((< 3 2) 'less))
+Lisp>>> (cond ((> 3 2) 'greater) ((< 3 2) 'less))
 greater
-Lisp>>> (cond ((> 3 3) 'greater)\n((< 3 3) 'less)\n(else 'equal))
+Lisp>>> (cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))
 equal
 -}
 
@@ -250,6 +250,7 @@ eval env (CaseExpr expr lista_pares) = do
     case findLispVal result lista_pares of
       Nothing -> return (String "undefined")
       Just x -> return x
+eval env (CondExpr list_conds) = checkConds env list_conds
 eval env (List [Atom "if", pred, conseq, alt]) =
     do result <- eval env pred
        case result of
@@ -312,7 +313,7 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy parseCasePair (char ' ') -- (char '\\' >> char 'n')
+    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
     char ')'
     return $ CaseExpr conditional_expr lista
 
