@@ -23,6 +23,21 @@ data LispVal = Atom String
              | Nil ()
                deriving (Show)
 
+{-
+$ ./simple_parser "(a test)"
+Found value
+$ ./simple_parser "(a (nested) test)"
+Found value
+$ ./simple_parser "(a (dotted . list) test)"
+Found value
+$ ./simple_parser "(a '(quoted (dotted . list)) test)"
+Found value
+$ ./simple_parser "(a '(imbalanced parens)"
+No match: "lisp" (line 1, column 24):
+unexpected end of input
+expecting space or ")"
+-}
+
 main :: IO ()
 main = do
      args <- getArgs

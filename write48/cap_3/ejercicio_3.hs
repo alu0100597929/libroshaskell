@@ -30,6 +30,17 @@ data LispVal = Atom String
 
 instance Show LispVal where show = showVal
 
+{-
+./eval "(+ 2 2)"
+4
+./eval "(+ 2 (-4 1))"
+2
+./eval "(+ 2 (- 4 1))"
+5
+./eval "(- (+ 4 6 3) 3 5 2)"
+3
+-}
+
 main :: IO ()
 main = getArgs >>= print . eval . readExpr . head
 
@@ -269,6 +280,8 @@ string2symbol _ = error "Expecting a String"
 
 numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> LispVal
 numericBinop op params = Number $ foldl1 op $ map unpackNum params
+
+(+ 1 2 3 4) == foldl1 => (1 + 2 + 3 + 4) = 10
 
 unaryOp :: (LispVal -> LispVal) -> [LispVal] -> LispVal
 unaryOp func [arg] = func arg

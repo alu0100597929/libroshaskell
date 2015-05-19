@@ -437,7 +437,31 @@ Y por último, veamos una que ignora su primer argumento y devuelva el segundo:
 \_ x -> x
 ```
 
-Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer argumento, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial. 
+Como vemos, se puede usar el patrón subrayado para expresar que no nos importa el valor del primer argumento, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y se usarán bastante a lo largo de este tutorial.
+
+La abstracción de una lambda "multi-argumento"
+
+```haskell
+\x y z -> ...
+```
+
+es realmente azúcar sintáctico para
+
+```haskell
+\x -> (\y -> (\z -> ...))
+```
+
+De igual modo, la definición de función
+
+```haskell
+f x y z = ... 
+```
+
+es azúcar sintáctico para
+
+```haskell
+f = \x -> (\y -> (\z -> ...)).
+```
 
 # Reconocimiento de patrones
 
@@ -1690,6 +1714,8 @@ La fijeza del operador `*` es `infixl 7 *`, y la del operador `+` es `infixl 6`.
 
 `Maybe Int` es un tipo concreto, pero `Maybe` es un constructor de tipo que recibe un tipo como argumento.
 
+<!--
+
 # Entrada salida:
 
     ghci> :t putStrLn
@@ -1701,7 +1727,11 @@ La fijeza del operador `*` es `infixl 7 *`, y la del operador `+` es `infixl 6`.
 
 * `()`: tupla vacía, también llamada *unidad*, es un tipo y un valor a la vez.
 
+-->
+
 <!-- final de la lista, si no, falla Sublime al resaltar -->
+
+<!-- 
 Por tanto, la función `putStrLn` recibe una String y devuelve una acción de entrada/salida que *produce* un resultado de tipo `()`.
 
 Una acción de entrada/salida es algo que cuando se lleva a cabo, lleva a cabo una acción con un efecto lateral y además presentará un resultado.
@@ -1748,6 +1778,8 @@ La respuesta es **no** por las siguientes razones:
 constructo `<-`.
 
 <!-- fin de la lista -->
+
+<!-- 
 
 ```haskell
 main = do
@@ -1820,6 +1852,9 @@ La palabra reservada `return` podría confundirnos bastante, sobre ella, debemos
 * **No** provoca que el bloque `do` en el que se encuentra termine su ejecución.
 
 <!-- -->
+
+<!-- 
+
 Este programa no termina su ejecución hasta llegar a la última línea:
 
 ```haskell
@@ -1865,7 +1900,7 @@ Por tanto, `return` puede ser usada para:
 
 * Permitir que un bloque `do` devuelva el resultado que nosotros queramos, poniendo el return que devuelve un valor del tipo deseado al final del bloque `do`.
 
-<!-- -->
+<!--
 ## Funciones útiles para la E/S
 
 ### `putStr` ###
@@ -2641,6 +2676,8 @@ La función `add`:
             delete (cosasQueHacer !! numero) cosasQueHacer 
      por fallo de latex-->
 
+<!-- 
+
 ```haskell
 add :: [String] -> IO ()
 add [nombreFichero, cosaQueHacer] =
@@ -2729,6 +2766,7 @@ add :: [String] -> IO ()
 add [fileName, todoItem] = appendFile fileName (todoItem ++ "\n")
 add _ = putStrLn "The add command takes exactly two arguments"
 ```
+-->
 
 ## Aleatoriedad ##
 

@@ -1,0 +1,586 @@
+Daniel Díaz
+
+k
+bueno, pues como decía
+hay un tipo que se suele llamar State que tiene esta forma (o equivalentes)
+data State s a = State (s -> (s,a))
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+como envuelve funciones puede ser un poco más lioso, pero no lo debería ser ya
+sabemos aplicar funciones y tal
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+State tiene kind "* -> * -> *"
+así que no puede ser Functor en sí mismo
+necesitamos fijar la primera variable
+¿cuál es la idea de tener este tipo?
+"s" podría interpretarse como un estado que se modifica
+un valor de tipo State s a es una función "s -> (s,a)"
+toma un valor de tipo "s", y produce otro valor de tipo "s", junto con uno de tipo "a"
+
+Francisco Nebrera Perdomo
+
+ok
+me suena un poco a los random
+con los generadores
+
+Daniel Díaz
+
+componiendo varias de estas funciones
+estaremos componiendo varias modificaciones de ese "estado'
+y esta es toda la idea detraś de State
+
+Francisco Nebrera Perdomo
+
+ahm
+okok
+interesante
+
+Daniel Díaz
+
+definamos una operacíon sencillita, una que deje el estado tal cual
+f x = State $ \s -> (s,x)
+entonces, dado un valor "x", "f x" es la función que, dado un estado inicial "s", lo deja invariante, y devuelve "x"
+¿todo bien hasta ahí?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+ok
+f :: a -> State s a
+también, podemos hacer que el valor que "devuelva" una computacíon State, sea el estado inicial
+get = State $ \s -> (s,s)
+get :: State s s
+
+Francisco Nebrera Perdomo
+
+ok
+pero vamos a ver
+cuando ustedes dicen
+inicial
+es
+el que tiene ahora
+
+Daniel Díaz
+
+a ver
+
+Francisco Nebrera Perdomo
+
+el que tenía cuando la función fue llamada
+
+Daniel Díaz
+
+una función "s -> (s,a)"
+el argumento es el estado inicial, la primera componente del resultado es el estado final
+
+Francisco Nebrera Perdomo
+
+okok
+vale
+pues eso no lo dicen en casi ningún lado
+
+Daniel Díaz
+
+una computación State es una función (s -> (s,a))
+
+Francisco Nebrera Perdomo
+
+xD
+
+Daniel Díaz
+
+ahora bien, si queremos componer dos computaciones State
+en la composición, el estado final de la primera será el estado inicial de la segunda
+¿no?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+ok
+pues escribiendo eso
+en algo más específico...
+antes aclarar algo...
+no podemos componer con (.), porque hay una "a"
+adicional
+de momento, vamos a dejar esa "a" de lado
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+compose (State s x) (State t y) = ...
+digamos que
+x :: a
+y :: b
+perdona
+lié tipos con valores
+compose (State f) (State g)
+digamos que
+f :: s -> (s,a)
+g :: s -> (s,b)
+
+Francisco Nebrera Perdomo
+
+ok
+
+Daniel Díaz
+
+para componerlos...
+compose (State f) (State g) = State $ \s -> g (fst (f s))
+de otra forma...
+compose (State f) (State g) = State $ g . fst . f
+casi composición!
+pero descartando el valor del resultado de "f"
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+¿sencillo hasta ahí?
+
+Francisco Nebrera Perdomo
+
+sí, sin problema
+
+Daniel Díaz
+
+bien
+el problema de "compose", es que no permite componer una computación State, con otra que dependa del resultado de la anterior
+ese resultado lo estamos descartando
+el tipo de compose es
+compose :: State s a -> State s b -> State s b
+¿ves eso?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+bien
+si quisiéramos que la segunda computación State pudiera depender del resultado de la primera
+el tipo más bien sería
+compose :: State s a -> (a -> State s b) -> State s b
+¿verdad?
+¿familiar?
+
+Francisco Nebrera Perdomo
+
+sí
+parece un bind sano
+sanísimo además
+xd
+
+Daniel Díaz
+
+claro
+así
+lo voy a llamar bind
+y la definición es casi obvia ahora
+bind (State f) g = State $ \s -> let (s',x) = f s ; State h = h x in h s'
+ok, quizás merece explicación
+"s" es el estado inicial
+"f s" es la primera computación, que produce otro estado (s') y un valor "x"
+este valor "x" se lo pasamos a "g :: a -> State s b"
+dándome otra función State (h)
+aplico "h" al estado final de la primera computacíon, y obtengo el estado final y el valor que sea que de
+¿clarito?
+
+Francisco Nebrera Perdomo
+
+no
+
+Daniel Díaz
+
+:'(
+
+Francisco Nebrera Perdomo
+
+no seria
+State h = g x
+?
+
+Daniel Díaz
+
+obviamente
+bind (State f) g = State $ \s -> let (s',x) = f s ; State h = g x in h s'
+pero la explicación sigue siendo la misma!
+
+Francisco Nebrera Perdomo
+
+sisi xD
+está muy bien hombre
+pero me confundió eso un poco
+
+Daniel Díaz
+
+sí, metí la pata
+
+Francisco Nebrera Perdomo
+
+me traba un poco
+ese constructor de valor
+State h
+ahi en medio
+
+Daniel Díaz
+
+bueno
+puedes hacerlo sin él...
+
+Francisco Nebrera Perdomo
+
+h sería un par
+?
+
+Daniel Díaz
+
+no
+
+Francisco Nebrera Perdomo
+
+bueno no
+una función perdon
+
+Daniel Díaz
+
+h :: s -> (s,b)
+
+Francisco Nebrera Perdomo
+
+okok
+pero por qué usaste el constructor ahí?
+
+Daniel Díaz
+
+porque quería sacar la función h...
+para aplicarla luego...
+
+Francisco Nebrera Perdomo
+
+sisi
+eso lo acabo de pillar ahora
+joder
+pues está interesante
+
+Daniel Díaz
+
+es básicamente componer funciones...
+
+Francisco Nebrera Perdomo
+
+tú usas el patrón que más te combiene
+y a correr
+
+Daniel Díaz
+
+que tienen un valor añadido
+
+Francisco Nebrera Perdomo
+
+conviene*
+
+Daniel Díaz
+
+bueno, para eso está el "let"!!
+
+Francisco Nebrera Perdomo
+
+okok
+
+Daniel Díaz
+
+ok...
+si miras lo que hemos hecho...
+es básicamente la instancia Monad de State
+aquella "f" era el return
+pero, lo cierto es que lo hemos hecho sin pensar en Monad
+sólo queríamos componer funciones
+
+Francisco Nebrera Perdomo
+
+pues sí
+me perdi sabes xq?
+xq no estaba pensando en g como la función típica del bind
+sino como otra State
+
+Daniel Díaz
+
+te puse el tipo arribita...
+
+Francisco Nebrera Perdomo
+
+sisi
+que fue culpa mía dani
+xD
+
+Daniel Díaz
+
+a la final, Monad trata de eso
+sus instancias son tipos que se pueden componer
+se abstrae sobre esa composición
+
+Francisco Nebrera Perdomo
+
+ok
+joder pues perfecto
+a ver si le saco partido
+con un ejemplo real
+porque quería hacer un DFA con State
+pero ví que en verdad
+foldl
+mucho mejor
+quiero irme haciendo códigos con mónadas pero que se vea pa qué son
+
+Daniel Díaz
+
+si puedes usar fold, el state puede dormir
+
+Francisco Nebrera Perdomo
+
+jajajaja
+xD
+okok
+
+Daniel Díaz
+
+pues, espera un poco
+hemos visto que State se hace instancia de Monad cuando queremos componer sus valores
+sus funciones, mejor dicho
+vamos a fijar un tipo para "s"
+digamos... Int
+podemos hacer cosas como...
+increaseState :: State Int ()
+increaseState = State $ \s -> (s+1,())
+pongo "()" porque no tengo nada más que ponder ahí
+*poner
+
+Francisco Nebrera Perdomo
+
+okok
+perfecto
+
+Daniel Díaz
+
+entonces
+increaseState >> increaseState
+es la función que incrementa el estado en 2
+
+Francisco Nebrera Perdomo
+
+ok
+usaste >>
+porque el segundo argumento en este caso da =
+como ejercicio lo haré a ver
+
+Daniel Díaz
+
+porque increaseState devuelve un valor ()
+del que no depende la siguiente función
+sólo quiero aumentar el estado
+si quiero que dependa
+escribo
+increaseUntil5 :: State Int ()
+increaseUntil5 = get >>= \s -> if s >= 5 then return () else increaseState >> increaseUntil5
+"get" se definió arriba
+get = State $ \s -> (s,s)
+te ahorro el scroll
+:P
+
+Francisco Nebrera Perdomo
+
+jajaja
+xD
+
+Daniel Díaz
+
+¿vas viendo por qué esto es útil?
+
+Francisco Nebrera Perdomo
+
+sí
+
+Daniel Díaz
+
+¿comprendes lo que increaseUntil5 hace?
+
+Francisco Nebrera Perdomo
+
+estoy en ello
+
+Daniel Díaz
+
+ok
+
+Francisco Nebrera Perdomo
+
+está un poco lioso
+porque hay mucha lambda de por medio
+xd
+
+Daniel Díaz
+
+uso notación do...
+lo reescribo con notación do
+increaseUntil5 = do
+s <- get
+if s >= 5 then return () else increaseState >> increaseUntil5
+ya no hay lambda
+pero es lo mismito que arriba
+y sólo había UNA lambda!!
+si te molesta la lambad en get... get = State $ let f s = (s,s) in f
+xDDDD
+pero no veo como eso simplifica nada xD
+
+Francisco Nebrera Perdomo
+
+xDDDDD
+get te da una s
+vale
+
+Daniel Díaz
+
+get coge el estado inicial, lo deja tal cual, y lo devuelve como valor
+yes!
+
+Francisco Nebrera Perdomo
+
+y lo devuelve como valor?
+
+Daniel Díaz
+
+llevo llamando "valor" a la segunda componente del resultado 
+no es nada estándar
+es simplemnete que en "State s a"
+
+Francisco Nebrera Perdomo
+
+si pero
+
+Daniel Díaz
+
+es como "s" es el tipo del estado, y "a" el del valor
+
+Francisco Nebrera Perdomo
+
+sisi
+muy bien
+pero antes
+escribiste
+get = State $ \s -> (s,s)
+
+Daniel Díaz
+
+yes
+
+Francisco Nebrera Perdomo
+
+entonces
+
+Daniel Díaz
+
+correcto
+entonces: get :: State s s
+
+Francisco Nebrera Perdomo
+
+ah vale
+y entonces el constructo <-
+lo que hace es una especie de
+(State s) s
+
+Daniel Díaz
+
+recuerdo: data State s a = State (s -> (s,a))
+
+Francisco Nebrera Perdomo
+
+y devuelve la segunda s
+
+Daniel Díaz
+
+bien bien
+instance Monad (State s) where
+...
+es así la instancia, sí
+la primera está fija!
+(el tipo)
+
+Francisco Nebrera Perdomo
+
+vamos
+que yo cuando leí write yourself
+y un par de ellos más
+he concluido que
+monad como me dijiste
+necesita un tipo * -> *
+de modo que cuando
+"sacas" de la mónada algo
+estás sacando lo que metiste
+
+Daniel Díaz
+
+sacando lo que metiste? xDDD
+
+Francisco Nebrera Perdomo
+
+es decir, un valor del tipo de su último parámetro de tipo
+
+Daniel Díaz
+
+sí
+sí sí sí
+
+Francisco Nebrera Perdomo
+
+okok
+guay
+ves?
+alguna cosa cojo
+xD
+
+Daniel Díaz
+
+claro
+lo que te dije de los kinds
+no ha dejado de aplicarse
+
+Francisco Nebrera Perdomo
+
+puto lenguaje tio, me tiene negro xD
+
+Daniel Díaz
+
+jajaja
+pero ahí sigues XD
+
+Francisco Nebrera Perdomo
+
+jajajaj
+xD
+es que está wapo tio
+se ve que tiene mucho potencial19:35
+pero requiere una de horas.......
+madre mía
+si lo sé me meto a magisterio
