@@ -36,6 +36,7 @@
 *.lot
 *.toc
 *.out
+*.synctex.gz
 
 # Dia diagrams #
 ################
