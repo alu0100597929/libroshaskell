@@ -1,4 +1,4 @@
-module Main where
+module Cap_2_modules.Recursive_Parser where
 
 import Data.Char (toLower)
 import Control.Monad (liftM)
@@ -8,12 +8,6 @@ import Data.Complex (Complex (..))
 import Numeric (readOct, readHex)
 import System.Environment
 import Text.ParserCombinators.Parsec hiding (spaces)
-
-{-
-Ejemplos de ejecución
-./eval "(char? #\a)"
-#t
--}
 
 data LispVal = Atom String
              | List [LispVal]
@@ -27,27 +21,32 @@ data LispVal = Atom String
              | Bool Bool
              | Vector (Array Int LispVal)
              | Nil ()
-
-instance Show LispVal where show = showVal
+               deriving (Show)
 
 {-
-./eval "(+ 2 2)"
-4
-./eval "(+ 2 (-4 1))"
-2
-./eval "(+ 2 (- 4 1))"
-5
-./eval "(- (+ 4 6 3) 3 5 2)"
-3
+$ ./simple_parser "(a test)"
+Found value
+$ ./simple_parser "(a (nested) test)"
+Found value
+$ ./simple_parser "(a (dotted . list) test)"
+Found value
+$ ./simple_parser "(a '(quoted (dotted . list)) test)"
+Found value
+$ ./simple_parser "(a '(imbalanced parens)"
+No match: "lisp" (line 1, column 24):
+unexpected end of input
+expecting space or ")"
 -}
 
-main :: IO ()
-main = getArgs >>= print . eval . readExpr . head
+{-main :: IO ()
+main = do
+     args <- getArgs
+     putStrLn (readExpr (args !! 0))-}
 
-readExpr :: String -> LispVal
+readExpr :: String -> String
 readExpr input = case parse parseExpr "lisp" input of
-         Left err -> String $ "No match: " ++ show err
-         Right val -> val
+         Left err -> "No match: " ++ show err
+         Right val -> "Found value: " ++ show val
 
 --
 -- LispVal Parsers
@@ -55,18 +54,18 @@ readExpr input = case parse parseExpr "lisp" input of
 
 parseExpr :: Parser LispVal
 parseExpr = parseAtom
-        <|> parseString
-        <|> try parseChar
-        <|> try parseComplex
-        <|> try parseFloat
-        <|> try parseRatio
-        <|> try parseNumber
-        <|> parseBool
-        <|> parseQuoted
-        <|> parseQuasiquote
-        <|> try parseUnquoteSplicing
-        <|> parseUnquote
-        <|> parseAnyList
+          <|> parseString
+          <|> try parseChar
+          <|> try parseComplex
+          <|> try parseFloat
+          <|> try parseRatio
+          <|> try parseNumber
+          <|> parseBool
+          <|> parseQuoted
+          <|> parseQuasiquote
+          <|> try parseUnquoteSplicing
+          <|> parseUnquote
+          <|> parseAnyList
 
 parseAtom :: Parser LispVal
 parseAtom = do first <- letter <|> symbol
@@ -78,7 +77,7 @@ parseAnyList = do
     char '('
     many spaces
     head <- sepEndBy parseExpr spaces
-    tail <- (char '.' >> spaces >> parseExpr) <|> return (Nil ())
+    tail <- (char '.' >> spaces >> parseExpr) <|> return (Nil ()) -- return mete, <- saca
     many spaces
     char ')'
     return $ case tail of
@@ -191,102 +190,6 @@ parseVector = do string "#("
                  return $ Vector (listArray (0, (length elems)-1) elems)
 
 --
--- Show functions
---
-
-showVal :: LispVal -> String
-showVal (String s) = "\"" ++ s ++ "\""
-showVal (Atom name) = name
-showVal (Char c) = show c -- faltaba
-showVal (Number n) = show n
-showVal (Bool True) = "#t"
-showVal (Bool False) = "#f"
-showVal (List xs) = "(" ++ unwordsList xs ++ ")"
-showVal (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ showVal tail ++ ")"
-
---
--- Evaluator
---
-
-eval :: LispVal -> LispVal
-eval val@(String _) = val
-eval val@(Number _) = val
-eval val@(Bool _) = val
-eval val@(Char _) = val -- faltaba
-eval val@(Atom _) = val -- faltaba
-eval (List [Atom "quote", val]) = val
-eval (List (Atom func : args)) = apply func $ map eval args
-
---
--- Primitive functions lookup table
---
-primitives :: [(String, [LispVal] -> LispVal)]
-primitives = [("+", numericBinop (+))
-             ,("-", numericBinop (-))
-             ,("*", numericBinop (*))
-             ,("/", numericBinop div)
-             ,("mod", numericBinop mod)
-             ,("quotient", numericBinop quot)
-             ,("remainder", numericBinop rem)
-             ,("not", unaryOp not')
-             ,("boolean?", unaryOp boolP)
-             ,("list?", unaryOp listP)
-             ,("symbol?", unaryOp symbolP)
-             ,("char?", unaryOp charP)
-             ,("string?", unaryOp stringP)
-             ,("number?", unaryOp numberP)
-             ,("vector?", unaryOp vectorP)
-             ,("symbol->string", unaryOp symbol2string)
-             ,("string->symbol", unaryOp string2symbol)]
-
---
--- Unary primitive defs all have type
--- LispVal -> LispVal
-
-not' (Bool x) = (Bool . not) x
-not' _ = Bool False
-
-boolP (Bool _) = Bool True
-boolP _ = Bool False
-
-listP (List _) = Bool True
-listP (DottedList _ _) = Bool True
-listP _ = Bool False
-
-symbolP (Atom _) = Bool True
-symbolP _ = Bool False
-
-charP (Char _) = Bool True
-charP _ = Bool False
-
-stringP (String _) = Bool True
-stringP _ = Bool False
-
-numberP (Number _) = Bool True
-numberP _ = Bool False
-
-vectorP (Vector _) = Bool True
-vectorP _ = Bool False
-
-symbol2string (Atom s) = String s
-symbol2string _ = error "Expecting an Atom"
-
-string2symbol (String s) = Atom s
-string2symbol _ = error "Expecting a String"
-
---
--- Primitive helpers
---
-
-numericBinop :: (Integer -> Integer -> Integer) -> [LispVal] -> LispVal
-numericBinop op params = Number $ foldl1 op $ map unpackNum params
-
--- (+ 1 2 3 4) == foldl1 => (1 + 2 + 3 + 4) = 10
-
-unaryOp :: (LispVal -> LispVal) -> [LispVal] -> LispVal
-unaryOp func [arg] = func arg
-
---
 -- Helpers
 --
 
@@ -307,20 +210,8 @@ symbol = oneOf "!$%&|*+-/:<=>?@^_~"
 spaces :: Parser ()
 spaces = skipMany1 space
 bin2int :: String -> Integer
-bin2int s = sum $ map (\(i,x) -> i*(2^x)) $ zip [0..] $ map p (reverse s)
+bin2int s = sum $ map (\(i,x) -> x*(2^i)) $ zip [0..] $ map p (reverse s)
           where p '0' = 0
                 p '1' = 1
 
-readWith :: (t -> [(a, b)]) -> t -> a
 readWith f s = fst $ f s !! 0
-
-unwordsList :: [LispVal] -> String
-unwordsList = unwords . map showVal
-
-apply :: String -> [LispVal] -> LispVal
-apply func args = maybe (Bool False) ($ args) $ lookup func primitives
-
-unpackNum :: LispVal -> Integer
-unpackNum (Number n) = n
-unpackNum (List [n]) = unpackNum n
-unpackNum _ = 0

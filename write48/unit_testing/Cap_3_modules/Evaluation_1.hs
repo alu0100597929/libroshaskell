@@ -1,4 +1,4 @@
-module Main where
+module Cap_3_modules.Evaluation_1 where
 
 import Data.Char (toLower)
 import Control.Monad (liftM)
@@ -41,8 +41,8 @@ instance Show LispVal where show = showVal
 3
 -}
 
-main :: IO ()
-main = getArgs >>= print . eval . readExpr . head
+{-main :: IO ()
+main = getArgs >>= print . eval . readExpr . head-}
 
 readExpr :: String -> LispVal
 readExpr input = case parse parseExpr "lisp" input of
