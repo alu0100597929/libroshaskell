@@ -43,30 +43,59 @@ matches cod1 cod2 = (sum $ zipWith min (countColors cod1) (countColors cod2)) ::
 
 -- Construct a Move from a guess given the actual code
 getMove :: Code -> Code -> Move
-getMove cod1 cod2 = Move cod2 exact nonexact
+getMove secret guess = Move guess exact nonexact
   where
-    nonexact = (matches cod1 cod2) - exact
-    exact = exactMatches cod1 cod2
+    nonexact = (matches secret guess) - exact
+    exact = exactMatches secret guess
+
+--getMove [Red, Blue, Yellow, Orange] [Red, Orange, Orange, Blue] ==
+--Move [Red,Orange,Orange,Blue] 1 2
 
 -- Exercise 4 -----------------------------------------
 
-isConsistent :: Move -> Code -> Bool
-isConsistent = undefined
+pair_matches :: Move -> (Int,Int)
+pair_matches (Move _ e i) = (e,i) 
 
+isConsistent :: Move -> Code -> Bool
+isConsistent (Move guess e i) secret = let move_generated = getMove secret guess
+                                       in pair_matches move_generated == (e,i)
 -- Exercise 5 -----------------------------------------
 
 filterCodes :: Move -> [Code] -> [Code]
-filterCodes = undefined
+filterCodes mov xs = filter (isConsistent mov) xs
 
 -- Exercise 6 -----------------------------------------
 
+allColors :: [[Peg]]
+allColors = map (\c -> [c]) colors
+
+-- from a list of all possible n-1 length codes, produce a list of all n-length codes
+appendWithAll :: [Code] -> [Code] -- Code = [Peg] ---> [Code] = [[Peg]]
+appendWithAll xs = concatMap (\col_xs -> map (\col -> col_xs ++ [col]) colors) xs
+
+-- recibe el largo de los códigos y nos da todas las listas posibles con ese largo
 allCodes :: Int -> [Code]
-allCodes = undefined
+allCodes 0 = []
+allCodes 1 = allColors
+allCodes n = appendWithAll $ allCodes (n-1)
+
+-- recuerda: el número de combinaciones posibles es 6^largo, puesto que hay 6 colores en la lista colors
 
 -- Exercise 7 -----------------------------------------
 
+initial :: [Code]
+initial = allCodes 4
+
+solve' :: Code -> [Code] -> [Move]
+solve' secret [] = []
+solve' secret [x] = [getMove secret x]
+solve' secret toda@(x:xs) = mov : solve' secret new_list
+  where
+    new_list = filterCodes mov xs
+    mov = getMove secret x
+
 solve :: Code -> [Move]
-solve = undefined
+solve secret = solve' secret initial
 
 -- Bonus ----------------------------------------------
 
