@@ -831,7 +831,7 @@ La primera línea del cuerpo es el nombre de la función, `esPalindroma` separad
 Luego, vemos que hay una cierta indentación (todas las `|` están a la misma altura), y esto son 
 **guardianes**.
 
-Los guardianes se ejecutan en orden, de arriba a abajo.
+Los guardianes se ejecutan en orden, de arriba a abajo. En el último caso se suele poner la palabra reservada `otherwise`, que es simplemente un alias de `True`. De este modo, será un caso que siempre se ejecutará en el caso de que no se cumpla ninguna de las otras condiciones.
 
 1. La función `null` devuelve `True` si la lista que le pasamos es vacía, y `False` si contiene algún 
 elemento. Como habíamos dicho, la lista vacía es palíndroma, por tanto devolvemos `True` en caso de que xs 
@@ -4842,6 +4842,8 @@ Para evitar estos cálculos redudantes se usa un método llamado reducción de g
 <!-- en el DIA, usar assorted, flowchart --> 
 
 # Ideas sueltas
+
+No usar head, init, last etc., ver el capítulo 2 de CIS 194 para reemplazar estas malas costumbres.
 
 En general, la siguiente gramática define qué puede ser usado como patrón:
 

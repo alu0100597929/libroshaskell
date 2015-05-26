@@ -109,6 +109,19 @@ example_b :: LogMessage -> Maybe String
 example_b (LogMessage severity s) | severity >= 50 = Just s
 example_b _                                        = Nothing
 
+{-
+It is a guard, but the otherwise case is subsumed by the don't-care on the second line. otherwise = True,
+so they're equivalent.
+EDIT:
+You could rewrite this as
+example_b :: LogMessage -> Maybe String
+example_b (LogMessage severity s) 
+  | severity >= 50 = Just s
+  | otherwise = Nothing
+or even
+example_b (LogMessage severity s) | severity >= 50 = Just s | otherwise = Nothing
+-}
+
 data List t = Empty | Cons t (List t)
 
 lst1 :: List Int
