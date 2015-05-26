@@ -4843,6 +4843,13 @@ Para evitar estos cálculos redudantes se usa un método llamado reducción de g
 
 # Ideas sueltas
 
+En general, la siguiente gramática define qué puede ser usado como patrón:
+
+    pat ::= _
+         |  var
+         |  var @ ( pat )
+         |  ( Constructor pat1 pat2 ... patn )
+
 **Importante:** mencionar el ejemplo del DFA en el cual tenemos que usar `let` dentro de un 
 bloque `do` para que se tome lo que hay dentro como funciones efectivas.
 
