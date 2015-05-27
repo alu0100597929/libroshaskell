@@ -22,6 +22,8 @@ firstOrEmpty xs = if not (null xs)
                     then head xs
                     else "empty"
 
+-- esto es una concatenación eficiente, pues hace uso de (:) en vez de (++)
+-- está mejor definida en el módulo DataTypes
 lst1 +++ lst2 = if null lst1 {- check emptyness -}
                   then lst2 -- base case
                   else (head lst1) : (tail lst1 +++ lst2)
@@ -30,6 +32,7 @@ reverse' :: [a] -> [a]
 reverse' [] = []
 reverse' (x:xs) = reverse' xs +++ [x]
 
+-- mejor definida en el módulo DataTypes
 maxmin :: (Ord a) => [a] -> (a,a)
 maxmin []     = error "no hay máximo ni mínimo en una lista vacía"
 maxmin [x]    = (x,x) --las listas con un sólo elemento tienen ese elemento por máximo y mínimo

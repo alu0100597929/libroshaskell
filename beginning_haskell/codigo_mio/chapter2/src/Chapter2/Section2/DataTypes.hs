@@ -32,6 +32,7 @@ type Travelfeatures = String
 type Price = Double
 
 timeMachine1 = TimeMachine (Make "ACME" "T3298-XP Pro") (ConcreteInfo "BetaModel1" "From the Big Bang to the End of Time" 100000000.5)
+timeMachine2 = TimeMachine (Make "ACME" "XATMO-72") (ConcreteInfo "BetaModel2" "1 week in the past or the future from now" 100)
 
 clientName :: Client -> String
 clientName client = case client of
@@ -128,3 +129,108 @@ NumberOfEachGender (1,1)
 *Chapter2.Section2.DataTypes> countGenders [client1, client1, client1, client2]
 NumberOfEachGender (1,3)
 -}
+
+makeDiscount :: Double -> TimeMachine -> TimeMachine
+makeDiscount discount (TimeMachine (Make a b) (ConcreteInfo c d price)) =
+  (TimeMachine (Make a b) (ConcreteInfo c d (price * (discount / 100))))
+
+discountMachines :: Double -> [TimeMachine] -> [TimeMachine]
+discountMachines _ []            = []
+discountMachines discount (x:xs) = makeDiscount discount x : discountMachines discount xs
+
+discountMachines' discount = map (makeDiscount discount) 
+
+[] +++ list2     = list2
+(x:xs) +++ list2 = x:(xs +++ list2)
+
+empty :: [a] -> Bool
+empty [] = True
+empty _  = False
+
+head' :: [a] -> a
+head' []    = error "lista vacía"
+head' (x:_) = x
+
+tail' :: [a] -> [a]
+tail' []     = error "lista vacía"
+tail' (x:xs) = xs
+
+sorted :: (Ord a) => [a] -> Bool
+sorted [] = True
+sorted [_] = True
+sorted (x:y:zs) = if x <= y
+                    then sorted (y:zs)
+                    else False
+
+-- versión pro, del libro, mejorada por mí en el <=
+sorted' [] = True
+sorted' [_] = True
+sorted' (x : r@(y:_)) = x <= y && sorted r
+
+maxmin [x] = (x,x)
+maxmin (x:xs) = ( if x > xs_max then x else xs_max
+                , if x < xs_min then x else xs_min
+                ) where (xs_max, xs_min) = maxmin xs
+
+ifibonacci :: Integer -> Maybe Integer
+ifibonacci n = if n < 0
+                 then Nothing
+                 else case n of
+                        0 -> Just 0
+                        1 -> Just 1
+                        n -> let Just f1 = ifibonacci (n-1)
+                                 Just f2 = ifibonacci (n-2)
+                             in Just (f1 + f2)
+
+-- lo comentado no sirve, debido a que no se puede repetir una variable
+-- en el mismo patrón, se debe usar otra letra y comprobar su igualdad después, por ejemplo
+-- o usar guardianes
+
+{-
+binom _ 0 = 1
+binom x x = 1
+binom n k = (binom (n-1) (k-1)) + (binom (n-1) k)
+-}
+
+-- mío
+binomialCoef n k
+  | k == 0 || n == k = 1
+  | otherwise = binomialCoef (n-1) (k-1) + binomialCoef (n-1) k
+
+-- libro
+binom _ 0 = 1
+binom x y | x == y = 1
+binom n k = (binom (n-1) (k-1)) + (binom (n-1) k)
+
+ifibonacci' n | n < 0 = Nothing
+ifibonacci' 0 = Just 0
+ifibonacci' 1 = Just 1
+ifibonacci' n | otherwise = let (Just f1, Just f2) = (ifibonacci (n-1), ifibonacci (n-2))
+                            in Just (f1 + f2)
+
+multipleOf :: Integer -> Integer -> Bool
+multipleOf x y = (mod x y) == 0
+
+specialMultiples :: Integer -> String
+specialMultiples n | multipleOf n 2 = show n ++ " is multiple of 2"
+specialMultiples n | multipleOf n 3 = show n ++ " is multiple of 3"
+specialMultiples n | multipleOf n 5 = show n ++ " is multiple of 5"
+specialMultiples n | otherwise      = show n ++ " is a beautiful number"
+
+specialMultiples' n
+  | multipleOf n 2 = show n ++ " is multiple of 2"
+  | multipleOf n 3 = show n ++ " is multiple of 3"
+  | multipleOf n 5 = show n ++ " is multiple of 5"
+  | otherwise = show n ++ " is a beautiful number"
+
+-- Exercise 2.6
+
+ack m n
+  | m == 0          = n + 1
+  | m > 0 && n == 0 = ack (m-1) 1
+  | otherwise       = ack (m-1) (ack m (n-1))
+
+unzip' :: [(a,b)] -> ([a],[b])
+unzip' []      = ([],[])
+unzip' [(x,y)] = ([x],[y])
+unzip' xs = (map fst xs, map snd xs)
