@@ -15,7 +15,7 @@ Contiene los ficheros fuente que solucionan los problemas de los [99 Haskell Pro
 
 ## beginning_haskell_source_code
 
-Códigos fuente de la web del libro del mismo nombre.
+Códigos fuente del libro del mismo nombre.
 
 ## cis194
 
