@@ -318,6 +318,14 @@ ochenta :: Int
 minúsculas. Los nombres de las funciones siempre deben empezar por minúscula, mientras que los 
 módulos deben empezar siempre con mayúscula.
 
+Se usan las minúsculas para:
+
+* funciones
+
+* ligaduras
+
+* parámetros, es decir, argumentos con tipo polimórfico
+
 Las declaraciones de tipos suelen ser así:
 
 ```haskell

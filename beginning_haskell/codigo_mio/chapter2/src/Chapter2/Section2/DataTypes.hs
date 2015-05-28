@@ -1,4 +1,12 @@
+{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NamedFieldPuns #-}
+
+-- lo de arriba es un pragma, un comentario especial que activa o desactiva un flag
+-- en GHCi poner :set -XViewPatterns 
+
 module Chapter2.Section2.DataTypes where
+
+import Data.Char (toUpper)
 
 data Client = GovOrg String
             | Company String Integer Person String
@@ -234,3 +242,147 @@ unzip' :: [(a,b)] -> ([a],[b])
 unzip' []      = ([],[])
 unzip' [(x,y)] = ([x],[y])
 unzip' xs = (map fst xs, map snd xs)
+
+-- View patterns: lo que hacen es casar con un tipo, aplicarle una función
+-- e intentar volver a casar con un posible resultado de dicha función
+
+responsibility :: Client -> String
+responsibility (Company _ _ _ r) = r
+responsibility _                 = "Unknown"
+
+specialClient :: Client -> Bool
+specialClient (clientName -> "Mr. Alejandro") = True
+specialClient (responsibility -> "Director")  = True
+specialClient _                               = False
+
+-- record syntax: provee mejor documentación, y permite usar los nombres de los
+-- campos en cualquier orden, con lo cual hay más libertad.
+
+data ClientR = GovOrgR { clientRName :: String }
+             | CompanyR { clientRName :: String 
+                        , companyId :: Integer
+                        , person :: PersonR
+                        , duty :: String }
+             | IndividualR { person :: PersonR }
+             deriving Show
+
+data PersonR = PersonR { firstName :: String
+                       , lastName :: String
+                       } deriving Show
+
+{-
+*Chapter2.Section2.DataTypes> IndividualR { person = PersonR { lastName = "Smith", firstName = "John" } }
+IndividualR {person = PersonR {firstName = "John", lastName = "Smith"}}
+*Chapter2.Section2.DataTypes> GovOrgR "NATO"
+GovOrgR {clientRName = "NATO"}
+-}
+
+-- a parte, se crean funciones especiales para acceder a esos campos particulares:
+
+{-
+*Chapter2.Section2.DataTypes> clientRName (GovOrgR "NATO")
+"NATO"
+*Chapter2.Section2.DataTypes> :t duty 
+duty :: ClientR -> String
+-}
+
+-- los nombres de constructores nunca pueden repetirse en un programa Haskell.
+-- los nombres de los campos sí, pero sólo si ambos devuelven un valor del mismo tipo
+
+-- al usar record syntax para los bindings, no estamos obligados a usar todos los campos
+-- sólo aquellos que hagan falta para el pattern matching que deseemos
+
+greet :: ClientR -> String
+greet IndividualR { person = PersonR { firstName = fn } } = "Hi, " ++ fn
+greet CompanyR    { clientRName = c }                     = "Hello " ++ c
+greet GovOrgR     { }                                     = "Welcome"
+
+-- requiere NamedFieldPuns
+greet' :: ClientR -> String
+greet' IndividualR { person = PersonR { firstName } } = "Hi, " ++ firstName
+greet' CompanyR    { clientRName }                    = "Hello " ++ clientRName
+greet' GovOrgR     { }                                = "Welcome"
+
+nameInCapitals :: PersonR -> PersonR
+nameInCapitals p@(PersonR { firstName = initial:rest }) =
+    let newName = (toUpper initial):rest
+    in p { firstName = newName }
+nameInCapitals p@(PersonR { firstName = "" }) = p
+
+-- exercise 2.7
+
+-- por ejemplo, la función makeR tiene tipo makerR :: TimeMachineR -> Maker
+data TimeMachineR = TimeMachineR { makeR :: MakeR
+                                 , concreteInfoR :: ConcreteInfoR }
+                  deriving Show
+data MakeR = MakeR { manufacturerR :: ManufacturerR
+                   , modelR :: ModelR }
+           deriving Show
+data ConcreteInfoR = ConcreteInfoR { nameR :: NameR
+                                   , travelfeaturesR :: TravelfeaturesR
+                                   , priceR :: PriceR }
+                  deriving Show
+-- type representa sinónimos, que nos ayudan a definir las cosas mejor
+type ManufacturerR = String
+type ModelR = String
+type NameR = String
+
+type TravelfeaturesR = String
+type PriceR = Double
+
+timeMachineR1 = TimeMachineR { makeR = MakeR { manufacturerR = "ACME"
+                                             , modelR = "T3298-XP Pro" }
+                             , concreteInfoR = ConcreteInfoR { nameR = "BetaModel1"
+                                                             , travelfeaturesR = "From the Big Bang to the End of Time"
+                                                             , priceR = 100000000.5 }
+                             }
+timeMachineR2 = TimeMachineR { makeR = MakeR { manufacturerR = "ACME"
+                                             , modelR = "XATMO-72" }
+                             , concreteInfoR = ConcreteInfoR { nameR = "BetaModel2"
+                                                             , travelfeaturesR = "1 week in the past or the future from now"
+                                                             , priceR = 100 }
+                             }
+
+{-
+data ClientR = GovOrgR { clientRName :: String }
+             | CompanyR { clientRName :: String 
+                        , companyId :: Integer
+                        , person :: PersonR
+                        , duty :: String }
+             | IndividualR { person :: PersonR }
+             deriving Show
+
+data PersonR = PersonR { firstName :: String
+                       , lastName :: String
+                       } deriving Show
+
+nameInCapitals :: PersonR -> PersonR
+nameInCapitals p@(PersonR { firstName = initial:rest }) =
+    let newName = (toUpper initial):rest
+    in p { firstName = newName }
+nameInCapitals p@(PersonR { firstName = "" }) = p
+
+{ makeR = MakeR { manufacturerR = man
+                                                   , modelR = mod
+                                                   }
+                                   , concreteInfoR { nameR = name
+                                                   , travelfeaturesR = travel
+                                                   , priceR = _
+                                                   }
+                                   }
+
+greet :: ClientR -> String
+greet IndividualR { person = PersonR { firstName = fn } } = "Hi, " ++ fn
+greet CompanyR    { clientRName = c }                     = "Hello " ++ c
+greet GovOrgR     { }                                     = "Welcome"
+
+-- requiere NamedFieldPuns
+greet' :: ClientR -> String
+greet' IndividualR { person = PersonR { firstName } } = "Hi, " ++ firstName
+greet' CompanyR    { clientRName }                    = "Hello " ++ clientRName
+greet' GovOrgR     { }  
+-}
+
+updatePrice :: Double -> TimeMachineR -> TimeMachineR
+updatePrice newprice tm@TimeMachineR { makeR, concreteInfoR = ConcreteInfoR { nameR, travelfeaturesR } } =
+  tm { concreteInfoR = ConcreteInfoR { nameR, travelfeaturesR, priceR = newprice } }
