@@ -37,8 +37,8 @@ minimumBy' f xs = case indice of
                    Just i -> xs !! i
                    Nothing -> error "error sano"
   where
-    indice = findIndex (==minim) lista_procesada
-    minim = minimum lista_procesada
+    indice          = findIndex (==minim) lista_procesada
+    minim           = minimum lista_procesada
     lista_procesada = map f xs
 
 minimumClient :: [Client a] -> Client a
@@ -65,4 +65,39 @@ takeUntilStop = takeWhile (/= "stop") ["hello", "send", "stop", "receive"]
 
 spanInStop :: ([String],[String])
 spanInStop = span (/= "stop") ["hello", "send", "stop", "receive"]
+
+isIndividual :: Client a -> Bool
+isIndividual (Individual {}) = True
+isIndividual _               = False
+
+checkIndividualAnalitics :: [Client a] -> (Bool, Bool)
+checkIndividualAnalitics cs = (any isIndividual cs, not $ all isIndividual cs)
+
+{-
+*Main> nubBy (\x y -> (even x && even y) || (odd x && odd y)) [1,2,3,4,5]
+[1,2]
+Por tanto nubBy lo que hace es devolvernos una lista en la cual no sea posible
+que se de la condición
+*Main> nubBy (\x y -> x+y /= y) [0,1..10]
+[0,1]
+*Main> nubBy (\x y -> x+y == 2*y) [0,1..10]
+[0,1,2,3,4,5,6,7,8,9,10]
+*Main> nubBy (\x y -> x+y == y-1) [0,1..10]
+[0,1,2,3,4,5,6,7,8,9,10]
+*Main> nubBy (\x y -> x+y == y+1) [0,1..10]
+[0,1]
+-}
+
+conjuntos = let x1 = [1,2,3,4]
+                x2 = [2,3,5]
+            in (x1 `union` x2, x1 `intersect` x2, x1 \\ x2)
+
+elem' :: (Eq a) => a -> [a] -> Bool
+elem' _ []     = False
+elem' e (x:xs) = e == x || elem' e xs
+
+elem'' :: (Eq a) => a -> [a] -> Bool
+elem'' e xs = case find (==e) xs of
+                Just x -> True
+                _      -> False
 
