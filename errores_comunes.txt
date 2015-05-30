@@ -1,6 +1,17 @@
-Duplicate instance...
+Problema: Duplicate instance...
 
 Solución:
 
 1) Renombrar dicha instancia, por ejemplo usando apóstrofes.
 2) Usar la instancia que queramos explícitamente: NombreIns.función /NombreIns.Constructor
+
+Problema:
+
+Al importar, nos dice:
+
+'xxxx' is not a (visible) constructor field name
+
+Solución:
+
+importar todos los constructores de ese módulo que sean necesarios
+

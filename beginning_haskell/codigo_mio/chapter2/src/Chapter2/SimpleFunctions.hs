@@ -1,4 +1,4 @@
-module Chapter2.Section2.SimpleFunctions where
+module Chapter2.SimpleFunctions where
 
 -- Exercise 2.1
 

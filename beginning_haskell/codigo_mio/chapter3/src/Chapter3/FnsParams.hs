@@ -75,3 +75,35 @@ individual1 =  Individual { clientId = 2015, person = Person { firstName = "Pabl
 *Chapter3.FnsParams> filterGovOrgs [govorg1,govorg2,individual1 ]
 [GovOrg {clientId = 909, clientName = "Piter"},GovOrg {clientId = 7, clientName = "James Bond"}]
 -}
+
+double = map (*2)
+
+ejemplodiv1 = map (/2) [1,2,3]
+
+ejemplodiv2 = map (2/) [1,2,3]
+
+duplicateOffs list = map (*2) $ filter odd list
+
+duplicateOffs' = map (*2) . filter odd
+
+uncurry' :: (a -> b -> c) -> (a,b) -> c
+uncurry' f = \(x,y) -> f x y
+
+curry' :: ((a,b) -> c) -> a -> b -> c
+curry' f = \x y -> f (x, y)
+
+{-
+*Chapter3.FnsParams> max 3 2
+3
+*Chapter3.FnsParams> (uncurry max) (3,2)
+3
+-}
+
+(***) :: (a -> b) -> (c -> d) -> ((a,c) -> (b,d))
+f *** g = \(x,y) -> (f x, g y)
+
+duplicate :: a -> (a,a)
+duplicate x = (x,x)
+
+formula1 :: Integer -> Integer
+formula1 = uncurry (+) . ( ((*7) . (+2)) *** (*3) ) . duplicate

@@ -20,6 +20,9 @@ Individual { clientId = "pepito", person = Person { firstName = "josito", lastNa
 GovOrg 'n' "NTTF" :: Client Char
 -}
 
+client1 = GovOrg 'n' "NTTF"
+client2 = Individual { clientId = "pepito", person = Person { firstName = "josito", lastName = "yoksetioxdxd" } }
+
 data Triple a b c = Triple a b c
 
 data SamePair a = SamePair a a

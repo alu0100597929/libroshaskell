@@ -42,5 +42,5 @@
   (major1) == 2 && (major2) <  25 || \
   (major1) == 2 && (major2) == 25 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "cap2_3uYHm9SgIHsCfhIZ9JMLGV"
+#define CURRENT_PACKAGE_KEY "cap3_KRZ2KRiZFO1I6CabtoRtzG"
 

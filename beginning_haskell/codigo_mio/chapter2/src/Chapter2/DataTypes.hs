@@ -4,7 +4,8 @@
 -- lo de arriba es un pragma, un comentario especial que activa o desactiva un flag
 -- en GHCi poner :set -XViewPatterns 
 
-module Chapter2.Section2.DataTypes where
+-- module Chapter2.DataTypes (ConnOptions(), connDefault) where
+module Chapter2.DataTypes where
 
 import Data.Char (toUpper)
 

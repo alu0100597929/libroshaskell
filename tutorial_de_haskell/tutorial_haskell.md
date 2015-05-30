@@ -999,6 +999,12 @@ Currificar equivale a fijar argumentos, dando lugar a nuevas funciones.
 
 Todas las funciones en Haskell están currificadas, es decir, realmente reciben un único argumento. Por tanto una función `a -> b -> c` recibe un único argumento de tipo `a` y devuelve una función `b -> c`, que recibe un argumento y devuelve `c`. Por tanto, la aplicación parcial de funciones devuelve una función que toma los argumentos que dejamos sin "rellenar". Así que `a -> b -> c` puede ser reescrita como `a -> (b -> c)`.
 
+La currificación en realidad lo que devuelve son clausuras, es decir, si tenemos una función con "n argumentos", y fijamos uno, creamos otra función con n-1 argumentos, y el primero ya fijado. Se pueden fijar cuantos argumentos queramos, pero lo ideal sería dejar al menos dos sin fijar, ya que de este modo la función dependerá al menos de un argumento para devolver el otro, y será paramétrica.
+
+TODO: poner un ejemplo.
+
+Si una función recibiera todos sus argumentos mediante una tupla, sería una función **no** currificada (uncurried). En cambio, aquellas que reciben una secuencia de argumentos son las currificadas. Las funciones currificadas son las preferidas en Haskell ya que se pueden aplicar parcialmente.
+
 ¿Cómo nos beneficia esto a nosotros? Si llamamos a una función pasándole menos argumentos de los que 
 acepta, obtendremos una función parcialmente aplicada, la cual es una función que recibe tantos argumentos 
 como dejamos sin "rellenar". Por tanto, este es un buen método para crear funciones "al vuelo", y después 
@@ -4950,6 +4956,8 @@ Una comprensión de listas equivale a un "para todo x" en matemáticas.
 En realidad las expresiones `case` son reconocimiento de patrones.
 
 # Ideas Razonando con Haskell
+
+En matemáticas, los argumentos que reciben las funciones se suelen llamar puntos. Por ejemplo, en la función `f(x)` el punto sería aquel valor de `x` que sustituyamos para cada caso concreto. Sabiendo esto, podemos entender los estilos point-wise y point-free.
 
 ## Estilo de funciones con argumento declarado "point-wise": ##
 
