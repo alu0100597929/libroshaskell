@@ -4,6 +4,7 @@
 
 import Chapter3.ParamPoly (Client(..), Person(..))
 import Data.List
+import Data.Function(on)
 
 -- *Main> getClientName (GovOrg 189 "pepito")
 -- "pepito"
@@ -31,6 +32,8 @@ minimumClient' = foldr compareClients (clienteLargo "topor")
 
 client1 = GovOrg "Bill Gates" "NTTF"
 client2 = Individual { clientId = "pepito", person = Person { firstName = "josito", lastName = "yoksetioxdxd" } }
+client3 = Company 4 "Wormhole Inc." (Person "Karl" "Schwarzschild") "Physicist"
+client4 = Company 4 "Wormhole Inc." (Person "Karl" "Schwarzschild") "Wisi"
 
 minimumBy' :: (Ord b) => (a -> b) -> [a] -> a
 minimumBy' f xs = case indice of
@@ -101,3 +104,53 @@ elem'' e xs = case find (==e) xs of
                 Just x -> True
                 _      -> False
 
+-- cada vez que creamos una función compare, es decir, que devuelva un ordering
+-- Haskell nos da gratuitamente los operadores > < >= <=
+compareClient :: Client a -> Client a -> Ordering
+compareClient (Individual { person = p1}) (Individual { person = p2 }) = compare (firstName p1) (firstName p2)
+compareClient (Individual {}) _ = GT
+compareClient _ (Individual {}) = LT
+compareClient c1 c2             = compare (clientName c1) (clientName c2)
+
+listOfClients = [ Individual 2 (Person "H. G." "Wells")
+                , GovOrg 3 "NTTF" -- National Time Travel Foundation
+                , Company 4 "Wormhole Inc." (Person "Karl" "Schwarzschild") "Physicist"
+                , Individual 5 (Person "Doctor" "")
+                , Individual 6 (Person "Sarah" "Jane")
+                , Company 7 "Wormhole Inc." (Person "Piter" "Schwarzschild") "Vividor"
+                , Company 7 "Wormhole Inc." (Person "Tote" "Schwarzschild") "Vividor"
+                ]
+
+-- sortBy compareClient listOfClients
+-- (compare (1,2) (1,1), compare "Hello" "Hello world", compare "This" "That")
+-- ( (1,2) <= (1,1), "Hello" <= "Hello world", "This" <= "That" )
+
+-- esta función devuelve el deber más repetido en la compañía
+companyDutiesAnalytics' :: [Client a] -> [String]
+companyDutiesAnalytics' = map (duty . head) .
+                            sortBy (\x y -> compare (length y) (length x)) . -- cambio del orden de x e y
+                            groupBy (\x y -> duty x == duty y) .
+                            filter isCompany
+                          where isCompany (Company {}) = True
+                                isCompany _            = False
+
+-- versión más pro, point-free, que usa la función on. Para ordenar de mayor a menor
+-- usó flip :: (a -> b -> c) -> (b -> a -> c), que permite cambiar el orden de los
+-- argumentos en funciones point-free
+companyDutiesAnalytics :: [Client a] -> [String]
+companyDutiesAnalytics = map (duty . head) .
+                           sortBy (flip (compare `on` length)) .
+                           groupBy ((==) `on` duty) .
+                           filter isCompany
+                         where isCompany (Company {}) = True
+                               isCompany _            = False
+
+enum :: Int -> Int -> [Int]
+enum a b | a > b = []
+enum a b         = a : enum (a+1) b
+
+withPositions' :: [a] -> [(Int,a)]
+withPositions' xs = zip (enum 0 (length xs -1)) xs 
+
+withPositions :: [a] -> [(Int,a)]
+withPositions xs = zip [0..length xs -1] xs
