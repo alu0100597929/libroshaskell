@@ -154,3 +154,17 @@ withPositions' xs = zip (enum 0 (length xs -1)) xs
 
 withPositions :: [a] -> [(Int,a)]
 withPositions xs = zip [0..length xs -1] xs
+
+{-
+*Main> unzip [("France","Paris"),("Spain","Madrid"),("Portugal","Lisbon")]
+(["France","Spain","Portugal"],["Paris","Madrid","Lisbon"])
+*Main> lookup "Spain" [("France","Paris"),("Spain","Madrid"),("Portugal","Lisbon")]
+Just "Madrid"
+*Main> lookup "UK" [("France","Paris"),("Spain","Madrid"),("Portugal","Lisbon")] 
+Nothing
+-}
+
+-- podemos usar pattern matching en los generadores de las list comprehensions
+comprehension = [ clientName x | x@(GovOrg _ _) <- listOfClients ]
+-- *Main> comprehension 
+-- ["NTTF"]
