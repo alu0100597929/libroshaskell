@@ -168,3 +168,11 @@ Nothing
 comprehension = [ clientName x | x@(GovOrg _ _) <- listOfClients ]
 -- *Main> comprehension 
 -- ["NTTF"]
+
+companyAnalytics :: [Client a] -> [(String, [(Person, String)])]
+companyAnalytics clients = [ (the clientName, zip person duty)
+                           | client@(Company { .. }) <- clients
+                           , then sortWith by duty
+                           , then group by clientName using groupWith
+                           , then sortWith by length client
+                           ] 

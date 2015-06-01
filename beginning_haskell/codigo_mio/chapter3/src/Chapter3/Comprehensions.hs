@@ -40,3 +40,13 @@ extension = [x*y | x <- [-1,1,-2], y <- [1,2,3], then reverse]
 
 -- esto necesita import GHC.Exts
 sortExts = [x*y | x <- [-1,1,-2], y <- [1,2,3], then sortWith by x]
+
+-- esto necesita import GHC.Exts
+-- ensures that all the elements of the list are identical and then returns that unique element
+groupExts = [ (the p, m) | x <- [-1,1,-2]
+                         , y <- [1,2,3]
+                         , let m = x*y
+                         , let p = m > 0
+                         , then group by p using groupWith]
+
+-- Recuerda, los ejemplos que involucran al tipo Client se han hecho en el fichero main

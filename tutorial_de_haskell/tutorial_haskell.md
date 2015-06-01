@@ -287,11 +287,26 @@ Hoy en día hay una inferencia de tipos mejorada que nos permite programar más 
 # Comandos de GHCi
 
 * `Ctrl + L` es una combinación de teclas que **limpia cualquier consola en sistemas POSIX**, también funciona en GHCi. Es equivalente a `:! clear`.
+
 * `:l nombre_fichero` sirve para **compilar** (e interpretar luego las aplicaciones que queramos) el fichero dado con nombre `nombre_fichero`.
+
 * `:r` sirve para **recompilar** al vuelo el último fichero compilado.
+
 * `:t expresión` nos permite **comprobar el tipo** de una expresión.
+
 * `:k expresión_de_tipo` nos permite **comprobar el kind** de un tipo.
-* `:i función` es una opción de GHCi que nos permite ver la **fijeza** (o asociatividad) de un operador.
+
+* `:i función` es una opción de GHCi que nos permite ver la **fijeza** (o asociatividad) de un operador. Si se aplica sobre clases de tipos, nos permite ver la definición de la clase:
+
+```haskell
+ghci> :i Monad
+class Monad (m :: * -> *) where
+  (>>=) :: m a -> (a -> m b) -> m b
+  (>>) :: m a -> m b -> m b
+  return :: a -> m a
+  fail :: String -> m a
+```
+
 * `:q` sirve para **salir** limpiamente de GHCi.
 
 # Cambio de modo de GHCi

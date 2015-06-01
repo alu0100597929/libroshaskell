@@ -1,0 +1,1 @@
+El capítulo 3 de Beginning Haskell, en su parte final.
