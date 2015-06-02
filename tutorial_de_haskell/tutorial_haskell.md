@@ -67,7 +67,7 @@ aprender mucho.
 
 1. Si no entiendes algo, probablemente creas que entiendes todo lo anterior, sin ser esto cierto. Repasa y fortalece tus conocimientos.
 
-2. Si no entiendes algo a la primera, sigue adelante (o aplica el punto 2) y retómalo un poco más tarde.
+2. Si no entiendes algo a la primera, sigue adelante (o aplica el punto 1) y retómalo un poco más tarde.
 
 3. El mejor medio para aprender no es este tutorial, es Internet. En Internet tienes muchísima información actualizada minuto a minuto, ¡úsala! (ver "Referencias Indispensables").
 
