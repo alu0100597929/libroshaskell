@@ -1,4 +1,5 @@
 {-# LANGUAGE TransformListComp #-}
+{-# LANGUAGE ParallelListComp#-}
 
 module Chapter3.Comprehensions where
 
@@ -35,18 +36,41 @@ normas = [ sqrt v | (x,y) <- [(1,2),(3,8)], let v = x*x+y*y ]
 
 domino_guards = [(x,y) | x <- [1 .. 6], y <- [1 .. 6], x <= y]
 
+-- Todo lo que venga detrás de then se ejecutará DESPUÉS de hacer la list comprehension
+
 -- TransformListComp
 extension = [x*y | x <- [-1,1,-2], y <- [1,2,3], then reverse]
 
--- esto necesita import GHC.Exts
+-- esto necesita import GHC.Exts, then f by e
 sortExts = [x*y | x <- [-1,1,-2], y <- [1,2,3], then sortWith by x]
 
 -- esto necesita import GHC.Exts
--- ensures that all the elements of the list are identical and then returns that unique element
-groupExts = [ (the p, m) | x <- [-1,1,-2]
+-- 'the' ensures that all the elements of the list are identical and then returns that unique element
+
+-- Por tanto, group by lo que hace es devolvernos una lista con varios pares:
+-- primer par: (lista de resultados de p, lista de valores pasados a p)
+-- segundo par: (lista de otros resultados de p, lista de valores pasados a p)
+
+groupExts = [ (p, m) | x <- [-1,1,-2]
                          , y <- [1,2,3]
                          , let m = x*y
                          , let p = m > 0
                          , then group by p using groupWith]
 
 -- Recuerda, los ejemplos que involucran al tipo Client se han hecho en el fichero main
+
+usoGroupBy = [ (p, m) | x <- [-1,1,-2]
+                      , y<- [1,2,3]
+                      , let m = x*y
+                      , let p = m > 0 ]
+
+usoGroupBy' = [ (p, m) | x <- [-1,1,2]
+                       , y<- [1,2,3]
+                       , let m = x*y
+                       , let p = m > 0
+                       , then group by p using groupWith]
+
+compNormal = [ x*y | x <- [1,2,3], y <- [1,2,3] ]
+
+-- ParallelListComp
+compParalela = [ x*y | x <- [1,2,3] | y <- [1,2,3] ]

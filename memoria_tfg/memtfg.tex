@@ -3,15 +3,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{graphicx}
 \usepackage[dvips]{epsfig}
+
 \usepackage[latin1]{inputenc}
 \usepackage[spanish]{babel}
+
+\selectlanguage{spanish}
+
 \usepackage{alltt}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{multirow}
 
 \usepackage{hyperref} %% poner hipervínculos
+
+% para evitar que los listings se partan en varias páginas, poner:
+% \begin{minipage}{\linewidth}
 \usepackage{listings} %% resaltar el código Haskell
+
 \usepackage{haskelllogo} %% logo de Haskell para la portada
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -415,7 +423,7 @@ Keyword1, Keyword2, Keyword2, ...
 \newpage{\pagestyle{empty}}
 \thispagestyle{empty}
 
-\chapter{Título del Capítulo Tres}
+\chapter{El lenguaje Scheme}
 \label{chapter:tres}
 
 \input{cap3.tex}

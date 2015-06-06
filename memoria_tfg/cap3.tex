@@ -4,17 +4,68 @@
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-Bla, Bla, Bla, .....
-
-%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-\section{Primer apartado de este capitulo}
+\section{Introducci\'on a Scheme}
 \label{3:sec1}
 
+El lenguaje Scheme es un dialecto de Lisp. Es un lenguaje que, como Lisp, es funcional. Es un lenguaje relativamente sencillo de aprender, con un poco de estudio se puede llegar a tener un conocimiento medio en poco tiempo.\\
+
+Scheme fue elegido para escribir uno de los mejores libros sobre Ciencias de la Computaci\'on que se han escrito: Structure and Interpretation of Computer Programs, de la editorial MIT Press. Asimismo, para mis pruebas he usado el int\'erprete de Scheme del MIT, llamado mit-scheme.\\
+
+El lenguaje usa la notaci\'on polaca para las llamadas a funciones y para cualquier tipo de evaluaci\'on. Adem\'as, cualquier definici\'on o llamada a una funci\'on deber\'a hacerse entre par\'entesis. Asimismo, las listas, contengan lo que contengan, se representan como una lista de ciertos valores de cierto tipo, entre par\'entesis y separados por espacios.\\
+
+Veamos una sesi\'on con el int\'erprete oficial de Scheme para familiarizarnos un poco con el lenguaje:\\
+
+\begin{minipage}{\linewidth}
+\begin{small}
+\begin{lstlisting}[frame=single]
+(+ 3 5)
+8
+\end{lstlisting}
+\end{small}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+\begin{small}
+\begin{lstlisting}[frame=single]
+(sqrt 144)
+12
+\end{lstlisting}
+\end{small}
+\end{minipage}
+
+Las funciones se definen mediante la palabra reservada \textbf{define}, una lista que contiene el nombre de la funci\'on y la lista de argumentos (todos separados por espacios), y, por \'ultimo, el cuerpo de la funci\'on. Todo esto debe estar entre par\'entesis.\\
+
+\begin{minipage}{\linewidth}
+\begin{small}
+\begin{lstlisting}[frame=single]
+(define (factorial n)
+  (if (= n 0)
+    1
+    (* n (factorial (- n 1)))))
+\end{lstlisting}
+\end{small}
+\end{minipage}
+
+Las funciones \textbf{car} y \textbf{cdr} act\'uan sobre una lista. La funci\'on \textbf{car} devuelve el primer elemento de la lista (si \'este existe), mientras que \textbf{cdr} devuelve una lista compuesta por el segundo elemento de la lista y todos los que le siguen.\\
+
+\begin{minipage}{\linewidth}
+\begin{small}
+\begin{lstlisting}[frame=single]
+(define (rev lst) (rev-rec lst ()))
+
+(define (rev-rec lst acc)
+  (cond ((null? lst) acc)
+        (else (rev-rec (cdr lst)
+                       (cons (car lst) acc)))
+        ))
+\end{lstlisting}
+\end{small}
+\end{minipage}
+
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-\section{Segundo apartado de este capitulo}
+\section{Segundo apartado de este cap\'itulo}
 \label{3:sec2}
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-\section{Tercer apartado de este capitulo}
-\label{:sec3}
+\section{Tercer apartado de este cap\'itulo}
+\label{3:sec3}

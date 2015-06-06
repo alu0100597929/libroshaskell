@@ -1,10 +1,13 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TransformListComp #-}
+{-# LANGUAGE RecordWildCards #-}
 
 import Chapter3.ParamPoly (Client(..), Person(..))
 import Data.List
 import Data.Function(on)
+import GHC.Exts
 
 -- *Main> getClientName (GovOrg 189 "pepito")
 -- "pepito"
@@ -118,7 +121,8 @@ listOfClients = [ Individual 2 (Person "H. G." "Wells")
                 , Individual 5 (Person "Doctor" "")
                 , Individual 6 (Person "Sarah" "Jane")
                 , Company 7 "Wormhole Inc." (Person "Piter" "Schwarzschild") "Vividor"
-                , Company 7 "Wormhole Inc." (Person "Tote" "Schwarzschild") "Vividor"
+                , Company 8 "Wormhole Inc." (Person "Tote" "Schwarzschild") "Vividor"
+                , Company 9 "McDonalds Inc." (Person "Tete" "Cohete") "Fresco"
                 ]
 
 -- sortBy compareClient listOfClients
@@ -169,10 +173,16 @@ comprehension = [ clientName x | x@(GovOrg _ _) <- listOfClients ]
 -- *Main> comprehension 
 -- ["NTTF"]
 
-companyAnalytics :: [Client a] -> [(String, [(Person, String)])]
-companyAnalytics clients = [ (the clientName, zip person duty)
-                           | client@(Company { .. }) <- clients
-                           , then sortWith by duty
-                           , then group by clientName using groupWith
-                           , then sortWith by length client
-                           ] 
+--companyAnalytics :: [Client a] -> [(String, [(Person, String)])]
+--companyAnalytics clients = [ (the clientName, zip person duty)
+--                           | client@(Company { .. }) <- clients
+--                           , then sortWith by duty
+--                           , then group by clientName using groupWith
+--                           , then sortWith by length client
+--                           ]
+
+companyAnalyticsBasic :: [Client a] -> [(String, String)]
+companyAnalyticsBasic clients = [ (clientName, duty)
+                              | client@(Company { .. }) <- clients
+                              , then sortWith by duty
+                              ]

@@ -3,7 +3,7 @@
 - autor: Francisco Nebrera Perdomo
 - institución: Universidad de La Laguna
 - correo electrónico: freinn@gmail.com
-- fecha: Mayo 2015
+- fecha: Julio 2015
 
 <!-- -->
 
@@ -45,7 +45,7 @@ Reacción típica de un programador al ver su primer fragmento de código Haskel
 
 # Introducción
 
-Todo el código de este tutorial ha sido testeado con GHC 7.8.4 y 7.10.1. De todas formas, si he 
+Todo el código de este tutorial ha sido testeado con GHC 7.10.1. De todas formas, si he 
 cometido algún error, ruego que me lo comuniques a la sección [Issues](https://github.com/freinn/libroshaskell/issues) del repositorio del tutorial.
 
 # Referencias indispensables
@@ -71,9 +71,9 @@ aprender mucho.
 
 3. El mejor medio para aprender no es este tutorial, es Internet. En Internet tienes muchísima información actualizada minuto a minuto, ¡úsala! (ver "Referencias Indispensables").
 
-4. Pasa tu primera etapa de aprendizaje resolviendo problemas de juguete, más adelante, pasa a programas del mundo real.
+4. Pasa tu primera etapa de aprendizaje resolviendo problemas de juguete, más adelante, pasa a problemas del mundo real.
 
-5. Si alguna vez te aburres de leer tutoriales y/o libros, pasa a programar, escribe código que te haga ver utilidad a lo que estás aprendiendo.
+5. Si alguna vez te aburres de leer tutoriales y/o libros, pasa a programar, escribe código que te haga encontrar la utilidad de lo que estás aprendiendo.
 
 # Estado del tutorial
 
@@ -91,7 +91,7 @@ aprender mucho.
 
 # Primeros pasos
 
-Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar.
+Para empezar a programar en Haskell tenemos varias opciones, ya que Haskell se puede interpretar o compilar. Es importante saber que ciertas funciones, como `getLine`
 
 Lo primero que debemos hacer es instalar un compilador. Para ello tenemos diversas opciones, aunque en el tutorial usaremos el más común y oficial, [GHC](https://www.haskell.org/ghc/).
 
@@ -412,7 +412,7 @@ Haskell es un lenguaje fuertemente tipado, lo cual es su mayor ventaja de cara a
 
 [TODO](http://en.wikibooks.org/wiki/Haskell/Type_basics_II).
 
-Mencionar tipos y constantes polimórficas, y su uso.
+Mencionar tipos y constantes polimórficos, y su uso.
 
 ```haskell
 fromIntegral :: (Integral a, Num b) => a -> b

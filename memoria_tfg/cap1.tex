@@ -3,8 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %---------------------------------------------------------------------------------
-Todo empezó con un hilo en el foro de internet forocoches.com (\url{https://www.forocoches.com}), en él hablaban de 
-que la programación funcional iba a tener cada día más relevancia porque cuenta con ventajas de 
+Todo empezó con un hilo en el foro de internet forocoches.com (\url{https://www.forocoches.com}), en él hablaban de que la programación funcional iba a tener cada día más relevancia porque cuenta con ventajas de 
 las cuales la imperativa carece.\\
 
 A raíz de ello, me interesé por este paradigma y empecé a (e incluso terminé de) leer numerosos 
@@ -27,7 +26,7 @@ Por ello los lenguajes funcionales con sintaxis ligera y un fuerte sistema de ti
 muy adecuados para crear compiladores y muchas otras cosas cuya finalidad es la traducción.\\
 
 Además, Haskell cuenta con mecanismos de abstracción muy fuertes que permiten escribir códigos 
-escuetos que se comportan muy bien, como por ejemplo:
+escuetos que se comportan muy bien, como por ejemplo:\\
 
 \begin{itemize}
   \item Reconocimiento de patrones
@@ -36,14 +35,14 @@ escuetos que se comportan muy bien, como por ejemplo:
   \item Plegados de listas
 \end{itemize}
 
-A continuación se describen los mencionados constructos en su sección correspondiente.
+A continuación se describen los mencionados constructos en su sección correspondiente.\\
 
 %---------------------------------------------------------------------------------
 \section{Reconocimiento de patrones y tipos de datos algebraicos}
 \label{1:sec:2}
 
 Para entender qué es el reconocimiento de patrones primero debemos saber qué es \textbf{casar}. Para 
-ello usaremos las acepciones pertinentes del diccionario de la Real Academia:
+ello usaremos las acepciones pertinentes del diccionario de la Real Academia:\\
 
 \begin{itemize}
 \item Dicho de dos o más cosas: Corresponder, conformarse, cuadrar.
@@ -51,8 +50,9 @@ ello usaremos las acepciones pertinentes del diccionario de la Real Academia:
 \item Disponer y ordenar algo de suerte que haga juego con otra cosa o tengan correspondencia entre sí.
 \end{itemize}
 
-Es un término que se usa bastante en las expresiones regulares, para ver si una expresión casa con un texto dado, y en qué lugar. Veamos un ejemplo de reconocimiento de patrones:
+Es un término que se usa bastante en las expresiones regulares, para ver si una expresión casa con un texto dado, y en qué lugar. Veamos un ejemplo de reconocimiento de patrones:\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 dime :: Int -> String
 dime 1 = "¡Uno!"
@@ -62,13 +62,16 @@ dime 4 = "¡Cuatro!"
 dime 5 = "¡Cinco!"
 dime x = "No está entre 1 y 5"
 \end{lstlisting}
+\end{minipage}
 
-La función \textbf{dime} hace reconocimiento de patrones con su primer argumento, de tipo \textbf{Int}, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea \textbf{dime x = ``No está entre 1 y 5''} al principio, nuestra función siempre devolvería ``No está entre 1 y 5'', aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.
+La función \textbf{dime} hace reconocimiento de patrones con su primer argumento, de tipo \textbf{Int}, y va de arriba a abajo intentando encontrar una coincidencia. Cuando recibe un número entre 1 y 5, lo canta con ahínco, si no lo encuentra, nos devolverá un mensaje diciéndonoslo. Notar además que si hubiéramos puesto la línea \textbf{dime x = ``No está entre 1 y 5''} al principio, nuestra función siempre devolvería ``No está entre 1 y 5'', aun siendo cierto. Por tanto, debemos ordenar los patrones por probabilidad; de los menos probables a los más probables.\\
 
-Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).
+Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconocimiento de constructores. En concreto en Haskell existen dos tipos de constructores, los constructores de tipos (los tipos que aparecen en las declaraciones de las funciones) y los constructores de valor (aquellos que se suelen poner entre paréntesis, y son funciones que recibiendo un valor crean un tipo que encapsula dicho valor).\\
 
-\textbf{Importante:} los dos guiones al principio de cada línea representan comentarios en Haskell, y su presencia aquí es de carácter didáctico.
+\textbf{Importante:} los dos guiones al principio de cada línea representan comentarios en Haskell, y su presencia aquí es de carácter didáctico.\\
 
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
 data Persona = CrearPersona String Int
                             |      |
@@ -76,9 +79,12 @@ data Persona = CrearPersona String Int
                             |      La edad de la persona
                             El nombre de la persona
 \end{lstlisting}
+\end{footnotesize}
+\end{minipage}
 
-A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).
+A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 data Persona = Persona String Int
      |         |
@@ -86,6 +92,7 @@ data Persona = Persona String Int
      |         Constructor de valor (o datos)
      El nombre de la persona
 \end{lstlisting}
+\end{minipage}
 
 El tipo del último ejemplo se conoce como \textbf{tipo de dato algebraico}; tipos de datos construidos mediante la combinación de otros tipos. El reconocimiento de patrones es una manera de desestructurar un tipo de dato algebraico, seleccionar una ecuación basada en su constructor y luego enlazar los componentes a variables. Cualquier constructor puede aparecer en un patrón; ese patrón casa con un valor si la etiqueta del patrón es la misma que la etiqueta del valor y todos los subpatrones casan con sus correspondientes componentes.\\
 
@@ -96,6 +103,8 @@ El tipo del último ejemplo se conoce como \textbf{tipo de dato algebraico}; tipo
 
 Las variables de tipo son aquellas que se declaran en \textbf{data} después del nombre del tipo que vamos a crear. Su finalidad principal es hacer saber qué puede formar parte del tipo, y además permitir a cualquier tipo formar parte de nuestro tipo personalizado. Veámoslo con un ejemplo:\\
 
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
 data Persona a = PersonaConCosa String a | PersonaSinCosa String
              |                         |
@@ -103,9 +112,12 @@ data Persona a = PersonaConCosa String a | PersonaSinCosa String
              |                         Podemos usarla aquí
              Introduciendo una variable de tipo aquí
 \end{lstlisting}
+\end{footnotesize}
+\end{minipage}
 
 En los siguientes ejemplos se ilustra el deber de informar al compilador qué tipo queremos que nuestra función devuelva, y así producir un tipo \textbf{Persona Int}, \textbf{Persona String},...,etc.\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 franConEdad :: Persona Int
 franConEdad = PersonaConCosa "fran" 25
@@ -113,9 +125,11 @@ franConEdad = PersonaConCosa "fran" 25
 franSinEdad :: Persona Int
 franSinEdad = PersonaSinCosa "fran"
 \end{lstlisting}
+\end{minipage}
 
 Ahora llega el reconocimiento de patrones propiamente dicho; según se encuentre el constructor \textbf{PersonaConCosa String a} ó \textbf{PersonaSinCosa String}, nuestra función debe ser programada para actuar en consecuencia:\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 getNombre :: Persona Int -> String
 getNombre (PersonaConCosa nombre  _) = nombre
@@ -125,8 +139,9 @@ getEdad :: Persona Int -> Maybe Int
 getEdad (PersonaConCosa _ edad) = Just edad
 getEdad (PersonaSinCosa _)      = Nothing
 \end{lstlisting}
+\end{minipage}
 
-Como vemos, a las variables \textbf{nombre} y \textbf{edad} respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor \textbf{PersonaSinCosa} sólo contiene el nombre y no la edad, utilizamos el tipo \textbf{Maybe} para devolver \textbf{Nothing} en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos \textbf{Just edad} ya que en este caso la tenemos.
+Como vemos, a las variables \textbf{nombre} y \textbf{edad} respectivamente se le han enlazado sus valores reales, que son los que nuestra función devuelve. Como el constructor \textbf{PersonaSinCosa} sólo contiene el nombre y no la edad, utilizamos el tipo \textbf{Maybe} para devolver \textbf{Nothing} en caso de que ese patrón (constructor) sea reconocido. En el otro caso, devolvemos \textbf{Just edad} ya que en este caso la tenemos.\\
 
 %---------------------------------------------------------------------------------
 \section{Lambdas}
@@ -136,73 +151,87 @@ En un lenguaje funcional, poner nombre a todas las funciones que usemos podría r
 
 Las lambdas se suelen declarar entre paréntesis para que el compilador sepa que se tratan de un ``todo''. No obstante, en el caso de las mónadas hay veces en que no son demasiado necesarios y se va resolviendo todo mediante la indentación.\\
 
-La sintaxis de las lambdas es la siguiente:
-    
+La sintaxis de las lambdas es la siguiente:\\
+
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
   \arg1 arg2 ... argn -> cuerpo_función
 \end{lstlisting}
+\end{minipage}
 
-Es decir, para que Haskell sepa que estamos trabajando con una lambda, se usa la backslash \textbackslash \ y a continuación se encuentran dos partes bien diferenciadas, separadas por una flecha $\rightarrow$:
+Es decir, para que Haskell sepa que estamos trabajando con una lambda, se usa la backslash \textbackslash \ y a continuación se encuentran dos partes bien diferenciadas, separadas por una flecha $\rightarrow$:\\
 
 \begin{itemize}
   \item A la izquierda de la flecha $\rightarrow$ la lista de nombres de argumentos, separados por espacios.
   \item A la derecha de la flecha $\rightarrow$ el cuerpo de la función. El tipo de esa expresión será el tipo retorno de la lambda.
 \end{itemize}
 
-Definamos la lambda más sencilla que existe, lo único que hace es devolver su argumento:
-    
+Definamos la lambda más sencilla que existe, lo único que hace es devolver su argumento:\\
+
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 \x -> x
 \end{lstlisting}
+\end{minipage}
 
-Definamos una lambda que eleve al cubo un número:
-    
+Definamos una lambda que eleve al cubo un número:\\
+
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 \x -> x*x*x
 \end{lstlisting}
+\end{minipage}
 
-Veamos ahora una lambda que sume sus dos argumentos:
+Veamos ahora una lambda que sume sus dos argumentos:\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 \x y -> x + y
 \end{lstlisting}
+\end{minipage}
 
-Y por último, veamos una que ignora su primer argumento y devuelva el segundo:
+Y por último, veamos una que ignora su primer argumento y devuelva el segundo:\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 \_ x -> x
 \end{lstlisting}
+\end{minipage}
 
-Como vemos, se puede usar el patrón subrayado (barra baja) para expresar que no nos importa el valor del primer parámetro, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y son muy útiles.
+Como vemos, se puede usar el patrón subrayado (barra baja) para expresar que no nos importa el valor del primer parámetro, ya que sólo usamos el segundo. Las lambdas tienen mucha importancia en Haskell, y son muy útiles.\\
 
 %---------------------------------------------------------------------------------
 \section{Plegados de listas}
 \label{1:sec:5}
 
-Pondremos un ejemplo real codificado por mí, un DFA hecho mediante un plegado de listas por la izquierda.
+Pondremos un ejemplo real codificado por mí, un DFA hecho mediante un plegado de listas por la izquierda.\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
   probarDFA :: DFA -> [Char] -> Bool
   probarDFA (DFA i a t) = a . foldl' t i
 \end{lstlisting}
+\end{minipage}
 
 Un DFA se podría implementar en programación imperativa con un bucle for que fuera sobreescribiendo el estado en cada iteración, haciendo un lookup en su tabla de estados dependiendo de su estado actual y el símbolo leído.\\
 
-Esto, en Haskell, se puede hacer usando la función \textbf{foldl} (aunque aquí por temas de rendimiento y uso de memoria se ha optado por \textbf{foldl'}).\\
+Esto, en Haskell, se puede hacer usando la función \textbf{foldl} (aunque aquí por razones de rendimiento y uso de memoria se ha optado por \textbf{foldl'}).\\
 
 Se trata de empezar con un acumulador (en este caso, el estado inicial), y nos vamos moviendo por la lista (cadena de entrada) de izquierda a derecha, haciendo un lookup con el acumulador y el carácter leído en ese instante, y luego el resultado (estado siguiente) se convertirá en el nuevo acumulador y se repetirá el proceso.\\
 
-La función \textbf{scanl} nos permite ver la lista de todos los valores que ha ido tomando el acumulador durante la ejecución del programa, y se comporta como \textbf{foldl} pero devolviendo la lista completa:
+La función \textbf{scanl} nos permite ver la lista de todos los valores que ha ido tomando el acumulador durante la ejecución del programa, y se comporta como \textbf{foldl} pero devolviendo la lista completa:\\
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single]
 *DFA> leerDFA "dfa1.txt"
 Cadena:AAABABABA
 ["Q1","Q2","Q1","Q2","Q2","Q2","Q1"]
 \end{lstlisting}
+\end{minipage}
 
 Luego de la aplicación de \textbf{foldl'} vemos un punto, que significa composición, es decir, aplicará la función \textbf{a} al resultado de \textbf{foldl'}, donde \textbf{a} es una función que comprueba si ese estado pertenece a la lista de estados finales, devolviendo un booleano que indicará la aceptación o rechazo de la cadena por el autómata.\\
 
-Como vemos, en Haskell con una sóla línea se pueden hacer virguerías, el programa completo que simula un DFA, leyendo desde fichero y pidiendo continuamente entrada tras computar la anterior, ocupa 35 líneas.
+Como vemos, en Haskell con una sóla línea se pueden hacer virguerías, el programa completo que simula un DFA, leyendo desde fichero y pidiendo continuamente entrada tras computar la anterior, ocupa 35 líneas.\\
 
 %------------------------------------------------------------------------------
 %\begin{figure}[!th]
