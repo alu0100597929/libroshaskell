@@ -59,5 +59,71 @@ countCharMsgBind c f =
 countCharMsg :: Char -> FilePath -> IO Int
 countCharMsg c f = 
    putStrLn ("count " ++ [c] ++ " in " ++ f) 
-                >> readFile f           -- much better!
+                >> readFile f           -- mucho mejor!
                 >>= return . countChar c
+
+-- readFile devuelve una IO String
+countCharBroken c f =
+  readFile f >>=
+    \cs -> let count = countChar c cs
+           in putStrLn ("Counted " ++ show count ++ " chars")
+              >> return count
+
+-- el let dentro de un bloque do no necesita 'in'
+countCharLogDo :: Char -> FilePath -> IO Int
+countCharLogDo c f = do
+  cs <- readFile f
+  let count = countChar c cs
+  putStrLn $ "Counted " ++ show count ++ " chars"
+  return count
+
+countCharRevBind :: Char -> FilePath -> IO Int
+countCharRevBind c f = return . countChar c =<< readFile f
+
+countCharRevEta :: Char -> FilePath -> IO Int
+countCharRevEta c = (return . countChar c =<<) . readFile
+
+-- relación entre fmap y el bind inverso
+
+incrementAllBy :: Int -> [Int] -> [Int]
+incrementAllBy i is = fmap (+ i) is
+
+countCharFmap :: Char -> FilePath -> IO Int
+countCharFmap c f = fmap (countChar c) (readFile f)
+
+countCharInfix :: Char -> FilePath -> IO Int
+countCharInfix c f = countChar c <$> readFile f
+
+listBindEx :: [Int] -> [Int]
+listBindEx is = is >>= (\i -> replicate i i)
+
+-- funciona como una list comprehension que simplemente concatena los casos
+listBindTwo :: [Int] -> [Int] -> [Int]
+listBindTwo is js = do
+   i <- is
+   j <- js
+   [i,j]
+
+-- Recuerda las Reglas de Transformación:
+
+-- "a <- m
+-- e" en 
+-- "m >>= \a -> e"
+-- y 
+-- "m
+-- n" en 
+-- "m >> n"
+
+listBindMia :: [Int] -> [Int] -> [Int]
+listBindMia is js = is >>= 
+                      \i -> js >>=
+                        \j -> [i,j]
+
+-- Por último, cambiaremos bind por su definición:
+-- m >>= f = concat (fmap f m)
+
+-- mejor hacer esto por partes, primero la más interna, obteniendo:
+-- js >>= \j -> [i,j] == concat (fmap (\j -> [i,j]) js)
+
+listBindDesplegada :: [Int] -> [Int] -> [Int]
+listBindDesplegada is js = concat (fmap (\i -> concat (fmap (\j -> [i,j]) js)) is)
