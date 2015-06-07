@@ -13,7 +13,7 @@
 \contentsline {section}{\numberline {3.1}Introducci\'on a Scheme}{21}{section.3.1}
 \contentsline {section}{\numberline {3.2}Segundo apartado de este cap\'itulo}{22}{section.3.2}
 \contentsline {section}{\numberline {3.3}Tercer apartado de este cap\'itulo}{22}{section.3.3}
-\contentsline {chapter}{\numberline {4}T\IeC {\'\i }tulo del Cap\IeC {\'\i }tulo Cuatro}{23}{chapter.4}
+\contentsline {chapter}{\numberline {4}Funcionamiento del Compilador e Int\'erprete}{23}{chapter.4}
 \contentsline {chapter}{\numberline {5}Conclusiones y trabajos futuros}{24}{chapter.5}
 \contentsline {chapter}{\numberline {6}Summary and Conclusions }{25}{chapter.6}
 \contentsline {section}{\numberline {6.1}First Section}{25}{section.6.1}
