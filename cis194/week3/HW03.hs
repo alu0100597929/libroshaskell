@@ -64,8 +64,8 @@ execOP (Lt) n m     = if n < m then 1 else 0
 execOP (Le) n m     = if n <= m then 1 else 0
 execOP (Eql) n m    = if n == m then 1 else 0
 
--- evalE empty (Op ((Val 3) Times (Val 9)) Times (Val 9))
-
+-- evalE empty (Op (Op (Val 3) Plus (Val 5)) Times (Val 4))
+-- 32
 
 --    Var String                   -- Variable
 --  | Val Int                      -- Integer literal
@@ -76,8 +76,6 @@ extractVar (Var str) = str
 
 extractVal :: Expression -> Int
 extractVal (Val int) = int
-
-
 
 -- Exercise 3 -----------------------------------------
 
