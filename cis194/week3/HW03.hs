@@ -44,8 +44,40 @@ empty = (\_ -> 0)
 
 -- Exercise 2 -----------------------------------------
 
+-- recuerda que 0 es False y 1 es True
+
+-- esto no tiene en cuenta el estado
 evalE :: State -> Expression -> Int
-evalE = undefined
+evalE st exp = case exp of
+                 (Val x) -> x
+                 (Op expr1 bop expr2) -> execOP bop (evalE st expr1) (evalE st expr2)
+                 _ -> error "expresión no evaluable"
+
+execOP :: Bop -> Int -> Int -> Int
+execOP (Plus) n m   = n + m
+execOP (Minus) n m  = n - m
+execOP (Times) n m  = n * m
+execOP (Divide) n m = n `div` m
+execOP (Gt) n m     = if n > m then 1 else 0
+execOP (Ge) n m     = if n >= m then 1 else 0     
+execOP (Lt) n m     = if n < m then 1 else 0
+execOP (Le) n m     = if n <= m then 1 else 0
+execOP (Eql) n m    = if n == m then 1 else 0
+
+-- evalE empty (Op ((Val 3) Times (Val 9)) Times (Val 9))
+
+
+--    Var String                   -- Variable
+--  | Val Int                      -- Integer literal
+--  | Op Expression Bop Expression -- Operation
+
+extractVar :: Expression -> String
+extractVar (Var str) = str
+
+extractVal :: Expression -> Int
+extractVal (Val int) = int
+
+
 
 -- Exercise 3 -----------------------------------------
 
