@@ -7,4 +7,4 @@ glxinfo | grep OpenGL
 sudo mkdir /etc/X11/xorg.conf.d/
 echo -e 'Section "Device"\n Identifier "Intel Graphics"\n Driver "Intel"\n Option "AccelMethod" "sna"\n Option "TearFree" "true"\nEndSection' \
 | sudo tee /etc/X11/xorg.conf.d/20-intel.conf
-sudo reboot
+service lightdm restart
