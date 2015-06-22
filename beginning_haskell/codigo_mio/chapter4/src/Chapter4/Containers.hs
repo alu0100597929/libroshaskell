@@ -35,3 +35,10 @@ M.alter (\(Just v) -> Just (v+7)) "hello" $ M.fromList [("hello", 3), ("bye", 4)
 myDelete key = M.alter (\(Just v) -> Nothing) key
 
 myAdjust f = M.alter (\(Just v) -> Just (f v))
+
+map3 = let m1 = M.fromList [("topor",0),("keylorsito",10)]
+           m2 = M.fromList [("topor",10),("chicharrito",10)]
+       in (m1 `M.union` m2, M.intersectionWith (-) m1 m2)
+
+mapYFoldr = let m = M.fromList [("hi",3),("bye",4)]
+            in (M.map (*2) m, M.foldr (+) 0 m)
