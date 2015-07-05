@@ -3,7 +3,9 @@
 
 module Chapter4.Containers where
 
+import Chapter4.TypeClasses
 import qualified Data.Map as M
+import qualified Data.Set as S
 
 -- Map k a, k es el tipo de las keys y a es el tipo de lo que guarda el map
 -- en Map, sólo puede haber un valor para una clave, con lo cual, si actualizamos,
@@ -42,3 +44,14 @@ map3 = let m1 = M.fromList [("topor",0),("keylorsito",10)]
 
 mapYFoldr = let m = M.fromList [("hi",3),("bye",4)]
             in (M.map (*2) m, M.foldr (+) 0 m)
+
+conjunto = let set1 = S.insert "welcome" $ S.singleton "hello"
+               set2 = S.fromList ["hello","bye"]
+            in ( set1 `S.intersection` set2
+               , "welcome" `S.member` set1
+               , S.map length set2)
+
+-- exercise 4.3
+data ClientKind = GovOrgKind
+                | CompanyKind
+                | IndividualKind
