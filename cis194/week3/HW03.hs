@@ -45,31 +45,28 @@ empty = (\_ -> 0)
 -- Exercise 2 -----------------------------------------
 
 -- recuerda que 0 es False y 1 es True
-
--- esto no tiene en cuenta el estado
 evalE :: State -> Expression -> Int
 evalE st exp = case exp of
-                 (Val x) -> x
+                 (Var nombreVar)      -> st nombreVar
+                 (Val x)              -> x
                  (Op expr1 bop expr2) -> execOP bop (evalE st expr1) (evalE st expr2)
-                 _ -> error "expresión no evaluable"
 
 execOP :: Bop -> Int -> Int -> Int
 execOP (Plus) n m   = n + m
 execOP (Minus) n m  = n - m
 execOP (Times) n m  = n * m
 execOP (Divide) n m = n `div` m
-execOP (Gt) n m     = if n > m then 1 else 0
+execOP (Gt) n m     = if n >  m then 1 else 0
 execOP (Ge) n m     = if n >= m then 1 else 0     
-execOP (Lt) n m     = if n < m then 1 else 0
+execOP (Lt) n m     = if n <  m then 1 else 0
 execOP (Le) n m     = if n <= m then 1 else 0
 execOP (Eql) n m    = if n == m then 1 else 0
 
 -- evalE empty (Op (Op (Val 3) Plus (Val 5)) Times (Val 4))
 -- 32
 
---    Var String                   -- Variable
---  | Val Int                      -- Integer literal
---  | Op Expression Bop Expression -- Operation
+-- evalE (extend empty "A" 5) (Op (Op (Var "A") Plus (Val 5)) Times (Val 4))
+-- 40
 
 extractVar :: Expression -> String
 extractVar (Var str) = str
@@ -87,13 +84,21 @@ data DietStatement = DAssign String Expression
                      deriving (Show, Eq)
 
 desugar :: Statement -> DietStatement
-desugar = undefined
-
+desugar (Assign str expr) = DAssign str expr
+desugar (Incr varName) = DAssign varName (Op (Var varName) Plus (Val 1))
+desugar (If expr statement1 statement2) = DIf expr (desugar statement1) (desugar statement2)
+desugar (While expr statement) = DWhile expr (desugar statement)
+--desugar (For Statement Expression Statement Statement) = DWhile
+desugar (Sequence statement1 statement2) = DSequence (desugar statement1) (desugar statement2)
+desugar Skip = DSkip
 
 -- Exercise 4 -----------------------------------------
 
 evalSimple :: State -> DietStatement -> State
-evalSimple = undefined
+evalSimple current (DAssign str expr) = extend current str (evalE current expr) 
+
+-- let s = evalSimple empty (DAssign "A" (Op (Val 10) Plus (Val 1))) in s "A"
+-- 11
 
 run :: State -> Statement -> State
 run = undefined
