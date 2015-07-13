@@ -46,7 +46,7 @@ Las funciones se definen mediante la palabra reservada \textbf{define}, una list
 \end{small}
 \end{minipage}
 
-Las funciones \textbf{car} y \textbf{cdr} act\'uan sobre una lista. La funci\'on \textbf{car} devuelve el primer elemento de la lista (si \'este existe), mientras que \textbf{cdr} devuelve una lista compuesta por el segundo elemento de la lista y todos los que le siguen.\\
+Las funciones \textbf{car}, \textbf{cdr} y \textbf{cons} act\'uan sobre una lista. La funci\'on \textbf{car} devuelve el primer elemento de la lista (si \'este existe), mientras que \textbf{cdr} devuelve una lista compuesta por el segundo elemento de la lista y todos los que le siguen. La funci\'on \textbf{cons} a\~nade un elemento al principio de una lista (por su izquierda). Se usa un wrapper llamado \textbf{rev} que llama a la funci\'on \textbf{rev-rec} con la lista que se le pasa y la lista vac\'ia \textbf{()}.\\
 
 \begin{minipage}{\linewidth}
 \begin{small}

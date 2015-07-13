@@ -130,6 +130,7 @@ value = bool <|> stringLiteral
 Solución: crear un tipo algebraico que contenga Bool y String (entre otros). Los tipos de datos algebraicos son una herramienta muy útil para los parsers, ya que permiten saber exactamente a qué tipo pertenece el token que hemos parseado.\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 data JSONValue = B Bool
                | S String
@@ -139,6 +140,7 @@ data JSONValue = B Bool
                | Null String
                deriving Show
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Como vemos, tenemos un sólo constructor de tipo, \textbf{JSONValue}, es decir, nuestros parsers tendrán tipo \textbf{Parser JSONValue}. Sin embargo, tenemos 6 constructores de valor, que por simplicidad son simplemente las letras Iniciales de cada tipo de valor a parsear, salvo \textbf{Null}, en el cual se usó el nombre completo ya que \textbf{N} se usó para el tipo Number de JavaScript.\\
@@ -146,6 +148,7 @@ Como vemos, tenemos un sólo constructor de tipo, \textbf{JSONValue}, es decir, n
 Veamos ahora el parser principal, es decir, un parser genérico capaz de parsear cualquier valor de JSON:\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonValue :: Parser JSONValue
 jsonValue = spaces >> (jsonNull
@@ -156,6 +159,7 @@ jsonValue = spaces >> (jsonNull
                    <|> jsonNumber
                    <?> "JSON value")
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 No te preocupes demasiado por el parser \textbf{spaces}, lo explicaré más adelante en conjunto con \textbf{lexeme}. Pero, ¿qué es esa interrogación? \textbf{$<?>$} es un combinador que permite dar mensajes de error en caso de parseo fallido. En este caso, se le pasa una {String} con el mensaje de error que queremos que aparezca. En caso de error, saldrá algo como "expected JSON value", pues ese es el argumento de \textbf{$<?>$} para cuando falle el parser \textbf{jsonValue}.\\
@@ -163,10 +167,12 @@ No te preocupes demasiado por el parser \textbf{spaces}, lo explicaré más adelan
 Lo malo de esto es que seguimos teniendo error de tipos porque:\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 bool :: Parser Bool
 stringLiteral :: Parser String
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Lo bueno es que con \textbf{$(<\$>) :: Functor f => (a -> b) -> f a -> f b$}, que en este caso tendría el tipo: \textbf{$(<\$>) :: (a -> b) -> Parser a -> Parser b$}, podemos solucionarlo.\\
@@ -174,6 +180,7 @@ Lo bueno es que con \textbf{$(<\$>) :: Functor f => (a -> b) -> f a -> f b$}, qu
 Recordemos que los constructores de valor son en realidad funciones como otra cualquiera (salvo que empiezan por mayúscula). Por ejemplo, el tipo de \textbf{B} es \textbf{$B :: Bool -> JSONValue$}. Por tanto, si hacemos \textbf{B <\$> bool} tendremos como resultado un \textbf{Parser JSONValue}, y eso haremos en todos nuestros parsers anteriormente nombrados.\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonBool'' :: Parser JSONValue
 jsonBool'' = B <$> bool
@@ -183,6 +190,7 @@ matchNull'' = lexeme matchNull'
 jsonStringLiteral :: Parser JSONValue
 jsonStringLiteral = lexeme (S <$> stringLiteral)
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Aquí lo único que nos llama la atención es el parser \textbf{lexeme}. \textbf{lexeme} está definido en Parsec por defecto, pero nosotros lo programaremos más que nada por razones didácticas.\\
@@ -190,6 +198,7 @@ Aquí lo único que nos llama la atención es el parser \textbf{lexeme}. \textbf{le
 \textbf{lexeme} es un parser que, recibiendo otro parser, devuelve un parser del mismo tipo, pero que consume todos los espacios (incluyendo tabuladores y newlines) que haya detrás del token parseado.\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 ws :: Parser String -- whitespace
 ws = many (oneOf " \t\n")
@@ -197,6 +206,7 @@ ws = many (oneOf " \t\n")
 lexeme :: Parser a -> Parser a
 lexeme p = p <* ws
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 De este modo, con aplicar lexeme a cada uno de los parsers que vayamos a usar, tenemos resuelto el problema de los espacios entre tokens.\\
@@ -208,15 +218,18 @@ Solución: añadir el parser {spaces} a nuestro parser principal \textbf{jsonValue
 A continuación creemos un parser que permita parsear números. Para ello usaremos la función \textbf{parseFloat}, que permite parsear cualquier tipo de número, incluso con signo, exponente, parte decimal...es decir, el formato de coma flotante.\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonNumber :: Parser JSONValue
 jsonNumber = N <$> parseFloat
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 ¡Listo! ya tenemos un parser más. Ahora veamos algo un poco más complejo, los arrays de JSON. Un array de JSON tiene el siguiente formato:\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 [
     {"firstName":"John", "lastName":"Doe"}, 
@@ -224,6 +237,7 @@ jsonNumber = N <$> parseFloat
     {"firstName":"Peter","lastName":"Jones"}
 ]
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Como vemos, tenemos:\\
@@ -236,6 +250,7 @@ Como vemos, tenemos:\\
 
 Sabido esto, lo único nuevo que tenemos que introducir aquí es el parser \textbf{sepBy}. \textbf{sepBy} recibe dos argumentos, el primero es el parser que se usará para cada token, y el segundo es el parser que se usará para el separador o separadores. Veamos el parser completo.\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 array :: Parser [JSONValue]
 array =
@@ -245,14 +260,17 @@ array =
   <*
   (lexeme $ char ']')
 \end{lstlisting}
+\end{small}
 
 Como los arrays contienen tokens de JSON, lo que hacemos es una llamada recursiva a \textbf{jsonValue}. De este modo, vemos que dentro de un array de JSON puede haber "lo que sea" (siempre que esté correctamente escrito y formateado) pero el array debe empezar por el carácter $[$ y terminar con $]$ para garantizar que dicho formato sea correcto. Como vemos, este parser nos devuelve una lista de \textbf{JSONValue}, y eso no es un tipo \textbf{JSONValue}. Por tanto, debemos aplicar \textbf{$fmap (<\$>)$}, en este caso de manera infija:\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonArray :: Parser JSONValue
 jsonArray = A <$> array
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Ahora parsearemos algo parecido pero no del todo igual, los objetos de JSON. El formato de los objetos es:\\
@@ -264,6 +282,7 @@ Ahora parsearemos algo parecido pero no del todo igual, los objetos de JSON. El 
 \end{itemize}
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonObject :: Parser JSONValue
 jsonObject = O <$> ((lexeme $ char '{') *>
@@ -277,19 +296,23 @@ objectEntry = do
   value <- lexeme jsonValue
   return (key, value)
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Ahora consigamos que el parser \textbf{jsonBool'} sea capaz de lidiar con espacios, tabuladores y nuevas líneas después del token que parsea:\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonBool' = lexeme jsonBool''
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Ya casi hemos terminado, pero aún falta un pequeño detalle. ¿Y si alguien se equivoca y escribe por ejemplo "falseee", o "nullpointer", o cualquier otra cosa siguiendo a las palabras reservadas \textbf{true}, \textbf{false} o \textbf{null}? Nuestro parser lo aceptaría, cuando eso no debería ser así. Queremos exactamente esas palabras, ni un carácter más ni uno menos, para que nuestro parser sea correcto. Para ello, Parsec nos provee con un parser que falla en caso de que otro esté seguido de ciertos carácteres, es \textbf{notFollowedBy}. \textbf{notFollowedBy} recibe un parser, y si éste tiene éxito, falla. Un ingenioso truco que nos saca del atolladero de manera muy sencilla y casi autoexplicativa.\\
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 jsonBool :: Parser JSONValue
 jsonBool = jsonBool' <* notFollowedBy alphaNum
@@ -297,6 +320,7 @@ jsonBool = jsonBool' <* notFollowedBy alphaNum
 jsonNull :: Parser JSONValue
 jsonNull = matchNull'' <* notFollowedBy alphaNum
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Por último, creemos la función \textbf{main} que nos permitirá compilar el programa. Para ello seguiremos los siguientes pasos:\\
@@ -308,12 +332,14 @@ Por último, creemos la función \textbf{main} que nos permitirá compilar el progr
 \end{itemize}
 
 \begin{minipage}{\linewidth}
+\begin{small}
 \begin{lstlisting}[frame=single]
 main = do
   putStr "Nombre_fichero: "
   filename <- getLine
   parseFromFile jsonValue filename
 \end{lstlisting}
+\end{small}
 \end{minipage}
 
 Eso es todo, ya tenemos nuestro parser de JSON funcionando.\\

@@ -4,7 +4,7 @@
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-En el cap\'itulo ~\ref{chapter:tres} se describi\'o el lenguaje Scheme, dando una idea general sobre el mismo. En el presente cap\'itulo se tratar\'a de explicar el funcionamiento del programa principal del presente Trabajo Fin de Grado.\\
+En el cap\'itulo ~\ref{chapter:tres} se describi\'o el lenguaje Scheme, dando una idea general sobre el mismo. En el presente cap\'itulo se tratar\'a de explicar el funcionamiento del programa principal del presente Trabajo Fin de Grado.
 
 \section{Estructura general del programa}
 \label{3:sec1}
@@ -13,11 +13,11 @@ En un programa escrito en Haskell, la mayor\'ia de funciones son puras, es decir
 
 El concepto descrito de funci\'on pura no se corresponde con el de las funciones de lenguajes imperativos como C, C++ o Java. En los mencionados lenguajes, las funciones no tienen demasiado que ver con las funciones matem\'aticas formales. Las funciones de C, C++ o Java pueden imprimir por pantalla, interactuar con el usuario y, en definitiva, recibir informaci\'on que est\'a m\'as all\'a del \'ambito de sus par\'ametros.\\
 
-Para superar esta dificultad se cre\'o el concepto de m\'onada. Las m\'onadas tienen fama de algo m\'as que abstracto, muy dif\'icil de entender, y estoy de acuerdo en que f\'aciles no son, al menos al principio. Las m\'onadas, en esencia, son constructos que se realizan con lambdas estructuradas de un modo espacial y con sus argumentos, y de este modo se consigue encapsular una computaci\'on o acci\'on. Como un argumento podr\'ia depender de argumentos de lambdas anteriores, se consigue, en el caso de la m\'onada IO, que las acciones se ejecuten en el orden deseado. Recordemos que Haskell, al ser un lenguaje funcional, ejecuta ``todo a la vez'', y mediante las m\'onadas, conseguimos una ejecuci\'on ordenada.\\
+Para superar esta dificultad se cre\'o el concepto de m\'onada. Las m\'onadas tienen fama de algo m\'as que abstracto, muy dif\'icil de entender, y estoy de acuerdo en que f\'aciles no son, al menos al principio. Las m\'onadas, en esencia, son constructos que se realizan con lambdas estructuradas de un modo especial y con sus argumentos, y de este modo se consigue encapsular una computaci\'on o acci\'on. Como un argumento podr\'ia depender de argumentos de lambdas anteriores, se consigue, en el caso de la m\'onada IO, que las acciones se ejecuten en el orden deseado. Recordemos que Haskell, al ser un lenguaje funcional, ejecuta ``todo a la vez'', y mediante las m\'onadas, conseguimos una ejecuci\'on ordenada (entre otras cosas).\\
 
 En el programa que se pasar\'a a describir se ha usado varias m\'onadas, cada cual cumple una funci\'on distinta, que, sin m\'as dilaci\'on, pasamos a explicar.\\
 
-El tipo \textbf{IO} es instancia de la clase de tipos \textbf{Monad}, m'onada es un concepto, decir que un valor pertenece a la clase de tipos \textbf{\textbf{Monad}} es decir:\\
+El tipo \textbf{IO} es instancia de la clase de tipos \textbf{Monad}, m'onada es un concepto, decir que un valor pertenece a la clase de tipos \textbf{\textbf{Monad}} es decir:
 
 \begin{itemize}
   \item 1) Hay (un cierto tipo de) informaci\'on oculta adjunta a este valor.
@@ -32,7 +32,7 @@ IO \textbf{[String]} e \textbf{IO ()} pertenecen al mismo tipo, el de la m\'onad
 
 Los valores con informaci\'on oculta adjunta son llamados valores mon\'adicos.\\
 
-Los valores mon\'adicos se suele llamar acciones, porque la manera m\'as f\'acil de pensar en el uso de la m\'onada \textbf{IO} es pensar en una secuencia de acciones afectando al mundo exterior. Cada acci\'on de la mencionada secuencia de acciones podr\'ia actuar sobre valores b\'asicos (no mon\'adicos). Por tanto:\\
+Los valores mon\'adicos se suele llamar acciones, porque la manera m\'as f\'acil de pensar en el uso de la m\'onada \textbf{IO} es pensar en una secuencia de acciones afectando al mundo exterior. Cada acci\'on de la mencionada secuencia de acciones podr\'ia actuar sobre valores b\'asicos (no mon\'adicos). Por tanto:
 
 \begin{itemize}
   \item m a es una acci\'on
@@ -53,7 +53,7 @@ Para ello se aplican parsers de Parsec y se extrae su informaci\'on oculta de aq
 
 Parsers recursivos:\\
 
-En un lenguaje funcional la recursividad es uno de los m\'etodos m\'as interesantes. En un lenguaje como Scheme y muchos otros, encontramos estructuras de datos que pueden contener a otras, por ejemplo, una lista puede contener:\\
+En un lenguaje funcional la recursividad es uno de los m\'etodos m\'as interesantes. En un lenguaje como Scheme y muchos otros, encontramos estructuras de datos que pueden contener a otras, por ejemplo, una lista puede contener:
 
 \begin{itemize}
   \item otras listas (sean normales o dotted)
@@ -62,7 +62,7 @@ En un lenguaje funcional la recursividad es uno de los m\'etodos m\'as interesan
 
 Por tanto, en el int\'erprete se llama recursivamente al parser principal, \textbf{parseExpr :: Parser LispVal}, con el objetivo de parsear lo que haya dentro de cada expresi\'on.\\
 
-Por ejemplo, en \textbf{parseList} y \textbf{parseDottedList} se usan, respectivamente:\\
+Por ejemplo, en \textbf{parseList} y \textbf{parseDottedList} se usan, respectivamente:
 
 \begin{itemize}
   \item sepBy parseExpr spaces
@@ -254,7 +254,7 @@ mapM :: Monad m => (a -> m b) -> [a] -> m [b]:
 \textbf{mapM mf xs} recibe una funci\'on mon\'adica (con tipo \textbf{Monad m => (a -> m b)}) y la aplica a cada elemento en la lista \textbf{xs}; el resultado es una lista (con elementos del tipo \textbf{b}, en este caso) dentro de una m\'onada. Por tanto \textbf{mapM eval args} da como resultado [\textbf{LispVal}].\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{tiny}
 \begin{lstlisting}[frame=single]
 eval :: LispVal -> ThrowsError LispVal
 eval val@(String _) = return val
@@ -285,10 +285,10 @@ unpackNum (String n) = let parsed = reads n in
 unpackNum (List [n]) = unpackNum n
 unpackNum notNum     = throwError $ TypeMismatch "number" notNum
 \end{lstlisting}
-\end{small}
+\end{tiny}
 \end{minipage}
 
-Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}, as\'i que vayamos por partes:\\
+Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}, as\'i que vayamos por partes:
 
 \begin{itemize}
 
