@@ -88,20 +88,57 @@ desugar (Assign str expr) = DAssign str expr
 desugar (Incr varName) = DAssign varName (Op (Var varName) Plus (Val 1))
 desugar (If expr statement1 statement2) = DIf expr (desugar statement1) (desugar statement2)
 desugar (While expr statement) = DWhile expr (desugar statement)
---desugar (For Statement Expression Statement Statement) = DWhile
+desugar (For statement1 expr statement2 statement3) =
+  let desugared1 = desugar statement1
+      desugared2 = desugar statement2
+      desugared3 = desugar statement3
+  in DSequence desugared1 (DWhile expr (DSequence desugared3 desugared2)) 
 desugar (Sequence statement1 statement2) = DSequence (desugar statement1) (desugar statement2)
 desugar Skip = DSkip
 
 -- Exercise 4 -----------------------------------------
 
 evalSimple :: State -> DietStatement -> State
-evalSimple current (DAssign str expr) = extend current str (evalE current expr) 
+evalSimple current (DAssign str expr) = extend current str (evalE current expr)
+evalSimple current (DIf expr statement1 statement2) = if (evalE current expr == 0)
+                                                        then evalSimple current statement2
+                                                        else evalSimple current statement1
+evalSimple current (DWhile expr statement) = if (evalE current expr == 0)
+                                               then current
+                                               else evalSimple (evalSimple current statement) (DWhile expr statement)
+evalSimple current (DSequence statement1 statement2) = evalSimple (evalSimple current statement1) statement2
+evalSimple current (DSkip) = current
 
 -- let s = evalSimple empty (DAssign "A" (Op (Val 10) Plus (Val 1))) in s "A"
 -- 11
 
+-- let s = evalSimple empty (DIf (Op (Val 0) Plus (Val 0)) (DAssign "A" (Val 8)) (DAssign "A" (Val 90))) in s "A"
+-- 90
+
+-- let s = evalSimple empty (DSequence (DAssign "A" (Val 8)) (DAssign "A" (Op (Var "A") Plus (Val 1)))) in s "A"
+-- 9
+
+-- let s = evalSimple empty (DSequence (DAssign "A" (Val 8)) (DSequence (DAssign "A" (Op (Var "A") Plus (Val 1))) (DAssign "A" (Op (Var "A") Plus (Val 1))))) in s "A"
+-- 10
+
+-- let s = evalSimple empty (DSequence (DAssign "A" (Val 0)) (DWhile (Op (Var "A") Lt (Val 5)) (DAssign "A" (Op (Var "A") Plus (Val 1))))) in s "A"
+
+-- let s = evalSimple empty (DSequence (DAssign "A" (Val 0)) (DWhile (Op (Var "A") Lt (Val 5)) (DAssign "A" (Op (Var "A") Plus (Val 1))))) in s "A"
+-- 5
+
+-- Como vemos, los encadenamientos se podrían realizar con un plegado a la derecha (foldr1)
+
 run :: State -> Statement -> State
-run = undefined
+run state statement = evalSimple state (desugar statement)
+
+-- let s = run (extend empty "In" 4) factorial in s "Out"
+-- 24
+
+-- let s = run (extend empty "A" 4) squareRoot  in s "B"
+-- 2
+
+-- let s = run (extend empty "In" 13) fibonacci in s "Out"
+-- 377
 
 -- Programs -------------------------------------------
 
