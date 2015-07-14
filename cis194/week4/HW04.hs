@@ -23,3 +23,36 @@ False
 True
 -}
 
+mostrarPolinomio :: (Num a, Eq a, Show a) => Poly a -> String
+mostrarPolinomio (P xs) = mostrarPoli (P xs) 0
+
+mostrarGrado :: Int -> String
+mostrarGrado 0 = "1"
+mostrarGrado 1 = "x"
+mostrarGrado x = "x^" ++ show x
+
+mostrarTermino :: (Num a, Eq a, Show a) => a -> Int -> String
+mostrarTermino coeficiente grado = case coeficiente of
+                                     0 -> ""
+                                     1 -> mostrarGrado grado
+                                     c -> if grado == 0 then "1" else show c ++ mostrarGrado grado
+
+mostrarPoli :: (Num a, Eq a, Show a) => Poly a -> Int -> String
+mostrarPoli (P []) n     = ""
+mostrarPoli (P [x]) n    = mostrarTermino x n 
+mostrarPoli (P (x:xs)) n = mostrarPoli (P xs) (n + 1) ++ case mostrarTermino x n of
+                                                           ""  -> ""
+                                                           cad -> " + " ++ cad
+
+instance (Num a, Eq a, Show a) => Show (Poly a) where
+  show = mostrarPolinomio
+
+plus :: Num a => Poly a -> Poly a -> Poly a
+plus (P xs) (P ys) = P (sumarListasPorPosiciones xs ys)
+
+sumarListasPorPosiciones :: Num a => [a] -> [a] -> [a]
+sumarListasPorPosiciones xs ys = let revxs = reverse xs
+                                     revys = reverse ys
+                                     mayor = if (length revxs > length revys) then revxs else revys
+                                     parteComun = zipWith (+) revxs revys
+                                 in reverse $ parteComun ++ (drop (length parteComun) mayor)
