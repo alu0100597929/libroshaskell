@@ -63,3 +63,33 @@ productosPorTermino :: Num a => Poly a -> Poly a -> Int -> [Poly a]
 productosPorTermino (P []) (P ys) _     = []
 productosPorTermino (P xs) (P []) _     = []
 productosPorTermino (P xs) (P ys) n = P ((take n $ repeat 0) ++ map ((last xs)*) ys) : productosPorTermino (P (tail xs)) (P ys) (n + 1)
+
+{-
+show (P [1,0,0,2]) == "2x^3 + 1"
+show (P [0,-1,2]) == "2x^2 + -x"
+-}
+
+negate :: Num a => Poly a -> Poly a
+negate (P xs) = P (map Prelude.negate xs)
+
+fromIntegerPoli :: Num a => Integer -> Poly a
+fromIntegerPoli n = P [(fromInteger n)]
+
+applyP :: Num a => Poly a -> a -> a
+applyP (P xs) = applyP' $ P (reverse xs)
+
+applyP' :: Num a => Poly a -> a -> a
+applyP' (P []) _ = 0
+applyP' (P toda@(x:xs)) n = let largo = length toda
+                            in x*n^(largo - 1) + applyP' (P xs) n
+
+class Num a => Differentiable a where
+  deriv :: a -> a
+  nderiv :: Int -> a -> a
+
+multiplicarPorSuIndice :: Num a => [a] -> [a]
+multiplicarPorSuIndice (xs) = zipWith (*) xs $ map fromInteger [0..toInteger (length xs) -1]
+
+derivarPoli :: Num a => Poly a -> Poly a
+derivarPoli (P xs) = let (y:ys) = multiplicarPorSuIndice xs
+                     in P ys
