@@ -309,6 +309,12 @@ class Monad (m :: * -> *) where
 
 * `:q` sirve para **salir** limpiamente de GHCi.
 
+* `:!` permite usar comandos arbitrarios de la shell dentro de GHCi. Ejemplos:
+
+`:!pwd` nos mostraría en qué directorio estamos trabajando.
+
+`:cd nuevo_directorio` nos permite cambiar el directorio de trabajo de GHCi. 
+
 # Cambio de modo de GHCi
 
 * `:set +s` cambia el modo de ejecución de GHCi, permitiendo ver cuánto tiempo tarda en ser evaluada cada una de nuestras expresiones. Muy útil para analizar el rendimiento de nuestro código.
