@@ -48,26 +48,34 @@ mostrarPoli (P (x:xs)) n = mostrarPoli (P xs) (n + 1) ++ case mostrarTermino x n
 instance (Num a, Eq a, Show a) => Show (Poly a) where
   show = mostrarPolinomio
 
-plus :: Num a => Poly a -> Poly a -> Poly a
-plus (P xs) (P ys) = P (sumarListasPorPosiciones xs ys)
-
 sumarListasPorPosiciones :: Num a => [a] -> [a] -> [a]
 sumarListasPorPosiciones xs ys = let mayor = if (length xs > length ys) then xs else ys
                                      parteComun = zipWith (+) xs ys
                                  in parteComun ++ (drop (length parteComun) mayor)
 
-producto :: Num a => Poly a -> Poly a -> Poly a
-producto (P xs) (P ys) = foldl1 plus (productosPorTermino (P xs) (P ys) 0)
+plus :: Num a => Poly a -> Poly a -> Poly a
+plus (P xs) (P ys) = P (sumarListasPorPosiciones xs ys)
 
 productosPorTermino :: Num a => Poly a -> Poly a -> Int -> [Poly a]
 productosPorTermino (P []) (P ys) _     = []
 productosPorTermino (P xs) (P []) _     = []
 productosPorTermino (P xs) (P ys) n = P ((take n $ repeat 0) ++ map ((last xs)*) ys) : productosPorTermino (P (tail xs)) (P ys) (n + 1)
 
+producto :: Num a => Poly a -> Poly a -> Poly a
+producto (P xs) (P ys) = foldl1 plus (productosPorTermino (P xs) (P ys) 0)
+
 {-
 show (P [1,0,0,2]) == "2x^3 + 1"
 show (P [0,-1,2]) == "2x^2 + -x"
 -}
+
+instance Num a => Num (Poly a) where
+  negate (P xs) = Main.negate (P xs)
+  (+) = plus
+  (*) = producto
+  fromInteger = fromIntegerPoli
+  abs = undefined -- no se puede calcular el valor absoluto de un polinomio
+  signum = undefined -- no se puede calcular el signo de un polinomio
 
 negate :: Num a => Poly a -> Poly a
 negate (P xs) = P (map Prelude.negate xs)
@@ -91,5 +99,15 @@ multiplicarPorSuIndice :: Num a => [a] -> [a]
 multiplicarPorSuIndice (xs) = zipWith (*) xs $ map fromInteger [0..toInteger (length xs) -1]
 
 derivarPoli :: Num a => Poly a -> Poly a
+derivarPoli (P []) = P []
 derivarPoli (P xs) = let (y:ys) = multiplicarPorSuIndice xs
                      in P ys
+
+derivadaEnesimaPoli :: Num a => Int -> Poly a -> Poly a
+derivadaEnesimaPoli _ (P []) = P []
+derivadaEnesimaPoli 0 (P xs) = P xs
+derivadaEnesimaPoli n (P xs) = derivadaEnesimaPoli (n-1) $ derivarPoli (P xs)
+
+instance (Num a) => Differentiable (Poly a) where
+  deriv = derivarPoli
+  nderiv = derivadaEnesimaPoli

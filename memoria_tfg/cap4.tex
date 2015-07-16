@@ -17,7 +17,7 @@ Para superar esta dificultad se cre\'o el concepto de m\'onada. Las m\'onadas ti
 
 En el programa que se pasar\'a a describir se ha usado varias m\'onadas, cada cual cumple una funci\'on distinta, que, sin m\'as dilaci\'on, pasamos a explicar.\\
 
-El tipo \textbf{IO} es instancia de la clase de tipos \textbf{Monad}, m'onada es un concepto, decir que un valor pertenece a la clase de tipos \textbf{\textbf{Monad}} es decir:
+El tipo \textbf{IO} es instancia de la clase de tipos \textbf{Monad}, m\'onada es un concepto, decir que un valor pertenece a la clase de tipos \textbf{\textbf{Monad}} es decir:
 
 \begin{itemize}
   \item 1) Hay (un cierto tipo de) informaci\'on oculta adjunta a este valor.
@@ -32,11 +32,11 @@ IO \textbf{[String]} e \textbf{IO ()} pertenecen al mismo tipo, el de la m\'onad
 
 Los valores con informaci\'on oculta adjunta son llamados valores mon\'adicos.\\
 
-Los valores mon\'adicos se suele llamar acciones, porque la manera m\'as f\'acil de pensar en el uso de la m\'onada \textbf{IO} es pensar en una secuencia de acciones afectando al mundo exterior. Cada acci\'on de la mencionada secuencia de acciones podr\'ia actuar sobre valores b\'asicos (no mon\'adicos). Por tanto:
+Los valores mon\'adicos se suelen denominar acciones, porque la manera m\'as f\'acil de pensar en el uso de la m\'onada \textbf{IO} es pensar en una secuencia de acciones afectando al mundo exterior. Cada acci\'on de la mencionada secuencia de acciones podr\'ia actuar sobre valores b\'asicos (no mon\'adicos). Por tanto:
 
 \begin{itemize}
-  \item m a es una acci\'on
-  \item (a -> m ()) es una funci\'on que devuelve una acci\'on que contiene la tupla vac\'ia o unidad ().
+  \item \textbf{m a} es una acci\'on
+  \item \textbf{(a -\begin{small}\textgreater\end{small} m ())} es una funci\'on que devuelve una acci\'on que contiene la tupla vac\'ia o unidad \textbf{()}.
 \end{itemize}
 
 Parsec (en realidad, \textbf{genParser}) es otro ejemplo de m\'onada: en este caso, la informaci\'on extra que se encuentra oculta es toda aquella relativa a la posici\'on en la cadena de entrada, registro de backtracking, conjuntos first y follow...etc\'etera.\\
@@ -45,18 +45,23 @@ La funci\'on \textbf{parse} devuelve un \textbf{Either}, que tendremos que manej
 
 \textbf{readExpr} recibe una \textbf{String} (la cadena de entrada) y devuelve otra \textbf{String} con informaci\'on de lo que haya parseado.\\
 
-\textbf{readExpr} utiliza la funci\'on parse, que devuelve un \textbf{Either}, que \textbf{readExpr} maneja seg\'un construya un \textbf{Left} (error) o \textbf{Right} (valor correcto).\\
+\textbf{readExpr} utiliza la funci\'on parse, que devuelve un \textbf{Either}, que \textbf{readExpr} maneja seg\'un construya un valor de tipo \textbf{Left} (error) o un valor de tipo \textbf{Right} (valor correcto).\\
 
 Luego se trata de ir parseando los diferentes tokens de Scheme y luego construir, mediante un constructor de valor para el tipo \textbf{LispVal}, un valor determinado.\\
 
-Para ello se aplican parsers de Parsec y se extrae su informaci\'on oculta de aquello que han parseado mediante el constructo \textbf{<-}, o se usa \textbf{liftM} funci\'on valor\_mon\'adico.\\
+Para ello se aplican parsers de Parsec y se extrae la informaci\'on oculta de aquello que han parseado mediante el constructo \textbf{\begin{small}\textless\end{small}-}, o se usa (\textbf{liftM} funci\'on valor\_mon\'adico). Esto quiz\'as requiera una explicaci\'on adicional:
+
+\begin{itemize}
+  \item \textbf{\begin{small}\textless\end{small}-} permite ligar a un nombre la informaci\'on oculta en un valor mon\'adico.
+  \item (\textbf{liftM} funci\'on valor\_mon\'adico) ``eleva'' (de ah\'i que su nombre empiece por lift) una funci\'on que act\'ua sobre tipos no mon\'adicos a otra que act\'ua sobre los valores que la mon\'ada tiene dentro.
+\end{itemize}
 
 Parsers recursivos:\\
 
 En un lenguaje funcional la recursividad es uno de los m\'etodos m\'as interesantes. En un lenguaje como Scheme y muchos otros, encontramos estructuras de datos que pueden contener a otras, por ejemplo, una lista puede contener:
 
 \begin{itemize}
-  \item otras listas (sean normales o dotted)
+  \item otras listas (sean normales o de tipo dotted)
   \item cualquier otra expresi\'on.
 \end{itemize}
 
@@ -71,11 +76,11 @@ Por ejemplo, en \textbf{parseList} y \textbf{parseDottedList} se usan, respectiv
 
 Los cuales van a devolver una [\textbf{LispVal}], justo el argumento que necesita el constructor de tipo \textbf{List} y el primero que necesita \textbf{DottedList}.\\
 
-Por tanto, vemos que mediante el uso de \textbf{sepBy} y \textbf{endBy} estamos haciendo llamadas recursivas a \textbf{readExpr} y por ello nuestro parser es capaz de lidiar con estructuras anidadas de manera casi gratuita.\\
+Por tanto, vemos que mediante el uso de \textbf{sepBy} y \textbf{endBy} estamos haciendo llamadas recursivas a \textbf{parseExpr} y por ello nuestro parser es capaz de lidiar con estructuras anidadas de manera casi gratuita.\\
 
 Lo primero de todo es hacer \textbf{LispVal} instancia de \textbf{Show} para poder imprimir por pantalla los valores de tipo \textbf{LispVal}.\\
 
-Para ello se crea la funci\'on \textbf{showVal :: LispVal -> String} y se iguala a \textbf{show} (\textbf{instance Show \textbf{LispVal} where show = showVal}). Para los dos tipos de listas, \textbf{List} y \textbf{DottedList}, se usa la funci\'on \textbf{unwordsList}:\\
+Para ello se crea la funci\'on \textbf{showVal :: LispVal -{\begin{small}\textgreater\end{small} String}} y se iguala a \textbf{show} (\textbf{instance Show \textbf{LispVal} where show = showVal}). Para los dos tipos de listas, \textbf{List} y \textbf{DottedList}, se usa la funci\'on \textbf{unwordsList}:\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -212,7 +217,7 @@ La m\'onada \textbf{Either} tambi\'en provee otras dos funciones a parte de las 
 
 \textbf{throwsError} recibe un valor de tipo \textbf{Error} y lo eleva al constructor \textbf{Left} (error) de un \textbf{Either}.\\
 
-¿Por qu\'e se usa \textbf{throwsError}? Porque en realidad, no existe el constructor de valor \textbf{LispError}, sino que es un constructor de tipo. Por ello, mediante \textbf{throwsError}, creamos un \textbf{Left} (el \textbf{LispError} concreto que sea), lo cual es un resultado de tipo \textbf{ThrowsError} \textbf{LispVal}, el tipo retorno de \textbf{readExpr}.\\
+Se usa \textbf{throwsError} porque en realidad, no existe el constructor de valor \textbf{LispError}, sino que es un constructor de tipo. Por ello, mediante \textbf{throwsError}, creamos un \textbf{Left} (el \textbf{LispError} concreto que sea), lo cual es un resultado de tipo \textbf{ThrowsError} \textbf{LispVal}, el tipo retorno de \textbf{readExpr}.\\
 
 \textbf{catchError}: recibe un valor \textbf{Either} (una acci\'on) y si es \textbf{Right}, lo devuelve, si es \textbf{Left}, le aplica la funci\'on que recibe (en este caso est\'a hardcoded, y lo que hace es pasar del \textbf{Left} a un valor normal de \textbf{LispVal}). El sentido de todo esto es que
 el \textbf{Either} resultado siempre tenga un valor \textbf{Right}:\\
@@ -296,7 +301,7 @@ Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}, as\'i que vayamo
 
 \item 2) \textbf{liftM} show sobre la m\'onada \textbf{ThrowsError LispVal} da una ThrowsError String.
 
-\item 3) hacer return sobre una ThrowsError String nos devuelve un (\textbf{IO (Either ThrowsError String)}, y esto se hace para que al operar con el constructo \textbf{<-} sigamos teniendo el \textbf{Either ThrowsError String}, que es lo que recibe (\textbf{trapError}).
+\item 3) hacer return sobre una ThrowsError String nos devuelve un (\textbf{IO (Either ThrowsError String)}, y esto se hace para que al operar con el constructo \textbf{\<\-} sigamos teniendo el \textbf{Either ThrowsError String}, que es lo que recibe (\textbf{trapError}).
 
 \textbf{Recuerda:}, si estamos trabajando en un do de una m\'onada tipo \textbf{IO}, el \textbf{return} va a envolver el dato en una m\'onada \textbf{IO}, y esto es v\'alido para cualquier m\'onada.
 
