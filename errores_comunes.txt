@@ -29,3 +29,16 @@ Failed, modules loaded: none.
 Solución:
 
 el error nos está diciendo que necesita la instancia de Poly a para Num, cosa que falta. Creando dicha instancia todo compilará bien.
+
+Error:
+
+Usando funciones que trabajan con Bytestrings obtenemos error de tipos entre las lazy y las normales.
+
+Solución:
+
+cabal update
+cabal install string-conversions
+y luego en el código, importarlo
+import Data.String.Conversions (cs)
+
+y luego usar la función cs sobre la bytestring que de problemas
