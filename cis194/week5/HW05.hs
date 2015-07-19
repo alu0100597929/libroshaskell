@@ -54,17 +54,21 @@ getBadTs rutaVictimas rutaTransacciones = do
   let filtradas = Just $ filter (esDeVictima (fromMaybe [] victimas)) (fromMaybe [] transacciones)
   return filtradas
 
-hacerOperacion :: Transaction -> M.Map String Integer -> M.Map String Integer
-hacerOperacion (Transaction { from = desde, to = hasta, amount = cantidad }) mapaViejo =
-  let mapaConOperacionNegativa = M.insertWith (-) desde cantidad mapaViejo
-  in M.insertWith (+) hasta cantidad mapaConOperacionNegativa
+-- si usamos insertWith con cosas que no existen, se ponen los valores dados y no se ejecuta
+-- la función, pues no hay valor viejo!!!
+doOperation :: Transaction -> M.Map String Integer -> M.Map String Integer
+doOperation (Transaction { from = desde, to = hasta, amount = cantidad }) mapaViejo =
+  let mapWithSubtract = if (M.member desde mapaViejo)
+                          then M.insertWith (-) desde (cantidad) mapaViejo
+                          else M.insert desde (negate cantidad) mapaViejo
+  in M.insertWith (+) hasta cantidad mapWithSubtract
 
 getFlow :: [Transaction] -> M.Map String Integer
 getFlow xs = last $ getFlow' xs M.empty
 
 getFlow' :: [Transaction] -> M.Map String Integer -> [M.Map String Integer]
 getFlow' [] mapaViejo = [mapaViejo]
-getFlow' (x:xs) mapaViejo = let mapaConOperacionHecha = hacerOperacion x mapaViejo
+getFlow' (x:xs) mapaViejo = let mapaConOperacionHecha = doOperation x mapaViejo
                             in mapaConOperacionHecha : getFlow' xs mapaConOperacionHecha
 
 prueba = let ts = [ Transaction { from = "Haskell Curry"

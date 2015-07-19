@@ -42,3 +42,12 @@ y luego en el código, importarlo
 import Data.String.Conversions (cs)
 
 y luego usar la función cs sobre la bytestring que de problemas
+
+Problema:
+
+Un mapa hace cosas raras cuando se opera con insertWith.
+
+Solución:
+
+si usamos insertWith con cosas que no existen, se ponen los valores dados y no se ejecuta
+la función, pues no hay valor viejo!!!

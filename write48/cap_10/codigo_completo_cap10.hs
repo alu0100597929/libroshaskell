@@ -117,7 +117,7 @@ readOrThrow parser input = case parse parser "lisp" input of
 -- se quita la cabecera porque si no, falla el compilador
 readExpr = readOrThrow parseExpr
 
-readExprList = readOrThrow (endBy parseExpr spaces)
+readExprList = readOrThrow (sepEndBy parseExpr spaces)
 
 -- Nueva implementación
 runOne :: [String] -> IO ()
@@ -592,11 +592,11 @@ parseAtom = do first <- letter <|> symbol
                (return . Atom) (first:rest)
 
 parseList :: Parser LispVal
-parseList = fmap List $ sepBy parseExpr spaces
+parseList = fmap List $ sepEndBy parseExpr spaces
 
 parseDottedList :: Parser LispVal
 parseDottedList = do head <- endBy parseExpr spaces
-                     tail <- char '.' >> spaces >> parseExpr
+                     tail <- char '.' >> spaces >> lexeme parseExpr
                      return $ DottedList head tail
 
 parseQuoted :: Parser LispVal
@@ -780,7 +780,6 @@ string2symbol _ = error "Expecting a String"
 -- nuevo helper, lexeme
 -- TODO: gran armada...lexeme se come cosas que luego usamos como separador...
 ws :: Parser String
---ws = many (oneOf " \t\n")
 ws = many (oneOf " \t")
 
 -- mi propio combinador lexeme
