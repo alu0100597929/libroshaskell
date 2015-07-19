@@ -305,13 +305,13 @@ eval env (List [Atom "load", String filename]) =
 eval env (List (function : args)) = do
     func <- eval env function
     argVals <- mapM (eval env) args
-    apply func argVals
+    apply func argVals -- !!!!!!!!!!!!!!!!!!
 eval env badForm = throwError $ BadSpecialForm "Unrecognized special form" badForm
 
 parseCaseResult :: Parser LispVal
 parseCaseResult = do
     char '\''
-    result <- parseExpr
+    result <- lexeme $ parseExpr
     return result
 
 parseCondElse :: Parser CasePair
@@ -343,7 +343,7 @@ parseCaseExpr = do
     lexeme $ char '('
     lexeme $ string "case"
     conditional_expr <- lexeme (char '(') *> parseList <* lexeme (char ')')
-    lista <- sepBy (try parseCasePair <|> parseCondElse) (char ' ') -- (char '\\' >> char 'n')
+    lista <- sepEndBy (try parseCasePair <|> parseCondElse) spaces
     lexeme $ char ')'
     return $ CaseExpr conditional_expr lista
 
@@ -777,10 +777,9 @@ string2symbol _ = error "Expecting a String"
 -- Helpers
 --
 
--- nuevo helper, lexeme
--- TODO: gran armada...lexeme se come cosas que luego usamos como separador...
+-- nuevo helper para lexeme
 ws :: Parser String
-ws = many (oneOf " \t")
+ws = many (oneOf " \t\n")
 
 -- mi propio combinador lexeme
 lexeme :: Parser a -> Parser a
