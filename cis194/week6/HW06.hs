@@ -23,3 +23,4 @@ instance Functor (Stream) where
 sRepeat :: a -> Stream a
 sRepeat x = (Cons x (sRepeat x))
 
+--
