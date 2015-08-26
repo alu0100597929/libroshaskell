@@ -1,0 +1,47 @@
+Version 1.0
+i)   Theme Submitted for approval
+
+Version 1.0.1
+i)	Fixed css issues
+
+Version 1.0.2
+i)	Fixed css issues
+ii)	set Sanitization
+iii)    add all prefix
+iV)     Remove theme options and use Customizer theme options.
+
+Version 1.0.3
+i)	Remove all comment code
+ii) remove header menu search
+iii)Add Escaping in home page
+iv) Add pot file
+
+Version 1.0.4
+i)	Remove all comment code
+ii)	set Sanitization
+iii)add all prefix
+
+Version 1.0.5
+1)	Fix Translation Issue.
+
+Version 1.0.6
+1)	Fix Translation Issue.
+2)  set page.php file
+
+Version 1.0.7
+1)	Fix Translation Issue.
+
+Version 1.0.8
+1)	Fixed Translation Issue.
+
+Version 1.0.9
+1)	Fixed Translation Issue.
+
+Version 1.1
+1)	Add theme options Fulgent por features tab
+
+Version 1.1.1
+1)	change pro features images.
+
+Version 1.1.2
+1)	Delete all the unused theme options files 

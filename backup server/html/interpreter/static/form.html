@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/btn-file.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/css/doc/docs.css">
+    <link rel="stylesheet" href="lib/codemirror.css">
+
+    <link rel="stylesheet" href="theme/3024-day.css">
+    <link rel="stylesheet" href="theme/3024-night.css">
+    <link rel="stylesheet" href="theme/ambiance.css">
+    <link rel="stylesheet" href="theme/base16-dark.css">
+    <link rel="stylesheet" href="theme/base16-light.css">
+    <link rel="stylesheet" href="theme/blackboard.css">
+    <link rel="stylesheet" href="theme/cobalt.css">
+    <link rel="stylesheet" href="theme/colorforth.css">
+    <link rel="stylesheet" href="theme/dracula.css">
+    <link rel="stylesheet" href="theme/eclipse.css">
+    <link rel="stylesheet" href="theme/elegant.css">
+    <link rel="stylesheet" href="theme/erlang-dark.css">
+    <link rel="stylesheet" href="theme/icecoder.css">
+    <link rel="stylesheet" href="theme/lesser-dark.css">
+    <link rel="stylesheet" href="theme/liquibyte.css">
+    <link rel="stylesheet" href="theme/material.css">
+    <link rel="stylesheet" href="theme/mbo.css">
+    <link rel="stylesheet" href="theme/mdn-like.css">
+    <link rel="stylesheet" href="theme/midnight.css">
+    <link rel="stylesheet" href="theme/monokai.css">
+    <link rel="stylesheet" href="theme/neat.css">
+    <link rel="stylesheet" href="theme/neo.css">
+    <link rel="stylesheet" href="theme/night.css">
+    <link rel="stylesheet" href="theme/paraiso-dark.css">
+    <link rel="stylesheet" href="theme/paraiso-light.css">
+    <link rel="stylesheet" href="theme/pastel-on-dark.css">
+    <link rel="stylesheet" href="theme/rubyblue.css">
+    <link rel="stylesheet" href="theme/seti.css">
+    <link rel="stylesheet" href="theme/solarized.css">
+    <link rel="stylesheet" href="theme/the-matrix.css">
+    <link rel="stylesheet" href="theme/tomorrow-night-bright.css">
+    <link rel="stylesheet" href="theme/tomorrow-night-eighties.css">
+    <link rel="stylesheet" href="theme/ttcn.css">
+    <link rel="stylesheet" href="theme/twilight.css">
+    <link rel="stylesheet" href="theme/vibrant-ink.css">
+    <link rel="stylesheet" href="theme/xq-dark.css">
+    <link rel="stylesheet" href="theme/xq-light.css">
+    <link rel="stylesheet" href="theme/yeti.css">
+    <link rel="stylesheet" href="theme/zenburn.css">
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="panel panel-default">
+				<div class="panel-heading">Intérprete de Scheme</div>
+        <div class="panel panel-info">
+          <div class="panel-body">
+              Reglas y programas de ejemplo
+          </div>
+          <div class="panel-footer">
+            Reglas: <br/> 
+            <ul>
+              <li>cada expresión ocupa una línea, y dicha línea tiene que acabar con un '\n'</li>
+              <li>los if no llevan else explícito, y están compuestos por tres listas (condición) (afirmativa) (negativa)</li>
+              <li>los case y los cond sí pueden llevar else</li>
+            </ul>
+            Programa 1: máximo común divisor<br />
+            <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">(<span style="color: #008800; font-weight: bold">define </span><span style="color: #336699">gcd</span> (<span style="color: #008800; font-weight: bold">lambda </span>(<span style="color: #0066bb; font-weight: bold">a</span> <span style="color: #336699">b</span>) (<span style="color: #008800; font-weight: bold">if </span>(<span style="color: #003388">= </span><span style="color: #336699">a</span> <span style="color: #336699">b</span>) <span style="color: #336699">a</span> (<span style="color: #008800; font-weight: bold">if </span>(<span style="color: #003388">&gt; </span><span style="color: #336699">a</span> <span style="color: #336699">b</span>) (<span style="color: #003388">gcd </span>(<span style="color: #003388">- </span><span style="color: #336699">a</span> <span style="color: #336699">b</span>) <span style="color: #336699">b</span>) (<span style="color: #003388">gcd </span><span style="color: #336699">a</span> (<span style="color: #003388">- </span><span style="color: #336699">b</span> <span style="color: #336699">a</span>))))))
+(<span style="color: #003388">gcd </span><span style="color: #0000DD; font-weight: bold">18</span> <span style="color: #0000DD; font-weight: bold">90</span>)
+</pre></div>
+
+
+</pre>
+            Programa 2: expresión case<br />
+            <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">(<span style="color: #008800; font-weight: bold">case </span>(<span style="color: #003388">+ </span><span style="color: #0000DD; font-weight: bold">5</span> <span style="color: #0000DD; font-weight: bold">5</span>) ((<span style="color: #0000DD; font-weight: bold">4</span> <span style="color: #0000DD; font-weight: bold">9</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #aa6600; background-color: #fff0f0">&#39;d64</span>) ((<span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #0000DD; font-weight: bold">2</span>) <span style="color: #aa6600; background-color: #fff0f0">&#39;pepito</span>) ((<span style="color: #0000DD; font-weight: bold">10</span>) <span style="color: #aa6600; background-color: #fff0f0">&#39;jorgito</span>))
+</pre></div>
+
+</pre>
+            Programa 3: factorial<br />
+            <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">(<span style="color: #008800; font-weight: bold">define </span>(<span style="color: #0066bb; font-weight: bold">factorial</span> <span style="color: #336699">x</span>) (<span style="color: #008800; font-weight: bold">if </span>(<span style="color: #003388">= </span><span style="color: #336699">x</span> <span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #0000DD; font-weight: bold">1</span> (<span style="color: #003388">* </span><span style="color: #336699">x</span> (<span style="color: #0066bb; font-weight: bold">factorial</span> (<span style="color: #003388">- </span><span style="color: #336699">x</span> <span style="color: #0000DD; font-weight: bold">1</span>)))))
+(<span style="color: #0066bb; font-weight: bold">factorial</span> <span style="color: #0000DD; font-weight: bold">900</span>)
+</pre></div>
+
+</pre>
+            <h4>1) Seleccione una opción para pegar automáticamente el código de ejemplo elegido</h4>
+            <form>
+            <div class="radio">
+              <label><input type="radio" name="codesample" value="(define gcd (lambda (a b) (if (= a b) a (if (> a b) (gcd (- a b) b) (gcd a (- b a))))))
+(gcd 18 90)">máximo común divisor</label><br />
+              <label><input type="radio" name="codesample" value="(case (+ 5 5) ((4 9 1) 'd64) ((1 2) 'pepito) ((10) 'jorgito))">expresión case</label><br />
+              <label><input type="radio" name="codesample" value="(define (factorial x) (if (= x 1) 1 (* x (factorial (- x 1)))))
+(factorial 900)" >factorial</label>
+            </div>
+            <h4>2) Presione ctrl + shift + B para ejecutar el programa, o pulse el botón "Ejecutar"</h4>
+            </form>
+          </div>
+        </div>
+				<div class="panel-body">
+					<form role="form" method="POST" enctype="multipart/form-data">
+						<div class="row">
+							<div class="form-group col-md-4">
+								<label for="action">Acción</label>
+								<div class="radio">
+									<label><input type="radio" name="action" value="file" /> Subir un fichero</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="action" value="code" checked="checked" /> Escribir código directamente</label>
+								</div>
+							</div>
+							<div class="form-group col-md-8">
+								<label for="file">Subida de ficheros</label>
+								<div class="input-group">
+									<span class="input-group-btn">
+										<span class="btn btn-primary btn-file">
+											Browse&hellip; <input type="file" name="file" />
+										</span>
+									</span>
+									<input type="text" class="form-control" readonly />
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-md-12">
+								<label for="code">Código</label>
+								<textarea class="form-control" name="code" id="code" rows="20"><?=htmlentities($code)?></textarea>
+              </div>
+						</div>
+						<div class="row">
+							<div class="form-group col-md-offset-8 col-md-4">
+								<button class="btn-primary btn-block form-control" id="botonejecutar">Ejecutar</button>
+							</div>
+						</div>
+					</form>
+					<div class="well">
+						<div class="row">
+							<div class="form-group col-md-12">
+								<label for="result">Resultado</label>
+								<textarea class="form-control" name="result" id="result" rows="20" readonly><?=htmlentities($result)?></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="static/js/jquery-2.1.3.min.js"></script>
+		<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="static/js/btn-file.js"></script>
+    <script src="lib/codemirror.js"></script>
+    <script src="static/mode/scheme/scheme.js"></script>
+    <script type="text/javascript" src="static/js/main.js"></script>
+	</body>
+</html>

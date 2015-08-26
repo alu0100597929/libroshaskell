@@ -1,0 +1,367 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Fulgent V1.1.2\n"
+"POT-Creation-Date: 2015-07-27 16:26+0530\n"
+"PO-Revision-Date: 2015-05-21 14:04+0530\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.3\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: 404.php:12
+msgid "Oops! That page can&rsquo;t be found."
+msgstr ""
+
+#: 404.php:14 search.php:52
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr ""
+
+#: author.php:13
+msgid "Published by"
+msgstr ""
+
+#: comments.php:14 functions/theme-default-setup.php:134
+#, php-format
+msgid "1 Comment"
+msgid_plural "%1$s Comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: content.php:32 page-templates/full-width.php:45
+#: page-templates/left-sidebar.php:47 page.php:45 single.php:46
+msgid "Pages:"
+msgstr ""
+
+#: footer.php:53
+#, php-format
+msgid "Powered by %1$s and %2$s "
+msgstr ""
+
+#: footer.php:60
+msgid "go to top"
+msgstr ""
+
+#: functions.php:10
+msgid "Main Menu"
+msgstr ""
+
+#: functions.php:58
+msgid "READ MORE"
+msgstr ""
+
+#: functions/breadcrumbs.php:9
+msgid "Home"
+msgstr ""
+
+#: functions/breadcrumbs.php:28
+msgid "category"
+msgstr ""
+
+#: functions/breadcrumbs.php:31
+msgid "Search Results For"
+msgstr ""
+
+#: functions/breadcrumbs.php:89
+msgid "Posts tagged"
+msgstr ""
+
+#: functions/breadcrumbs.php:94
+msgid "Articles posted by "
+msgstr ""
+
+#: functions/breadcrumbs.php:97
+msgid "Error 404"
+msgstr ""
+
+#: functions/breadcrumbs.php:102
+msgid "Page"
+msgstr ""
+
+#: functions/getintouch.php:11
+msgid ""
+"A widget that displays the title,address,phone,fax,email,website "
+"information. "
+msgstr ""
+
+#: functions/getintouch.php:13
+msgid "Get In Touch"
+msgstr ""
+
+#: functions/getintouch.php:29
+msgid "Contributor"
+msgstr ""
+
+#: functions/getintouch.php:35 functions/getintouch.php:87
+msgid "Phone:"
+msgstr ""
+
+#: functions/getintouch.php:39 functions/getintouch.php:93
+msgid "Fax:"
+msgstr ""
+
+#: functions/getintouch.php:43
+msgid "Email:"
+msgstr ""
+
+#: functions/getintouch.php:47
+msgid "Web:"
+msgstr ""
+
+#: functions/getintouch.php:74
+msgid "Widget Title:"
+msgstr ""
+
+#: functions/getintouch.php:80
+msgid "Address:"
+msgstr ""
+
+#: functions/getintouch.php:99
+msgid "Email Address:"
+msgstr ""
+
+#: functions/getintouch.php:105
+msgid "Website:"
+msgstr ""
+
+#: functions/latestpost.php:15
+msgid "Displays a Latest post with thumbnail"
+msgstr ""
+
+#: functions/latestpost.php:16
+msgid "fulgent Latest Post"
+msgstr ""
+
+#: functions/latestpost.php:26
+msgid "Title:"
+msgstr ""
+
+#: functions/latestpost.php:27
+msgid "Number of posts to show:"
+msgstr ""
+
+#: functions/latestpost.php:30
+msgid "Display post date?"
+msgstr ""
+
+#: functions/theme-customizer.php:5
+msgid "Basic Settings"
+msgstr ""
+
+#: functions/theme-customizer.php:13
+msgid "Home Page Settings"
+msgstr ""
+
+#: functions/theme-customizer.php:19
+msgid "Home Banner"
+msgstr ""
+
+#: functions/theme-customizer.php:24
+msgid "About Us"
+msgstr ""
+
+#: functions/theme-customizer.php:29
+msgid "Our Main Moto"
+msgstr ""
+
+#: functions/theme-customizer.php:34
+msgid "Blog Section"
+msgstr ""
+
+#: functions/theme-customizer.php:46
+msgid "Logo (Recommended size 220 x 120)"
+msgstr ""
+
+#: functions/theme-customizer.php:57 functions/theme-customizer.php:218
+msgid "Blog Title"
+msgstr ""
+
+#: functions/theme-customizer.php:80
+msgid "Banner  Image (Recommended size 1280 x 853)"
+msgstr ""
+
+#: functions/theme-customizer.php:90
+msgid "Banner Title 1"
+msgstr ""
+
+#: functions/theme-customizer.php:100
+msgid "Banner Title 2"
+msgstr ""
+
+#: functions/theme-customizer.php:110
+msgid "Banner Title 3"
+msgstr ""
+
+#: functions/theme-customizer.php:120
+msgid "Banner Button"
+msgstr ""
+
+#: functions/theme-customizer.php:130
+msgid "Banner Button Link"
+msgstr ""
+
+#: functions/theme-customizer.php:143 functions/theme-customizer.php:176
+msgid "Title"
+msgstr ""
+
+#: functions/theme-customizer.php:153
+msgid "Info"
+msgstr ""
+
+#: functions/theme-customizer.php:163
+msgid "Background Image (Recommended size 1280 x 853)"
+msgstr ""
+
+#: functions/theme-customizer.php:186
+msgid "About Us Info"
+msgstr ""
+
+#: functions/theme-customizer.php:195
+msgid "Right Side Image (Recommended size 570 x 350)"
+msgstr ""
+
+#: functions/theme-customizer.php:205
+msgid "Left Side Text"
+msgstr ""
+
+#: functions/theme-customizer.php:268
+msgid "Select Category"
+msgstr ""
+
+#: functions/theme-default-setup.php:8
+msgctxt "Raleway font: on or off"
+msgid "on"
+msgstr ""
+
+#: functions/theme-default-setup.php:19
+msgid "Main Sidebar"
+msgstr ""
+
+#: functions/theme-default-setup.php:21
+msgid "Main sidebar that appears on the right."
+msgstr ""
+
+#: functions/theme-default-setup.php:29
+msgid "Footer Area One"
+msgstr ""
+
+#: functions/theme-default-setup.php:31
+msgid "Footer Area One that appears on footer."
+msgstr ""
+
+#: functions/theme-default-setup.php:39
+msgid "Footer Area Two"
+msgstr ""
+
+#: functions/theme-default-setup.php:41
+msgid "Footer Area Two that appears on footer."
+msgstr ""
+
+#: functions/theme-default-setup.php:49
+msgid "Footer Area Three"
+msgstr ""
+
+#: functions/theme-default-setup.php:51
+msgid "Footer Area Three that appears on footer."
+msgstr ""
+
+#: functions/theme-default-setup.php:59
+msgid "Footer Area Four"
+msgstr ""
+
+#: functions/theme-default-setup.php:61
+msgid "Footer Area Four that appears on footer."
+msgstr ""
+
+#: functions/theme-default-setup.php:80
+msgid "Tags : "
+msgstr ""
+
+#: functions/theme-default-setup.php:88
+#, php-format
+msgid "View all posts by %s"
+msgstr ""
+
+#: functions/theme-default-setup.php:94 functions/theme-default-setup.php:102
+#: functions/theme-default-setup.php:110
+msgid "by"
+msgstr ""
+
+#: functions/theme-default-setup.php:95 functions/theme-default-setup.php:103
+msgid "Posted in"
+msgstr ""
+
+#: functions/theme-default-setup.php:111
+msgid "Posted on"
+msgstr ""
+
+#: functions/theme-default-setup.php:127 functions/theme-default-setup.php:130
+msgid "No Comments"
+msgstr ""
+
+#: functions/theme-default-setup.php:132
+msgid " Comments"
+msgstr ""
+
+#: functions/theme-default-setup.php:155
+msgctxt "comment form placeholder"
+msgid "Name *"
+msgstr ""
+
+#: functions/theme-default-setup.php:167
+msgctxt "comment form placeholder"
+msgid "Email Id *"
+msgstr ""
+
+#: functions/theme-default-setup.php:178
+msgctxt "comment form placeholder"
+msgid "Website URl"
+msgstr ""
+
+#: functions/theme-default-setup.php:195
+msgctxt "comment form placeholder"
+msgid "Comment"
+msgstr ""
+
+#: functions/theme-default-setup.php:207
+msgid "Previous"
+msgstr ""
+
+#: functions/theme-default-setup.php:208
+msgid "Next"
+msgstr ""
+
+#: index.php:16 page-templates/frontpage.php:110
+msgid "Our Blog"
+msgstr ""
+
+#: page-templates/frontpage.php:74
+msgid "What You Get"
+msgstr ""
+
+#: page-templates/frontpage.php:153
+msgid "By"
+msgstr ""
+
+#: page-templates/frontpage.php:154
+msgid "In"
+msgstr ""
+
+#: search.php:13
+msgid "Search results for"
+msgstr ""
+
+#: tag.php:13
+msgid "Tag"
+msgstr ""

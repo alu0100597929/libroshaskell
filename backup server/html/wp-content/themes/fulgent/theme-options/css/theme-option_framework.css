@@ -1,0 +1,241 @@
+/* Options Framework Admin Styles */
+.box-size {
+    margin-bottom: 25px;
+    margin-top: 10px;
+    width: 100%;
+}
+.logo h2 {
+    font-family: 'Roboto',sans-serif;
+    font-size: 23px;
+    text-transform: uppercase;
+    color:#ffffff;
+    font-weight:bold;
+}
+
+.theme-option-themes{
+	background-color:#FFF;
+	border:1px solid #e5e5e5;
+	position:relative;
+	float:left;
+	width:98.5%;
+}
+.theme-option-header{
+	background-color: #334d5c;
+	background-image:url(../images/header-bg.png);
+	background-repeat: repeat;
+	
+    float: left;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+.logo {
+    float: left;
+    padding: 15px 0 10px;
+    text-align: center;
+    width: 14%;
+}
+
+.header-right {
+    float: left;
+    width: 84%;
+}
+.header-right h1{
+	color:#FFF;
+	padding:20px 0 0 25px;
+	width:80%;
+	float:left;
+	text-align:center;
+}
+
+.theme-option-inner-tab-group.active:focus{
+    box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30, 140, 190, 0.8);
+}
+.theme-option-themes .heading:focus{
+    box-shadow: none;
+}
+
+
+.left-box {	
+    border: medium none;
+    box-shadow: none;
+    float: left;
+    margin-top: 45px;
+    padding-left: 15px;
+    position: relative;
+    width: 74.5%;
+    z-index: 0;
+}
+.theme-option-themes .metabox-holder{
+	float:left;
+	width:100%;
+}
+.theme-option-options{
+	position:relative;
+	float:left;
+	width:100%;
+	min-height:370px;
+}
+.right-box{
+	float: left;
+    position: relative;
+    width: 23.9%;
+    z-index: 9;
+}
+.right-box-bg{
+    background-color: #373737;
+    bottom: 0;
+    position: absolute;
+    left: 0;
+    top: 0px;
+    width: 23.9%;
+    z-index: 0;
+}
+.option-title{
+        background-color: #2d2d2d;
+        float: left;
+        width: 100%;
+        padding: 5px 0;
+}
+.option-title > h2 {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 30px;
+    position: static;
+    text-transform: uppercase;
+}
+
+.option-title > h2:after,
+.option-title > h2:before{
+    content: "";
+background-image: url(../images/arrow-title.png);
+background-repeat: no-repeat;
+background-position: 0 0;
+position: absolute;
+padding: 10px 7px;
+}
+.option-title > h2:before{
+    background-position: 0 0;
+    left: 0;
+}
+.option-title > h2:after{
+    background-position:  -13px 0;
+    right: 0;
+}
+
+.right-box .nav-tab-wrapper ul,
+.right-box .nav-tab-wrapper ul li{
+	float: left;
+    margin: 0;
+    width: 100%;
+}
+.right-box .nav-tab-wrapper ul li{
+    border-bottom: 1px solid #2c2c2c;
+}
+.right-box .nav-tab-wrapper ul li a{
+	background-color: #373737;
+    color: #ededed;
+    display: block;
+    float: left;
+    font-size: 14px;
+    margin: 0;
+   padding: 14px 10px 14px 25px;
+    position: relative;
+    width: 84.4%;
+	outline:none;
+        border-left: 5px solid transparent;
+        border-right: none;
+        border-bottom: none;
+        border-top: none;
+}
+
+.right-box .nav-tab-wrapper ul li a:hover{
+    background-color: #424242;
+    border-left: 5px solid #00a4c7;
+    transition: all linear 0.3s;
+    transition: all linear 0.3s;
+    -webkit-transition: all linear 0.3s;
+}
+.right-box .nav-tab-wrapper ul li .nav-tab-active{
+	background-color:#424242;
+        border-left: 5px solid #00a4c7;
+	
+}
+.right-box .nav-tab-wrapper ul li a:focus{
+    box-shadow: none;
+}
+
+
+
+.fulgent-pro-header {
+    background-color: #ffffff;
+    padding: 8px 0 0;
+    width: 100%;
+}
+.fulgent-pro-image img {
+    height: auto;
+    max-width: 100%;
+}
+.fulgent-pro-logo  {
+  
+    margin-left: 30px;
+    color: #0000;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 32px;
+    margin-top: -30px;
+
+}
+.fulgent-pro-buynow {
+    float: right;
+    margin: -60px 40px 0 0;
+    width: 190px;
+}
+.fulgent-pro-image {
+    width: 98%;
+    margin-top: 30px;
+}
+
+
+
+
+@media (max-width:992px){
+	.logo{
+		width:100%;
+		text-align:center;
+	}
+	.header-right{
+		padding-bottom: 20px;
+    	width: 100%;
+	}
+	.header-right h1{
+		padding-top: 0;
+		text-align: left;
+		width: auto;
+	}
+	.header-right .btn-save{
+		margin-top: 5px;
+	}
+	.right-box{
+		width:100%;
+	}
+	.right-box-bg{
+		display:none;
+	}	
+	.right-box .nav-tab-wrapper ul li a{
+		width:95%;
+	}
+	.theme-option-inner-tab-group,
+	.theme-option-themes .heading{
+		width:90%;
+	}
+	.left-box,
+	.theme-option-themes textarea{
+		width:95.5%;
+	}
+	.right-box .nav-tab-wrapper ul li .nav-tab-active:after{
+		border:none;
+	}
+	
+}
