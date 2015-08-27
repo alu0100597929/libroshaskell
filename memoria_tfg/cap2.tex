@@ -41,10 +41,9 @@ El formato JSON (JavaScript Object Notation) es de los más comunes hoy en día pa
   \item Null
 \end{itemize}
 
-La principal aplicación de Haskell siempre han sido los parsers, tanto para compiladores como para propósito general.\\
-
 Empezaremos definiendo los parsers más sencillos, cuyo fin es devolver argumentos que entrarán en constructores de valor para tipos de JSON que siempre valgan lo mismo. Estos 3 tipos son: \textbf{true}, \textbf{false} y \textbf{null}.\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 alwaysTrue :: Parser Bool
 alwaysTrue = pure True
@@ -55,11 +54,13 @@ alwaysFalse = pure False
 alwaysNull :: Parser String
 alwaysNull = pure "null"
 \end{lstlisting}
+\end{small}
 
 La misión de \textbf{$pure :: a \-\> f a$} (donde en este caso \textbf{f} es la mónada \textbf{Parser}) no es otra que envolver los dos \textbf{Bool} y la \textbf{String} en un valor monádico, devolviendo de este modo un \textbf{Parser Bool} o un \textbf{Parser String}. Por tanto, estas funciones devuelven un \textbf{Parser}, que cuando se ejecuta (mediante la función \textbf{parse}) devuelve un \textbf{Bool} o una \textbf{String}.\\
 
 Ahora lo que debemos hacer es usar el parser \textbf{string}, que intenta casar con una cadena dada, devolviéndola en caso de que consiga casar:\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 matchTrue :: Parser String
 matchTrue = string "true"
@@ -70,9 +71,11 @@ matchFalse = string "false"
 matchNull :: Parser String
 matchNull = string "null"
 \end{lstlisting}
+\end{small}
 
 Por último, no devolveremos la cadena propiamente dicha, sino un valor puro (por ello antes definimos funciones que usan \textbf{pure}):\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 boolTrue :: Parser Bool
 boolTrue = matchTrue *> alwaysTrue
@@ -83,15 +86,18 @@ boolFalse = matchFalse *> alwaysFalse
 null :: Parser String
 null = matchNull *> alwaysNull
 \end{lstlisting}
+\end{small}
 
 Aquí usamos un operador de la clase de tipos \textbf{Applicative}, que en inglés se suele llamar ``star arrow''. Este operador ejecuta primero el parser de la izquierda, luego el de la derecha, y devuelve sólo lo que parsee el de la derecha (el sitio al que apunta la flecha).\\
 
 Ahora veamos qué pasa si un token puede pertenecer a un tipo aún más general:\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 bool :: Parser Bool
 bool = boolTrue <|> boolFalse
 \end{lstlisting}
+\end{small}
 
 \textbf{$<|>$} es el operador de elección, y se parece mucho a la barra vertical \textbf{$|$} de las expresiones regulares. Pueden ser encadenados tantos parsers como queramos. Este operador lo que hace es:\\
 
@@ -108,24 +114,26 @@ Como en este caso las string que vamos a parsear no tienen prefijos coincidentes
 
 Ahora empezaremos a ver algo que se parece aún más a las expresiones regulares:\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 stringLiteral :: Parser String
 stringLiteral = char '"' *> (many (noneOf ['"'])) <* char '"'
 \end{lstlisting}
+\end{small}
 
-Aquí vemos que Parsec puede leerse casi en "inglés plano", ya que esta línea casi se autodescribe. Primero, debe encontrarse un carácter \textbf{\"}, luego vemos la función \textbf{many}, que equivale a la estrella \textbf{*} de las expresiones regulares, es decir, podría haber muchos, uno o ninguna ocurrencia del parser que reciba \textbf{many}.\\
+Aquí vemos que Parsec puede leerse casi en "inglés plano", ya que esta línea casi se autodescribe. Primero, debe encontrarse un carácter \textbf{''}, luego vemos la función \textbf{many}, que equivale a la estrella \textbf{*} de las expresiones regulares, es decir, podría haber muchos, uno o ninguna ocurrencia del parser que reciba \textbf{many}.\\
 
 Luego vemos una función {noneOf}, que es un parser que acepta todo menos los carácteres que pertenezcan a una lista determinada, en este caso acepta todo menos las comillas dobles, en caso de toparse con comillas dobles (la cadena ha acabado), deja de consumir entrada.\\
 
-Para terminar, se vuelve a parsear un carácter \textbf{\"}, que debe estar obligatoriamente. Ahora vemos que nuestra combinación aplicativa sigue una estructura \textbf{a $>*$ b $<*$ c}, esto indica que los parsers \textbf{a}, \textbf{b} y \textbf{c} deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado {b}, que en este caso corresponde a \textbf{(many (noneOf ['"']))}.\\
-
-De modo que Parsec, como la programación funcional, se basa en hacer sencillas funciones que sean buenas en lo suyo, e irlas combinando para realizar tareas cada vez más complejas. Esta es la base de la filosofía KISS tan popular en los sistemas POSIX.\\
+Para terminar, se vuelve a parsear un carácter \textbf{''}, que debe estar obligatoriamente. Ahora vemos que nuestra combinación aplicativa sigue una estructura \textbf{a $>\!*$ b $<\!*$ c}, esto indica que los parsers \textbf{a}, \textbf{b} y \textbf{c} deben tener éxito, pero como sólo se devuelve lo que está apuntado por las flechas, sólo devolveremos lo que haya parseado {b}, que en este caso corresponde a \textbf{(many (noneOf ['"']))}.\\
 
 La siguiente línea da error de tipos:\\
 
+\begin{small}
 \begin{lstlisting}[frame=single]
 value = bool <|> stringLiteral
 \end{lstlisting}
+\end{small}
 
 Solución: crear un tipo algebraico que contenga Bool y String (entre otros). Los tipos de datos algebraicos son una herramienta muy útil para los parsers, ya que permiten saber exactamente a qué tipo pertenece el token que hemos parseado.\\
 
@@ -175,9 +183,9 @@ stringLiteral :: Parser String
 \end{small}
 \end{minipage}
 
-Lo bueno es que con \textbf{$(<\$>) :: Functor f => (a -> b) -> f a -> f b$}, que en este caso tendría el tipo: \textbf{$(<\$>) :: (a -> b) -> Parser a -> Parser b$}, podemos solucionarlo.\\
+Lo bueno es que con \textbf{$(<\$>) :: Functor f => (a \, -> \, b) -> f \, a \, -> \, f \, b$}, que en este caso tendría el tipo: \textbf{$(<\$>) :: (a \, -> \, b) \, -> \, Parser \, a \, -> \, Parser \, b$}, podemos solucionarlo.\\
 
-Recordemos que los constructores de valor son en realidad funciones como otra cualquiera (salvo que empiezan por mayúscula). Por ejemplo, el tipo de \textbf{B} es \textbf{$B :: Bool -> JSONValue$}. Por tanto, si hacemos \textbf{B <\$> bool} tendremos como resultado un \textbf{Parser JSONValue}, y eso haremos en todos nuestros parsers anteriormente nombrados.\\
+Recordemos que los constructores de valor son en realidad funciones como otra cualquiera (salvo que empiezan por mayúscula). Por ejemplo, el tipo de \textbf{B} es \textbf{$B :: Bool -> JSONValue$}. Por tanto, si hacemos \textbf{B $<\! \$\! >$ bool} tendremos como resultado un \textbf{Parser JSONValue}, y eso haremos en todos nuestros parsers anteriormente nombrados.\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -195,7 +203,7 @@ jsonStringLiteral = lexeme (S <$> stringLiteral)
 
 Aquí lo único que nos llama la atención es el parser \textbf{lexeme}. \textbf{lexeme} está definido en Parsec por defecto, pero nosotros lo programaremos más que nada por razones didácticas.\\
 
-\textbf{lexeme} es un parser que, recibiendo otro parser, devuelve un parser del mismo tipo, pero que consume todos los espacios (incluyendo tabuladores y newlines) que haya detrás del token parseado.\\
+\textbf{lexeme} es un parser que, recibiendo otro parser, devuelve un parser del mismo tipo, pero que consume todos los espacios (incluyendo tabuladores y newlines) que haya detrás (a la derecha) del token parseado.\\
 
 \begin{minipage}{\linewidth}
 \begin{small}

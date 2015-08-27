@@ -76,24 +76,24 @@ Cuando hablamos de reconocimiento de patrones hablamos, en realidad, de reconoci
 \begin{small}
 \begin{lstlisting}[frame=single]
 data Persona = CrearPersona String Int
-                            |      |
-                            |      |
-                            |      La edad de la persona
-                            El nombre de la persona
+--                          |      |
+--                          |      |
+--                          |      La edad de la persona
+--                          El nombre de la persona
 \end{lstlisting}
 \end{small}
 \end{minipage}
 
-A la izquierda del igual está el constructor de tipos. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).\\
+A la izquierda del igual está el constructor de tipo. A la derecha del igual están los constructores de datos. El constructor de tipos es el nombre del tipo y usado en las declaraciones de tipos. Los constructores de datos son funciones que producen valores del tipo dado. Si solo hay un constructor de datos, podemos llamarlo igual que el de tipo, ya que es imposible sustituirlos sintácticamente (recuerda, los constructores de tipos van en las declaraciones, los constructores de valor en las ecuaciones).\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
 \begin{lstlisting}[frame=single]
 data Persona = Persona String Int
-     |         |
-     |         |
-     |         Constructor de valor (o datos)
-     El nombre de la persona
+--   |         |
+--   |         |
+--   |         Constructor de valor (o datos)
+--   Constructor de tipo
 \end{lstlisting}
 \end{small}
 \end{minipage}
@@ -112,10 +112,10 @@ Las variables de tipo son aquellas que se declaran en \textbf{data} después del 
 \begin{footnotesize}
 \begin{lstlisting}[frame=single]
 data Persona a = PersonaConCosa String a | PersonaSinCosa String
-             |                         |
-             |                         |
-             |                         Podemos usarla aquí
-             Introduciendo una variable de tipo aquí
+--           |                         |
+--           |                         |
+--           |                         Podemos usarla aquí
+--           Introduciendo una variable de tipo aquí
 \end{lstlisting}
 \end{footnotesize}
 \end{small}
@@ -159,7 +159,7 @@ Como vemos, a las variables \textbf{nombre} y \textbf{edad} respectivamente se l
 
 En un lenguaje funcional, poner nombre a todas las funciones que usemos podría resultar tedioso. Además, es cómodo definir funciones al vuelo, es decir, rápidamente y en el punto del programa en el que realmente sea necesario. Las lambdas sirven para este propósito.\\
 
-Las lambdas se suelen declarar entre paréntesis para que el compilador sepa que se tratan de un ``todo''. No obstante, en el caso de las mónadas hay veces en que no son demasiado necesarios y se va resolviendo todo mediante la indentación.\\
+Las lambdas se suelen declarar entre paréntesis para que el compilador sepa que se tratan de un ``todo''. No obstante, en el caso de las mónadas hay veces en que no son necesarios y se resuelve todo mediante la indentación.\\
 
 La sintaxis de las lambdas es la siguiente:\\
 
@@ -224,7 +224,7 @@ Como vemos, se puede usar el patrón subrayado (barra baja) para expresar que no 
 \section{Plegados de listas}
 \label{1:sec:5}
 
-Pondremos un ejemplo real codificado por mí, un DFA hecho mediante un plegado de listas por la izquierda.\\
+Como ejemplo pondré un DFA hecho mediante un plegado de listas por la izquierda.\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -255,7 +255,7 @@ Cadena:AAABABABA
 
 Luego de la aplicación de \textbf{foldl'} vemos un punto, que significa composición, es decir, aplicará la función \textbf{a} al resultado de \textbf{foldl'}, donde \textbf{a} es una función que comprueba si ese estado pertenece a la lista de estados finales, devolviendo un booleano que indicará la aceptación o rechazo de la cadena por el autómata.\\
 
-Como vemos, en Haskell con una sóla línea se pueden hacer virguerías, el programa completo que simula un DFA, leyendo desde fichero y pidiendo continuamente entrada tras computar la anterior, ocupa 35 líneas.\\
+Como vemos, en Haskell con una sóla línea se pueden hacer virguerías, el programa completo que simula un DFA, leyendo desde fichero y pidiendo continuamente entrada tras computar la anterior, ocupa 35 líneas y puede ser consultado en \url{https://github.com/freinn/libroshaskell/blob/master/write48/DFA_propio/DFA.hs}.\\
 
 %------------------------------------------------------------------------------
 %\begin{figure}[!th]

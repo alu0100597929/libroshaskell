@@ -13,7 +13,7 @@ En este caso:
 
 La información extra son acciones IO que se harán usando los valores que se van pasando de una a otra; mientras que el valor básico (el cual tiene información adjunta) es void, la tupla vacía o unidad, ().
 
-IO [String] e IO () pertenecen al mismo tipo, el de lamónada IO, pero tienen distintos tipos base. Actúan sobre (y se pasan unos a otros) valores de distintos tipos, [String] y ().
+IO [String] e IO () pertenecen al mismo tipo, el de la mónada IO, pero tienen distintos tipos base. Actúan sobre (y se pasan unos a otros) valores de distintos tipos, [String] y ().
 
 Los "valores con información oculta adjunta" son llamados "valores monádicos". 
 
@@ -21,7 +21,27 @@ Los "valores monádicos" se suele llamar "acciones", porque la manera más fáci
 
 * `m a` es una acción
 
-* `(a -> m ())` es una función que devuelve una acción que contiene la tupla vacía o unidad `()`. 
+* `(a -> m ())` es una función que devuelve una acción que contiene la tupla vacía o unidad `()`.
+
+En los bloques do no se pueden mezclar acciones de mónadas diferentes.
+
+Hay dos maneras de crear una acción IO:
+
+* Elevar un valor ordinario en la mónada IO, usando la función return.
+
+* Combinar dos acciones existentes.
+
+Para combinar estas acciones, usamos un bloque do. Un bloque do consiste en una serie de líneas (las cuales tienen que tener la misma indentación). Cada línea puede tener una de estas dos formas:
+
+* nombre <- acción1
+
+* acción2
+
+La primera forma liga el resultado de acción1 a nombre, para que esté disponible en las siguientes acciones. Por ejemplo, si el tipo de acción1 es IO [String], entonces el nombre estará ligado en todas las acciones y lo podremos usar en acciones posteriores, y esto se consigue mediante el operador bind (>>=).
+
+En la segunda opción, simplemente ejecutamos la acción (por ejemplo, imprimir algo por pantalla) pero no ligamos nada a ningún nombre, ya que consideramos que no es necesario. Esto se consigue mediante el operador (>>).
+
+Se suele usar el nombre de mónadas para denominar a la clase de tipos que describe como mínimo bind y return, pero cada mónada es diferente y sus funciones conseguirán distintos resultados. En el caso de la mónada IO, se ejecutan las acciones de modo secuencial, produciendo los efectos laterales externos que resulten de acciones.
 
 ## Lección 2:
 

@@ -13,20 +13,20 @@ En un programa escrito en Haskell, la mayor\'ia de funciones son puras, es decir
 
 El concepto descrito de funci\'on pura no se corresponde con el de las funciones de lenguajes imperativos como C, C++ o Java. En los mencionados lenguajes, las funciones no tienen demasiado que ver con las funciones matem\'aticas formales. Las funciones de C, C++ o Java pueden imprimir por pantalla, interactuar con el usuario y, en definitiva, recibir informaci\'on que est\'a m\'as all\'a del \'ambito de sus par\'ametros.\\
 
-Para superar esta dificultad se cre\'o el concepto de m\'onada. Las m\'onadas tienen fama de algo m\'as que abstracto, muy dif\'icil de entender, y estoy de acuerdo en que f\'aciles no son, al menos al principio. Las m\'onadas, en esencia, son constructos que se realizan con lambdas estructuradas de un modo especial y con sus argumentos, y de este modo se consigue encapsular una computaci\'on o acci\'on. Como un argumento podr\'ia depender de argumentos de lambdas anteriores, se consigue, en el caso de la m\'onada IO, que las acciones se ejecuten en el orden deseado. Recordemos que Haskell, al ser un lenguaje funcional, ejecuta ``todo a la vez'', y mediante las m\'onadas, conseguimos una ejecuci\'on ordenada (entre otras cosas).\\
+Para superar esta dificultad se cre\'o el concepto de m\'onada. Las m\'onadas tienen fama de algo m\'as que abstracto, muy dif\'icil de entender, y estoy de acuerdo en que no son sencillas, pero las intentar\'e explicar al menos hasta donde llega mi entendimiento. Las m\'onadas, en esencia, son constructos que se realizan con lambdas estructuradas de un modo especial y con sus argumentos, y de este modo se consigue encapsular una computaci\'on o acci\'on. Como un argumento podr\'ia depender de argumentos de lambdas anteriores, se consigue, en el caso de la m\'onada IO, que las acciones se ejecuten en el orden deseado. Recordemos que Haskell, al ser un lenguaje funcional, ejecuta ``todo a la vez'', y mediante las m\'onadas, conseguimos una ejecuci\'on ordenada (entre otras cosas).\\
 
-En el programa que se pasar\'a a describir se ha usado varias m\'onadas, cada cual cumple una funci\'on distinta, que, sin m\'as dilaci\'on, pasamos a explicar.\\
+En el programa que se pasar\'a a describir se han usado varias m\'onadas, cada cual cumple una funci\'on distinta, que, sin m\'as dilaci\'on, pasamos a explicar.\\
 
 El tipo \textbf{IO} es instancia de la clase de tipos \textbf{Monad}, m\'onada es un concepto, decir que un valor pertenece a la clase de tipos \textbf{\textbf{Monad}} es decir:
 
 \begin{itemize}
   \item 1) Hay (un cierto tipo de) informaci\'on oculta adjunta a este valor.
-  \item 2) La mayor\'ia de funciones no se tienen que preocupar de esa informaci'on.
+  \item 2) La mayor\'ia de funciones no se tienen que preocupar de esa informaci\'on.
 \end{itemize}
 
 En este caso:\\
 
-La informaci\'on extra son acciones \textbf{IO} que se ejecutar\'an usando los valores que se van pasando de una a otra; mientras que el valor b\'asico (el cual tiene informaci\'on adjunta) es void, la tupla vac\'ia o unidad, ().\\
+La informaci\'on extra son acciones \textbf{IO} que se ejecutar\'an usando los valores que se van pasando de una a otra; mientras que el valor b\'asico (el cual tiene informaci\'on adjunta) es void, la tupla vac\'ia o unidad, \textbf{()}.\\
 
 IO \textbf{[String]} e \textbf{IO ()} pertenecen al mismo tipo, el de la m\'onada \textbf{IO}, pero tienen distintos tipos base. Act\'uan sobre (y se pasan unos a otros) valores de distintos tipos, \textbf{[String]} y \textbf{()}.\\
 
@@ -38,6 +38,26 @@ Los valores mon\'adicos se suelen denominar acciones, porque la manera m\'as f\'
   \item \textbf{m a} es una acci\'on
   \item \textbf{(a -\begin{small}\textgreater\end{small} m ())} es una funci\'on que devuelve una acci\'on que contiene la tupla vac\'ia o unidad \textbf{()}.
 \end{itemize}
+
+En los bloques do no se pueden mezclar acciones de m\'onadas diferentes.\\
+
+Hay dos maneras de crear una acci\'on IO:
+
+\begin{itemize}
+  \item Elevar un valor ordinario en la m\'onada IO, usando la funci\'on \textbf{return}.
+  \item Combinar dos acciones existentes.
+\end{itemize}
+
+Para combinar estas acciones, usamos un bloque \textbf{do}. Un bloque \textbf{do} consiste en una serie de l\'ineas (las cuales tienen que tener la misma indentaci\'on). Cada l\'inea puede tener una de estas dos formas:
+
+\begin{itemize}
+  \item nombre $<-$ acci\'on1
+  \item acci\'on2
+\end{itemize}
+
+La primera forma liga el resultado de \textbf{acci\'on1} a nombre, para que est\'e disponible en las siguientes acciones. Por ejemplo, si el tipo de \textbf{acci\'on1} es \textbf{IO [String]}, entonces el nombre estar\'a ligado en todas las acciones y lo podremos usar en acciones posteriores, y esto se consigue mediante el operador bind ($>>=$).
+
+En la segunda opci\'on, simplemente ejecutamos la acci\'on (por ejemplo, imprimir algo por pantalla) pero no ligamos nada a ning\'un nombre, ya que consideramos que no es necesario. Esto se consigue mediante el operador ($>>$).
 
 Parsec (en realidad, \textbf{genParser}) es otro ejemplo de m\'onada: en este caso, la informaci\'on extra que se encuentra oculta es toda aquella relativa a la posici\'on en la cadena de entrada, registro de backtracking, conjuntos first y follow...etc\'etera.\\
 
