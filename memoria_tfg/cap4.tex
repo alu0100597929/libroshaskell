@@ -41,7 +41,7 @@ Los valores mon\'adicos se suelen denominar acciones, porque la manera m\'as f\'
 
 En los bloques do no se pueden mezclar acciones de m\'onadas diferentes.\\
 
-Hay dos maneras de crear una acci\'on IO:
+Hay dos maneras de crear una acci\'on IO:\\
 
 \begin{itemize}
   \item Elevar un valor ordinario en la m\'onada IO, usando la funci\'on \textbf{return}.
@@ -55,9 +55,9 @@ Para combinar estas acciones, usamos un bloque \textbf{do}. Un bloque \textbf{do
   \item acci\'on2
 \end{itemize}
 
-La primera forma liga el resultado de \textbf{acci\'on1} a nombre, para que est\'e disponible en las siguientes acciones. Por ejemplo, si el tipo de \textbf{acci\'on1} es \textbf{IO [String]}, entonces el nombre estar\'a ligado en todas las acciones y lo podremos usar en acciones posteriores, y esto se consigue mediante el operador bind ($>>=$).
+La primera forma liga el resultado de \textbf{acci\'on1} a nombre, para que est\'e disponible en las siguientes acciones. Por ejemplo, si el tipo de \textbf{acci\'on1} es \textbf{IO [String]}, entonces el nombre estar\'a ligado en todas las acciones y lo podremos usar en acciones posteriores, y esto se consigue mediante el operador bind ($>>=$).\\
 
-En la segunda opci\'on, simplemente ejecutamos la acci\'on (por ejemplo, imprimir algo por pantalla) pero no ligamos nada a ning\'un nombre, ya que consideramos que no es necesario. Esto se consigue mediante el operador ($>>$).
+En la segunda opci\'on, simplemente ejecutamos la acci\'on (por ejemplo, imprimir algo por pantalla) pero no ligamos nada a ning\'un nombre, ya que consideramos que no es necesario. Esto se consigue mediante el operador ($>>$).\\
 
 Parsec (en realidad, \textbf{genParser}) es otro ejemplo de m\'onada: en este caso, la informaci\'on extra que se encuentra oculta es toda aquella relativa a la posici\'on en la cadena de entrada, registro de backtracking, conjuntos first y follow...etc\'etera.\\
 
@@ -162,12 +162,12 @@ eval (List (Atom func : args)) = apply func $ map eval args
 Como vemos, tenemos hecha una ecuaci\'on que es recursiva, mapea eval sobre los argumentos, con lo cual ya tenemos resuelto el problema de evaluar listas anidadas de manera ``gratuita''.\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
 apply :: String -> [LispVal] -> LispVal
 apply func args = maybe (Bool False) ($ args) $ lookup func primitives
 \end{lstlisting}
-\end{small}
+\end{footnotesize}
 \end{minipage}
 
 La funci\'on \textbf{maybe} recibe un valor por defecto, una funci\'on, y un valor de tipo \textbf{Maybe}. Si el valor de tipo \textbf{Maybe} es \textbf{Nothing}, la funci\'on devuelve el valor por defecto. Si no, aplica la funci\'on al valor dentro del \textbf{Just} y devuelve el resultado.\\
@@ -199,7 +199,34 @@ unpackNum _ = 0
 \end{footnotesize}
 \end{minipage}
 
-Crearemos una m\'onada llamada \textbf{ThrowsError}, que en realidad se comporta como la m\'onada \textbf{Either}:\\
+Aqu\'i vemos la funci\'on \textbf{primitives}, que devuelve una lista de pares (string, funci\'on), estableciendo una correspondencia entre funciones de Scheme y Haskell. En \textbf{numericBinop} tenemos una funci\'on que recibe:
+
+\begin{itemize}
+  \item una funci\'on binaria $\mathbb{Z}^2 \rightarrow \mathbb{Z}$
+  \item una lista de \textbf{LispVal}
+\end{itemize}
+
+Lo que hace es primeramente desempaquetar los n\'umeros, es decir, pasarlos al tipo \textbf{Integer}. Despu\'es les aplica un plegado a la izquierda, es decir, va haciendo la operaci\'on binaria con los enteros de la lista, dos a dos (asonciando a izquierdas), y va acumulando el resultado para usarlo con el siguiente entero de la lista. Esto nos permite que operaciones no conmutativas como la resta den el resultado correcto de manera casi gratuita.\\
+
+Manejo de errores:\\
+
+En primera instancia crearemos un tipo de dato algebraico que generalice los errores mediante un constructor de tipos, y los concretice mediante constructores de valor:\\
+
+\begin{minipage}{\linewidth}
+\begin{small}
+\begin{lstlisting}[frame=single]
+data LispError = NumArgs Integer [LispVal]
+               | TypeMismatch String LispVal
+               | Parser ParseError
+               | BadSpecialForm String LispVal
+               | NotFunction String String
+               | UnboundVar String String
+               | Default String
+\end{lstlisting}
+\end{small}
+\end{minipage}
+
+Luego, crearemos una m\'onada llamada \textbf{ThrowsError}, que en realidad se comporta como la m\'onada \textbf{Either}:\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -219,7 +246,7 @@ type ThrowsError b = Either LispError b
 \end{small}
 \end{minipage}
 
-\textbf{ThrowsError} es, por tanto, una m\'onada que puede contener \textbf{LispError} (en el caso de \textbf{Left}) o un tipo b, que en nuestro programa es \textbf{LispVal} (en el caso de \textbf{Right}). Por tanto, cuando accedemos a su interior, encontraremos un \textbf{LispError} o un \textbf{LispVal}. Es decir, estamos definiendo un tipo que puede ser del tipo \textbf{b}, o bien dar error.\\
+\textbf{ThrowsError} es, por tanto, una m\'onada que puede contener \textbf{LispError} (en el caso de \textbf{Left}) o un tipo b, que en nuestro programa es \textbf{LispVal} (en el caso de \textbf{Right}). Por tanto, cuando accedemos a su interior, encontraremos un \textbf{LispError} o un \textbf{LispVal}. Es decir, estamos definiendo un tipo que puede ser del tipo \textbf{b}, o bien dar error. Ahora ya nuestro int\'erprete no trabajará directamente con \textbf{LispVal}, sino con \textbf{ThrowsError LispVal}. El sentido de todo esto es poder crear valores que describan el error que ha ocurrido, para luego imprimir por pantalla una explicaci\'on detallada del mismo. Ahora todas las funciones que puedan dar errores devolver\'an un \textbf{ThrowsError LispVal}, y tendremos que crear ecuaciones que capturen esos errores y construyan un \textbf{LispError} apropiado para posteriormente informar al usuario.\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -239,8 +266,7 @@ La m\'onada \textbf{Either} tambi\'en provee otras dos funciones a parte de las 
 
 Se usa \textbf{throwsError} porque en realidad, no existe el constructor de valor \textbf{LispError}, sino que es un constructor de tipo. Por ello, mediante \textbf{throwsError}, creamos un \textbf{Left} (el \textbf{LispError} concreto que sea), lo cual es un resultado de tipo \textbf{ThrowsError} \textbf{LispVal}, el tipo retorno de \textbf{readExpr}.\\
 
-\textbf{catchError}: recibe un valor \textbf{Either} (una acci\'on) y si es \textbf{Right}, lo devuelve, si es \textbf{Left}, le aplica la funci\'on que recibe (en este caso est\'a hardcoded, y lo que hace es pasar del \textbf{Left} a un valor normal de \textbf{LispVal}). El sentido de todo esto es que
-el \textbf{Either} resultado siempre tenga un valor \textbf{Right}:\\
+\textbf{catchError}: recibe un valor \textbf{Either} (una acci\'on) y si es \textbf{Right}, lo devuelve, si es \textbf{Left}, le aplica la funci\'on que recibe (en este caso est\'a hardcoded, y lo que hace es pasar del \textbf{Left} a un valor normal de \textbf{LispVal}). El sentido de todo esto es que el \textbf{Either} resultado siempre tenga un valor \textbf{Right}:\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -264,7 +290,7 @@ extractValue Right val) = val
 \end{small}
 \end{minipage}
 
-La funci\'on parse devuelve un \textbf{Either}, que tendremos que manejar seg\'un construya un \textbf{Left} (ParseError) o \textbf{Right} (valor correcto).\\
+La funci\'on \textbf{parse} devuelve un \textbf{Either}, que tendremos que manejar seg\'un construya un \textbf{Left} (ParseError) o \textbf{Right} (valor correcto).\\
 
 Ahora \textbf{eval} va a devolver un valor mon\'adico, con lo cual, en vez de \textbf{map} debemos usar \textbf{mapM}, y usar \textbf{return} para encapsular en valores mon\'adicos los resultados de \textbf{eval}.\\
 
@@ -276,7 +302,7 @@ mapM :: Monad m => (a -> m b) -> [a] -> m [b]:
 \end{small}
 \end{minipage}
 
-\textbf{mapM mf xs} recibe una funci\'on mon\'adica (con tipo \textbf{Monad m => (a -> m b)}) y la aplica a cada elemento en la lista \textbf{xs}; el resultado es una lista (con elementos del tipo \textbf{b}, en este caso) dentro de una m\'onada. Por tanto \textbf{mapM eval args} da como resultado [\textbf{LispVal}].\\
+\textbf{mapM mf xs} recibe una funci\'on mon\'adica (con tipo \textbf{Monad m $=\!>$ (a $-\!>$ m b)}) y la aplica a cada elemento en la lista \textbf{xs}; el resultado es una lista (con elementos del tipo \textbf{b}, en este caso) dentro de una m\'onada. Por tanto \textbf{mapM eval args} da como resultado un valor de tipo \textbf{ThrowsError [Integer]}.\\
 
 \begin{minipage}{\linewidth}
 \begin{tiny}
@@ -313,38 +339,36 @@ unpackNum notNum     = throwError $ TypeMismatch "number" notNum
 \end{tiny}
 \end{minipage}
 
-Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}, as\'i que vayamos por partes:
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+main :: IO ()
+main = do
+  args <- getArgs
+  evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+  putStrLn $ extractValue $ trapError evaled
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}:
 
 \begin{itemize}
 
 \item 1) $readExpr (args !! 0) >>= eval$: readExpr da un \textbf{ThrowsError LispVal}, luego bind lo que hace es pasar el \textbf{LispVal} a eval, y acaba dando otro \textbf{ThrowsError LispVal}.
 
-\item 2) \textbf{liftM} show sobre la m\'onada \textbf{ThrowsError LispVal} da una ThrowsError String.
+\item 2) \textbf{liftM show} sobre la m\'onada \textbf{ThrowsError LispVal} da una \textbf{ThrowsError String}.
 
-\item 3) hacer return sobre una ThrowsError String nos devuelve un (\textbf{IO (Either ThrowsError String)}, y esto se hace para que al operar con el constructo \textbf{\<\-} sigamos teniendo el \textbf{Either ThrowsError String}, que es lo que recibe (\textbf{trapError}).
+\item 3) hacer \textbf{return} sobre una \textbf{ThrowsError String} nos devuelve un (\textbf{IO (Either ThrowsError String)}, y esto se hace para que al operar con el constructo \textbf{\<\-} sigamos teniendo el \textbf{ThrowsError String}, que es lo que recibe (\textbf{trapError}).
 
 \textbf{Recuerda:}, si estamos trabajando en un do de una m\'onada tipo \textbf{IO}, el \textbf{return} va a envolver el dato en una m\'onada \textbf{IO}, y esto es v\'alido para cualquier m\'onada.
 
-\item 4) trapError nos devuelve un \textbf{Either} del tipo \textbf{Either String}, porque recordemos, \textbf{Left} era \textbf{LispError}, \textbf{Right} era \textbf{String}, y \textbf{catchError} siempre devuelve \textbf{Right}.
+\item 4) \textbf{trapError} nos devuelve un \textbf{Either} del tipo \textbf{Either String}, porque recordemos, \textbf{Left} era \textbf{LispError}, \textbf{Right} era \textbf{String}, y \textbf{catchError} siempre devuelve \textbf{Right}.
 
 \item 5) \textbf{extractValue} nos devuelve un valor de tipo \textbf{String}.
 \end{itemize}
 
-\begin{minipage}{\linewidth}
-\begin{small}
-\begin{lstlisting}[frame=single]
-main :: IO ()
-main = do
-     args <- getArgs
-     evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-     putStrLn $ extractValue $ trapError evaled
-\end{lstlisting}
-\end{small}
-\end{minipage}
-
 Todas las funciones cuyo primer argumento es \textbf{LispVal} deben usar pattern matching para saber qu\'e constructor de valor se ha usado para crear el mencionado \textbf{LispVal}.\\
-
-La funci\'on \textbf{car} de Scheme devuelve el primer elemento de una lista que se pasa como argumento. \textbf{cdr} de Scheme es justo lo contrario, devuelve el resto de la lista.\\
 
 \textbf{cons} es el operador \textbf{(:)} de Haskell, es decir, el que sirve para concatenar un elemento a una lista del tipo de ese elemento.\\
 
