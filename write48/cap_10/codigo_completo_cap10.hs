@@ -90,10 +90,9 @@ instance Error LispError where
   noMsg = Default "An error has occurred"
   strMsg = Default
 
-{-
-La línea de código está currificada, se podría escribir así también:
-type ThrowsError b = Either LispError b
--}
+
+-- La línea de código está currificada, se podría escribir así también:
+-- type ThrowsError b = Either LispError b
 type ThrowsError = Either LispError
 type Env = IORef [(String, IORef LispVal)]
 type IOThrowsError = ErrorT LispError IO

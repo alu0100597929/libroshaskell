@@ -232,17 +232,100 @@ Aquí lo más complicado es saber el tipo de evaled, así que vayamos por partes
          evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
          putStrLn $ extractValue $ trapError evaled
 
-## Lección 5
-
 Todas las funciones cuyo primer argumento es `LispVal` deben usar pattern matching para saber qué constructor de valor se ha usado para crear el mencionado `LispVal`.
 
-`car` de Scheme es como `head` de Haskell. `cdr` de Scheme es  como `tail` de Haskell.
+## Lección 5: Evaluación, parte 2
 
-`cons` es el operador `(:)` de Haskell, es decir, el que sirve para concatenar un elemento a una lista del tipo de ese elemento. Si aplicamos `cons` a una lista que no contenga al menos una lista, obtendremos una `DottedList`.
+`boolBinop` es una función definida para ser currificada, y por ello es muy versátil:
 
-Ahora definimos un cuantificador existencial (sí, aunque se llame `forall`, no es universal). Esto lo que hace es crear un constructor de valor `AnyUnpacker` que recibe funciones de `Lispval` a `ThrowsError a`, para todo tipo `a` que sea instancia de la clase de tipos `Eq`:
+    boolBinop :: (LispVal -> ThrowsError a) -> (a -> a -> Bool) -> [LispVal] -> ThrowsError LispVal
+    boolBinop unpacker op args = if length args /= 2 
+                                 then throwError $ NumArgs 2 args
+                                 else do left <- unpacker $ args !! 0
+                                          right <- unpacker $ args !! 1
+                                          return $ Bool $ left `op` right
+
+Gracias a ella podemos usar una función arbitraria que pase de LispVal a (ThrowsError a) y con ello crear una plantilla para una operación binaria entre los tipos que queramos:
+
+    numBoolBinop  = boolBinop unpackNum
+    strBoolBinop  = boolBinop unpackStr
+    boolBoolBinop = boolBinop unpackBool
+
+Esto nos permite ampliar nuestra lista de primitivas más cómodamente:
+
+    ("=", numBoolBinop (==)),
+    ("<", numBoolBinop (<)),
+    (">", numBoolBinop (>)),
+    ("/=", numBoolBinop (/=)),
+    (">=", numBoolBinop (>=)),
+    ("<=", numBoolBinop (<=)),
+    ("&&", boolBoolBinop (&&)),
+    ("||", boolBoolBinop (||)),
+    ("string=?", strBoolBinop (==)),
+    ("string<?", strBoolBinop (<)),
+    ("string>?", strBoolBinop (>)),
+    ("string<=?", strBoolBinop (<=)),
+    ("string>=?", strBoolBinop (>=)),
+
+Ahora empieza lo interesante, implementemos condicionales sencillos, aún sin else:
+
+    eval (List [Atom "if", pred, conseq, alt]) = 
+         do result <- eval pred
+            case result of
+                 Bool False -> eval alt
+                 otherwise  -> eval conseq
+
+`car` de Scheme es como `head` de Haskell, y su implementación se basa en el reconocimiento de patrones:
+
+    car :: [LispVal] -> ThrowsError LispVal
+    car [List (x : xs)]         = return x
+    car [DottedList (x : xs) _] = return x
+    car [badArg]                = throwError $ TypeMismatch "pair" badArg
+    car badArgList              = throwError $ NumArgs 1 badArgList
+
+`cdr` de Scheme es  como `tail` de Haskell:
+
+    cdr :: [LispVal] -> ThrowsError LispVal
+    cdr [List (x : xs)]         = return $ List xs
+    cdr [DottedList [_] x]      = return x
+    cdr [DottedList (_ : xs) x] = return $ DottedList xs x
+    cdr [badArg]                = throwError $ TypeMismatch "pair" badArg
+    cdr badArgList              = throwError $ NumArgs 1 badArgList
+
+`cons` es el operador `(:)` de Haskell, es decir, el que sirve para concatenar un elemento a una lista del tipo de ese elemento. Si aplicamos `cons` a una lista que sólo contenga elementos, obtendremos una `DottedList`:
+
+    cons :: [LispVal] -> ThrowsError LispVal
+    cons [x1, List []] = return $ List [x1]
+    cons [x, List xs] = return $ List $ x : xs
+    cons [x, DottedList xs xlast] = return $ DottedList (x : xs) xlast
+    cons [x1, x2] = return $ DottedList [x1] x2
+    cons badArgList = throwError $ NumArgs 2 badArgList
+
+Lo siguiente es definir una función que establezca un criterio de igualdad entre valores. Esto se hace recibiendo una lista con dos elementos, los valores a comparar (los cuales también pueden ser listas). Lo primero es comprobar que los dos valores son del mismo tipo, ya que estamos implementando una comparación fuerte. Si esto no ocurre, se devuelve falso. Si los dos valores son del mismo tipo, se les aplica la función `(==)` de Haskell:
+
+    eqv :: [LispVal] -> ThrowsError LispVal
+    eqv [(Bool arg1), (Bool arg2)]             = return $ Bool $ arg1 == arg2
+    eqv [(Number arg1), (Number arg2)]         = return $ Bool $ arg1 == arg2
+    eqv [(String arg1), (String arg2)]         = return $ Bool $ arg1 == arg2
+    eqv [(Atom arg1), (Atom arg2)]             = return $ Bool $ arg1 == arg2
+    eqv [(DottedList xs x), (DottedList ys y)] = eqv [List $ xs ++ [x], List $ ys ++ [y]]
+    eqv [(List arg1), (List arg2)]             = return $ Bool $ (length arg1 == length arg2) && 
+                                                                 (all eqvPair $ zip arg1 arg2)
+         where eqvPair (x1, x2) = case eqv [x1, x2] of
+                                    Left err -> False
+                                    Right (Bool val) -> val
+    eqv [_, _]                                 = return $ Bool False
+    eqv badArgList                             = throwError $ NumArgs 2 badArgList
+
+Ahora definimos un cuantificador existencial (sí, aunque se llame `forall`, no es universal). Esto lo que hace es crear un constructor de valor `AnyUnpacker` que recibe funciones de `Lispval` a `ThrowsError a`, para todo tipo `a` que sea instancia de la clase de tipos `Eq`. Para usarlo debemos añadir a la cabecera de nuestro programa el pragma `{-# LANGUAGE ExistentialQuantification #-}`:
 
     data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
+
+Aunque parezca muy extraño y novedoso, indagando un poco en por qué se le llama existencial nos daremos cuenta de que todo cobra sentido; esto es un constructor de tipos como otro cuaquiera, pero estamos obligando a que el tipo `a` sea instancia de la clase de tipos `Eq`. Luego, si y sólo si existe la instancia para `Eq` del tipo que queramos instanciar como tipo `Unpacker`, el compilador nos permitirá instanciarlo. Estamos ordenando nuestro código y evitando errores en tiempo de ejecución a costa de generar potenciales errores en tiempo de compilación, puro Haskell.
+
+Nuestra intención es tener también un modo "débil" de comparar, y para ello lo que haremos será probar uno a uno todos nuestros unpackers, y desde el momento en que uno de ellos devuelva `True`, eso mismo devolveremos, y si en cambio todos devuelven `False`, entonces devolveremos `False`.
+
+Lo primero que implementaremos será un helper que determinará si dos `LispVal` son iguales, usando un `Unpacker`, es decir, un desempaquetador arbitrario. Aquí lo que hacemos es crear un bloque `do` en el cual desempaquetamos los dos argumentos `arg1` y `arg2`, ligándolos a las variables `unpacked1` y `unpacked2`. Luego comprobamos su igualdad (serán casi seguro `LispVal`s) y Los volvemos a meter en la mónada `ThrowsError`.
 
     unpackEquals :: LispVal -> LispVal -> Unpacker -> ThrowsError Bool
     unpackEquals arg1 arg2 (AnyUnpacker unpacker) = 
@@ -251,7 +334,6 @@ Ahora definimos un cuantificador existencial (sí, aunque se llame `forall`, no 
                     return $ unpacked1 == unpacked2
             `catchError` (const $ return False)
 
-Aquí lo que hacemos es crear un bloque `do` en el cual desempaquetamos los dos argumentos `arg1` y `arg2`, ligándolos a las variables `unpacked1` y `unpacked2`. Luego comprobamos su igualdad (serán casi seguro `LispVal`s) y Los volvemos a meter en la mónada `ThrowsError`.
 
 Ahora entra en juego `catchError`, que, recordemos, lo que hacía es recibir un `Either` y si es `Right`, devolver ese mismo `Either`, si es `Left`, aplicarle la función de la derecha.
 
@@ -262,10 +344,8 @@ Ahora entra en juego `catchError`, que, recordemos, lo que hacía es recibir un 
 
 Veamos los tipos de cada una de las partes para entenderlo mejor:
 
-Prelude Control.Monad.Except> :t (const $ return False)
-(const $ return False) :: Monad m => b -> m Bool
-Prelude Control.Monad.Except> :t (return False)
-(return False) :: Monad m => m Bool
+    (const $ return False) :: Monad m => b -> m Bool
+    (return False) :: Monad m => m Bool
 
 Luego lo que está haciendo `const` es permitir una currificación que, da igual lo que reciba esa función (en este caso recibe un `Left` conteniendo el error), devolverá siempre lo primero que recibió, en este caso el resultado de `return False`, que no es otra cosa que un `ThrowsError Bool`.
 
