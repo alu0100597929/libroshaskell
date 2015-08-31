@@ -266,7 +266,7 @@ La m\'onada \textbf{Either} tambi\'en provee otras dos funciones a parte de las 
 
 Se usa \textbf{throwsError} porque en realidad, no existe el constructor de valor \textbf{LispError}, sino que es un constructor de tipo. Por ello, mediante \textbf{throwsError}, creamos un \textbf{Left} (el \textbf{LispError} concreto que sea), lo cual es un resultado de tipo \textbf{ThrowsError} \textbf{LispVal}, el tipo retorno de \textbf{readExpr}.\\
 
-\textbf{catchError}: recibe un valor \textbf{Either} (una acci\'on) y si es \textbf{Right}, lo devuelve, si es \textbf{Left}, le aplica la funci\'on que recibe (en este caso est\'a hardcoded, y lo que hace es pasar del \textbf{Left} a un valor normal de \textbf{LispVal}). El sentido de todo esto es que el \textbf{Either} resultado siempre tenga un valor \textbf{Right}:\\
+\textbf{catchError}: recibe un valor \textbf{Either} (una acci\'on) y una funci\'on. Si el valor \textbf{Either} es \textbf{Right}, lo devuelve, si es \textbf{Left}, le aplica la funci\'on que recibe (en este caso est\'a hardcoded, y lo que hace es pasar del \textbf{Left} a un valor normal de \textbf{LispVal}). El sentido de todo esto es que el \textbf{Either} resultado siempre tenga un valor \textbf{Right}:\\
 
 \begin{minipage}{\linewidth}
 \begin{small}
@@ -375,18 +375,18 @@ Todas las funciones cuyo primer argumento es \textbf{LispVal} deben usar pattern
 Ahora definimos un cuantificador existencial (s\'i, aunque se llame \textbf{forall}, no es universal). Esto lo que hace es crear un constructor de valor \textbf{AnyUnpacker} que recibe funciones de \textbf{Lispval} a \textbf{ThrowsError a}, para todo tipo a que sea instancia de la clase de tipos \textbf{Eq}:\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
 data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
 
-unpackEquals :: LispVal} -> LispVal -> Unpacker -> ThrowsError Bool
+unpackEquals :: LispVal -> LispVal -> Unpacker -> ThrowsError Bool
 unpackEquals arg1 arg2 (AnyUnpacker unpacker) = 
              do unpacked1 <- unpacker arg1
                 unpacked2 <- unpacker arg2
                 return $ unpacked1 == unpacked2
-        catchError (const $ return False)
+        `catchError` (const $ return False)
 \end{lstlisting}
-\end{small}
+\end{footnotesize}
 \end{minipage}
 
 Aqu\'i lo que hacemos es crear un bloque \textbf{do} en el cual desempaquetamos los dos argumentos \textbf{arg1} y \textbf{arg2}, lig\'andolos a las variables \textbf{unpacked1} y \textbf{unpacked2}. Luego comprobamos su igualdad (ser\'an casi seguro \textbf{LispVal}s) y Los volvemos a meter en la m\'onada \textbf{ThrowsError}.\\
@@ -396,31 +396,29 @@ Ahora entra en juego \textbf{catchError}, que, recordemos, lo que hac\'ia es rec
 Veamos en qu\'e consiste \textbf{cons} para saber por qu\'e se ha usado.\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
 const            :: a -> b -> a
 const x _        =  x
 \end{lstlisting}
-\end{small}
+\end{footnotesize}
 \end{minipage}
 
 Veamos los tipos de cada una de las partes para entenderlo mejor:\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{footnotesize}
 \begin{lstlisting}[frame=single]
-Prelude Control.Monad.Except> :t (const $ return False)
 (const $ return False) :: Monad m => b -> m Bool
-Prelude Control.Monad.Except> :t (return False)
 (return False) :: Monad m => m Bool
 \end{lstlisting}
-\end{small}
+\end{footnotesize}
 \end{minipage}
 
 Luego lo que est\'a haciendo \textbf{const} es permitir una currificaci\'on que, da igual lo que reciba esa funci\'on (en este caso recibe un \textbf{Left} conteniendo el error), devolver\'a siempre lo primero que recibi\'o, en este caso el resultado de \textbf{return False}, que no es otra cosa que un \textbf{ThrowsError Bool}.\\
 
 \begin{minipage}{\linewidth}
-\begin{small}
+\begin{tiny}
 \begin{lstlisting}[frame=single]
 equal :: [LispVal] -> ThrowsError LispVal
 equal [arg1, arg2] = do
@@ -430,9 +428,9 @@ equal [arg1, arg2] = do
       return $ Bool $ (primitiveEquals || let (Bool x) = eqvEquals in x)
 equal badArgList = throwError $ NumArgs 2 badArgList
 \end{lstlisting}
-\end{small}
+\end{tiny}
 \end{minipage}
 
-El tipo de \textbf{unpackEquals arg1 arg2} es \textbf{Unpacker -> ThrowsError Bool}, por tanto, \textbf{mapM (unpackEquals arg1 arg2)} sobre la lista \textbf{[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]} dar\'a una m\'onada \textbf{ThrowsError} conteniendo una lista de Bool, es decir, \textbf{ThrowsError [Bool]}. A dicha lista le aplicaremos la funci\'on or mediante \textbf{liftM}.\\
+El tipo de \textbf{unpackEquals arg1 arg2} es \textbf{Unpacker $-\!>$ ThrowsError Bool}, por tanto, \textbf{mapM (unpackEquals arg1 arg2)} sobre la lista \textbf{[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]} dar\'a una m\'onada \textbf{ThrowsError} conteniendo una lista de Bool, es decir, \textbf{ThrowsError [Bool]}. A dicha lista le aplicaremos la funci\'on \textbf{or} mediante \textbf{liftM}.\\
 
 Para lidiar con las cl\'ausulas \textbf{else} se ha realizado un ``hack'', cada vez que \textbf{eval} se encuentra un \textbf{else}, devuelve un \textbf{Bool True} para que siempre se ejecute esa expresi\'on.\\
