@@ -15,15 +15,15 @@
 \contentsline {section}{\numberline {3.3}Tercer apartado de este cap\'itulo}{21}{section.3.3}
 \contentsline {chapter}{\numberline {4}Funcionamiento del Compilador e Int\'erprete}{22}{chapter.4}
 \contentsline {section}{\numberline {4.1}Estructura general del programa}{22}{section.4.1}
-\contentsline {chapter}{\numberline {5}Conclusiones y trabajos futuros}{37}{chapter.5}
-\contentsline {chapter}{\numberline {6}Summary and Conclusions }{38}{chapter.6}
-\contentsline {section}{\numberline {6.1}First Section}{38}{section.6.1}
-\contentsline {chapter}{\numberline {7}Presupuesto}{39}{chapter.7}
-\contentsline {section}{\numberline {7.1}Secci\'on Uno}{39}{section.7.1}
-\contentsline {chapter}{\numberline {A}T\IeC {\'\i }tulo del Ap\'endice 1}{40}{appendix.Alph1}
-\contentsline {section}{\numberline {A.1}Algoritmo XXX}{40}{section.Alph1.1}
-\contentsline {section}{\numberline {A.2}Algoritmo YYY}{40}{section.Alph1.2}
-\contentsline {chapter}{\numberline {B}T\IeC {\'\i }tulo del Ap\'endice 2}{42}{appendix.Alph2}
-\contentsline {section}{\numberline {B.1}Otro apendice: Seccion 1}{42}{section.Alph2.1}
-\contentsline {section}{\numberline {B.2}Otro apendice: Seccion 2}{42}{section.Alph2.2}
-\contentsline {chapter}{Bibliograf\IeC {\'\i }a}{42}{section.Alph2.2}
+\contentsline {chapter}{\numberline {5}Conclusiones y trabajos futuros}{42}{chapter.5}
+\contentsline {chapter}{\numberline {6}Summary and Conclusions }{43}{chapter.6}
+\contentsline {section}{\numberline {6.1}First Section}{43}{section.6.1}
+\contentsline {chapter}{\numberline {7}Presupuesto}{44}{chapter.7}
+\contentsline {section}{\numberline {7.1}Secci\'on Uno}{44}{section.7.1}
+\contentsline {chapter}{\numberline {A}T\IeC {\'\i }tulo del Ap\'endice 1}{45}{appendix.Alph1}
+\contentsline {section}{\numberline {A.1}Algoritmo XXX}{45}{section.Alph1.1}
+\contentsline {section}{\numberline {A.2}Algoritmo YYY}{45}{section.Alph1.2}
+\contentsline {chapter}{\numberline {B}T\IeC {\'\i }tulo del Ap\'endice 2}{47}{appendix.Alph2}
+\contentsline {section}{\numberline {B.1}Otro apendice: Seccion 1}{47}{section.Alph2.1}
+\contentsline {section}{\numberline {B.2}Otro apendice: Seccion 2}{47}{section.Alph2.2}
+\contentsline {chapter}{Bibliograf\IeC {\'\i }a}{47}{section.Alph2.2}

@@ -13,7 +13,7 @@ import Text.ParserCombinators.Parsec hiding (spaces)
 import Control.Monad.Error -- está deprecated
 import Control.Monad.Except -- cabal install mtl, deberíamos usar esta
 import Data.List
-import Debug.Trace
+-- import Debug.Trace
 import System.IO hiding (try)
 
 -----------------Parte nueva-----------------
@@ -196,11 +196,11 @@ bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
            addBinding (var, value) = do ref <- newIORef value
                                         return (var, ref)
 
-evalAndPrint :: Env -> String -> IO ()
-evalAndPrint env expr =  evalString env expr >>= putStrLn
- 
 evalString :: Env -> String -> IO String
 evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
+
+evalAndPrint :: Env -> String -> IO ()
+evalAndPrint env expr =  evalString env expr >>= putStrLn
 
 -- código viejo
 
@@ -225,9 +225,9 @@ extractValue (Right val) = val
 -- nuevo helper que busca un elemento en una lista, probada.
 findList :: LispVal -> LispVal -> ThrowsError LispVal
 findList el (List [])     = Right (Bool False)
-findList el (List (x:xs)) = trace (showVal x) $ case eqv [el,x] of
-                                                  Right (Bool True) -> Right (Bool True)
-                                                  _ -> findList el (List xs)
+findList el (List (x:xs)) = case eqv [el,x] of
+                              Right (Bool True) -> Right (Bool True)
+                              _ -> findList el (List xs)
 
 -- nuevo: ayudante de eval que busca coincidencias en expresiones case
 -- recibe una clave y la busca en cada lista, si está, o si es un else,
@@ -333,7 +333,7 @@ parseCondExpr = do
     lexeme $ char ')'
     return $ CondExpr lista
 
--- las posibles acciones de un case se separan por líneas obligatoriamente, luego hubo
+-- las posibles acciones de un case se separaban por líneas obligatoriamente, luego hubo
 -- que arreglar el error de parseo derivado de que |n se lee como \\n, es decir,
 -- una barra escapada y luego una n, esto se hizo con la función foo, encima
 -- de main

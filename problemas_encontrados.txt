@@ -1,0 +1,9 @@
+fin de línea windows/linux
+
+expresiones cond y case
+
+dos modos de ejecución (interpretado y compilado)
+
+entendimiento de Parsec
+
+Errores de compilación y cabal hell

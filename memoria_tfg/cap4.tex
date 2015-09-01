@@ -375,7 +375,7 @@ Evaluaci\'on, parte 2\\
 \textbf{boolBinop} es una funci\'on definida para ser currificada, y por ello es muy vers\'atil:\\
 
 \begin{minipage}{\linewidth}
-\begin{footnotesize}
+\begin{tiny}
 \begin{lstlisting}[frame=single]
 boolBinop :: (LispVal -> ThrowsError a) -> (a -> a -> Bool) -> [LispVal] -> ThrowsError LispVal
 boolBinop unpacker op args = if length args /= 2 
@@ -384,7 +384,7 @@ boolBinop unpacker op args = if length args /= 2
                                       right <- unpacker $ args !! 1
                                       return $ Bool $ left `op` right
 \end{lstlisting}
-\end{footnotesize}
+\end{tiny}
 \end{minipage}
 
 Gracias a ella podemos usar una funci\'on arbitraria que pase de \textbf{LispVal} a \textbf{ThrowsError a} y con ello crear una plantilla para una operaci\'on binaria entre los tipos que queramos:\\
@@ -504,11 +504,11 @@ eqv badArgList                             = throwError $ NumArgs 2 badArgList
 Ahora definimos un cuantificador existencial (s\'i, aunque se llame \textbf{forall}, no es universal). Esto lo que hace es crear un constructor de valor \textbf{AnyUnpacker} que recibe funciones de \textbf{Lispval} a `ThrowsError a`, para todo tipo \textbf{a} que sea instancia de la clase de tipos \textbf{Eq}. Para usarlo debemos a\~nadir a la cabecera de nuestro programa el pragma \textbf{\{-\# LANGUAGE ExistentialQuantification \#-\}}:\\
 
 \begin{minipage}{\linewidth}
-\begin{footnotesize}
+\begin{scriptsize}
 \begin{lstlisting}[frame=single]
 data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
 \end{lstlisting}
-\end{footnotesize}
+\end{scriptsize}
 \end{minipage}
 
 Aunque parezca muy extra~no y novedoso, indagando un poco en por qu\'e se le llama existencial nos daremos cuenta de que todo cobra sentido; esto es un constructor de tipos como otro cuaquiera, pero estamos obligando a que el tipo \textbf{a} sea instancia de la clase de tipos \textbf{Eq}. Luego, si y s\'olo si existe la instancia para \textbf{Eq} del tipo que queramos instanciar como tipo \textbf{Unpacker}, el compilador nos permitir\'a instanciarlo. Estamos ordenando nuestro c\'odigo y evitando errores en tiempo de ejecuci\'on a costa de generar potenciales errores en tiempo de compilaci\'on, puro Haskell.\\
@@ -571,3 +571,299 @@ equal badArgList = throwError $ NumArgs 2 badArgList
 \end{minipage}
 
 El tipo de \textbf{unpackEquals arg1 arg2} es \textbf{Unpacker $-\!>$ ThrowsError Bool}, por tanto, \textbf{mapM (unpackEquals arg1 arg2)} sobre la lista \textbf{[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]} dar\'a una m\'onada \textbf{ThrowsError} conteniendo una lista de \textbf{Bool}, es decir, \textbf{ThrowsError [Bool]}. A dicha lista le aplicaremos la funci\'on \textbf{or} mediante \textbf{liftM}.\\
+
+Construyendo un REPL\\
+
+Un REPL (read-eval-print loop) es un bucle de lectura-evaluaci\'on-impresi\'on, es decir, nos permite usar nuestro programa como si de una consola se tratara, y es as\'i como funcionan la mayor\'ia de int\'erpretes pasados y actuales. Lo primero que haremos ser\'a crear un helper que imprima por pantalla una cadena (la salida que da el int\'erprete al evaluar algo) y limpie despu\'es el flujo:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+flushStr :: String -> IO ()
+flushStr str = putStr str >> hFlush stdout
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+A continuaci\'on usaremos la funci\'on recientemente definida para imprimir una cadena por pantalla, limpiar el flujo y posteriormente pedir una l\'inea al usuario.\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+readPrompt :: String -> IO String
+readPrompt prompt = flushStr prompt >> getLine
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Sacamos de \textbf{main} el c\'odigo para parsear y evaluar una cadena y capturar los errores y lo ponemos en su propia funci\'on:\\
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+evalString :: Env -> String -> IO String
+evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Ahora creamos una funci\'on que eval\'ue una cadena e imprima el resultado:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+evalAndPrint :: Env -> String -> IO ()
+evalAndPrint env expr =  evalString env expr >>= putStrLn
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Necesitamos un bucle con una condici\'on de parada (una funci\'on, \mbox{¡}qu\'e sorpresa!), pero como en la programaci\'on funcional no existen los bucles, lo que hacemos para simular uno es llamar recursivamente a la funci\'on que definimos, \textbf{until\_}, a menos que la condici\'on de parada se cumpla, en cuyo caso devolveremos un valor de tipo tupla vac\'ia \textbf{())}.\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+until_ :: Monad m => (a -> Bool) -> m a -> (a -> m ()) -> m ()
+until_ pred prompt action = do 
+   result <- prompt
+   if pred result 
+      then return ()
+      else action result >> until_ pred prompt action
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Ahora que tenemos todas las piezas, s\'olo nos queda unirlas:\\
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+runRepl :: IO ()
+runRepl = primitiveBindings >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Ahora adaptamos nuestra funci\'on \textbf{main} para que si el programa no recibe argumentos cuando se ejecuta se ponga en marcha el int\'erprete, y si recibe un argumento (la expresi\'on a ejecutar) la eval\'ue y salga:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+main :: IO ()
+main = do args <- getArgs
+          if null args then runRepl else runOne $ args
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+A\~{n}adiendo variables y asignaci\'on:\\
+
+Usaremos el modo de hilos de estado de Haskell, llamado \textbf{IORef}. Este m\'odulo se usa en medio de la m\'onada IO y sirve para usar variables mutables sin esfuerzo en Haskell. Necesitamos una m\'onada que contenga una lista que asocie cadenas con m\'onadas que contengan valores de tipo \textbf{LispVal}. Esto es as\'i porque hay dos maneras de modificar un entorno:\\
+
+\begin{itemize}
+  \item la funci\'on \textbf{set!} cambia el valor de una variable de la lista
+  \item la funci\'on \textbf{define} a\~{n}ade una nueva variable a la lista
+\end{itemize}
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+import Data.IORef
+
+type Env = IORef [(String, IORef LispVal)]
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Definimos una funci\'on que cree un entorno vac\'io:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+nullEnv :: IO Env
+nullEnv = newIORef []
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Ahora definiremos un transformador mon\'adico, es decir, algo que combina varias m\'onadas. Es una especie de \textbf{Either} currificado que puede contener dos m\'onadas, \textbf{LispError} e \textbf{IO}, es decir, encapsulamos una computaci\'on IO la posibilidad de que produzca error:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+type IOThrowsError = ErrorT LispError IO
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Como los bloques do no nos permiten usar m\'onadas de distintos tipos y tenemos muchas funciones que hacen uso de \textbf{ThrowsError}, debemos definir un lifter que pase de una m\'onada a la otra:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+liftThrows :: ThrowsError a -> IOThrowsError a
+liftThrows (Left err) = throwError err
+liftThrows (Right val) = return val
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Tambi\'en queremos un helper que ejecute la acci\'on \textbf{IOThrowsError}, ejecute la computaci\'on del error y capture los errores, devolviendo una acci\'on \textbf{IO}. Esto usa \textbf{trapError} para convertir los valores de error en su representaci\'on de cadena, y luego ejecuta la computaci\'on mediante \textbf{runErrorT}. Luego se extrae el valor y se envuelve en la m\'onada \textbf{IO}:\\
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+runIOThrows :: IOThrowsError String -> IO String
+runIOThrows action = runErrorT (trapError action) >>= return . extractValue
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
+
+Se muestra el tipo de \textbf{readIORef} por claridad. Definimos ahora una funci\'on que devuelva un booleano que indique si una variable est\'a ligada o no:\\
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+readIORef :: IORef a -> IO a
+
+isBound :: Env -> String -> IO Bool
+isBound envRef var = readIORef envRef >>= return . maybe False (const True) . lookup var
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Ahora repetimos la estrategia pero para obtener un valor de tipo \textbf{LispVal} dentro de la m\'onada \textbf{IOThrowsError}:\\ 
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+liftIO :: IO a -> m a
+
+getVar :: Env -> String -> IOThrowsError LispVal
+getVar envRef var  =  do env <- liftIO $ readIORef envRef
+                         maybe (throwError $ UnboundVar "Getting an unbound variable" var)
+                               (liftIO . readIORef)
+                               (lookup var env)
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Ahora definiremos una funci\'on para cambiar el valor de una variable. Es muy parecida a la anterior pero hace uso de dos funciones nuevas:
+
+\begin{itemize}
+  \item \textbf{flip}: invierte el orden de los argumentos de una funci\'on.
+  \item \textbf{writeIORef}: escribe un valor en el \textbf{IORef}.
+\end{itemize}
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+setVar :: Env -> String -> LispVal -> IOThrowsError LispVal
+setVar envRef var value = do env <- liftIO $ readIORef envRef
+                             maybe (throwError $ UnboundVar "Setting an unbound variable" var)
+                                   (liftIO . (flip writeIORef value))
+                                   (lookup var env)
+                             return value
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Una funci\'on algo m\'as interesante es aquella capaz de definir una nueva variable. Para ello se ha de crear un nuevo \textbf{IORef} con el valor que tendr\'a en principio, luego crear un par (nombreVariable, valorIORef) para a\~{n}adirlo al principio de la lista (esto se hace por eficiencia):\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+defineVar :: Env -> String -> LispVal -> IOThrowsError LispVal
+defineVar envRef var value = do
+     alreadyDefined <- liftIO $ isBound envRef var
+     if alreadyDefined
+        then setVar envRef var value >> return value
+        else liftIO $ do
+             valueRef <- newIORef value
+             env <- readIORef envRef
+             writeIORef envRef ((var, valueRef) : env)
+             return value
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+La siguiente funci\'on enriquece un entorno con una lista de variables y valores, y para ello usa una tuber\'ia mon\'adica y dos helpers:
+
+\begin{itemize}
+  \item \textbf{extendEnv} a\~{n}ade al principio de un entorno una lista de pares 
+  \item \textbf{addBinding} recibe un par (nombre, valor) y devuelve un par adaptado para ser a\~{n}adido a un entorno.
+\end{itemize}
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+bindVars :: Env -> [(String, LispVal)] -> IO Env
+bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
+     where extendEnv bindings env = liftM (++ env) (mapM addBinding bindings)
+           addBinding (var, value) = do ref <- newIORef value
+                                        return (var, ref)
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
+
+A\~{n}adimos despu\'es de la ecuaci\'on para if las siguientes dos ecuaciones:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+eval env (List [Atom "set!", Atom var, form]) =
+     eval env form >>= setVar env var
+eval env (List [Atom "define", Atom var, form]) =
+     eval env form >>= defineVar env var
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+Actualizamos el resto de funciones de evaluaci\'on:\\
+
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+evalAndPrint :: Env -> String -> IO ()
+evalAndPrint env expr =  evalString env expr >>= putStrLn
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+evalString :: Env -> String -> IO String
+evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Adaptamos ahora nuestras funciones de ejecuci\'on para que empiecen con el entorno vac\'io:\\
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+runOne :: String -> IO ()
+runOne expr = nullEnv >>= flip evalAndPrint expr
+
+runRepl :: IO ()
+runRepl = nullEnv >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
+
+Finalmente cambiamos nuestra funci\'on \textbf{main} para que s\'olo funcione con un argumento o ninguno.\\
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+main :: IO ()
+main = do args <- getArgs
+          case length args of
+               0 -> runRepl
+               1 -> runOne $ args !! 0
+               otherwise -> putStrLn "Program takes only 0 or 1 argument"
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
