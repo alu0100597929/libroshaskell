@@ -17,13 +17,13 @@
 \contentsline {section}{\numberline {4.1}Estructura general del programa}{22}{section.4.1}
 \contentsline {chapter}{\numberline {5}Conclusiones y trabajos futuros}{44}{chapter.5}
 \contentsline {chapter}{\numberline {6}Summary and Conclusions }{46}{chapter.6}
-\contentsline {section}{\numberline {6.1}First Section}{46}{section.6.1}
-\contentsline {chapter}{\numberline {7}Presupuesto}{47}{chapter.7}
-\contentsline {section}{\numberline {7.1}Secci\'on Uno}{47}{section.7.1}
-\contentsline {chapter}{\numberline {A}T\IeC {\'\i }tulo del Ap\'endice 1}{48}{appendix.Alph1}
-\contentsline {section}{\numberline {A.1}Algoritmo XXX}{48}{section.Alph1.1}
-\contentsline {section}{\numberline {A.2}Algoritmo YYY}{48}{section.Alph1.2}
-\contentsline {chapter}{\numberline {B}T\IeC {\'\i }tulo del Ap\'endice 2}{50}{appendix.Alph2}
-\contentsline {section}{\numberline {B.1}Otro apendice: Seccion 1}{50}{section.Alph2.1}
-\contentsline {section}{\numberline {B.2}Otro apendice: Seccion 2}{50}{section.Alph2.2}
-\contentsline {chapter}{Bibliograf\IeC {\'\i }a}{50}{section.Alph2.2}
+\contentsline {section}{\numberline {6.1}First Section}{47}{section.6.1}
+\contentsline {chapter}{\numberline {7}Presupuesto}{48}{chapter.7}
+\contentsline {section}{\numberline {7.1}Secci\'on Uno}{48}{section.7.1}
+\contentsline {chapter}{\numberline {A}T\IeC {\'\i }tulo del Ap\'endice 1}{49}{appendix.Alph1}
+\contentsline {section}{\numberline {A.1}Algoritmo XXX}{49}{section.Alph1.1}
+\contentsline {section}{\numberline {A.2}Algoritmo YYY}{49}{section.Alph1.2}
+\contentsline {chapter}{\numberline {B}T\IeC {\'\i }tulo del Ap\'endice 2}{51}{appendix.Alph2}
+\contentsline {section}{\numberline {B.1}Otro apendice: Seccion 1}{51}{section.Alph2.1}
+\contentsline {section}{\numberline {B.2}Otro apendice: Seccion 2}{51}{section.Alph2.2}
+\contentsline {chapter}{Bibliograf\IeC {\'\i }a}{51}{section.Alph2.2}

@@ -2,12 +2,20 @@
 % Chapter 6: Summary and Conlusions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Functional programming is a paradigm booming right now, especially for its applications in parallel computing and mathematics, as well as its capacity to ensure that programs are almost inmune to fuzzing attacks, and less likely to lead errors.\\
 
-This chapter is compulsory.
-The memory should include an extended summary and conclusions in english. 
+However, learning functional programming is, above all, slow, and closely related to abstract algebra, the lambda calculus and category theory. It is the most abstract paradigm I know and requires a head fitted for this purpose, therefore I see more targeted (at least a priori) to mathematicians to computer engineers.\\
+
+Functional programs are very, very modular, in the sense that there are a lot of functions defined in them (in fact in functional programming you can't do anything else), and this allows them to be little prone to errors, because functions don't share state, cause functions are limited to receive inputs and produce outputs (this is known as referential transparency or purity). The programmer can then merely thinking how from an input he will produce an output, and in many cases this leads to generalizations and abstractions far more powerful than those that are available in other paradigms abstractions.\\
+
+For compilers and interpreters, a language like Haskell is very powerful. Algebraic data types allow us to build values and then apply pattern matching, creating domain specific languages easily. This is specially suited to interpret functional languages like Scheme. In this case, we have multiple definitions and data structures that behave like Scheme, and we took advantage of it.\\
+
+Performance-wise, it's very good, and can work with inmensely large integers to calculate, for example, huge factorials. The code is easily customizable and you can add new functions or equations to existing functions easily.\\
+
+I think functional programming is valid for depending on what task, rather than to others, therefore, the languages I think have a better future today are, at least for me, Javascript and Rust. These two languages are mixes (they have imperative and functional features), and is the way I think will take the languages in the future. Functional programming servers to approach problems differently, and opens the mind of imperative programmers.\\
+
+As future lines of work, they could use the ideas of the code already done to make a Scheme to C compiler, also using Haskell or another functional language. Also, the state could be implemented via the fixed-point combinator. They could also add the features proposed in the tutorial in which I have drawn, such as macros (pre-process the code and make modifications before running), or continuations (calculations running and keeping their result, for late use if needed, without repeating the calculation). 
 
 %---------------------------------------------------------------------------------
 \section{First Section}
 \label{6:sec:1}
-
