@@ -867,3 +867,99 @@ main = do args <- getArgs
 \end{lstlisting}
 \end{scriptsize}
 \end{minipage}
+
+Definiendo funciones de Scheme:\\
+
+Lo primero que debemos hacer es a\~{n}adir nuevos constructores de valor al tipo \textbf{LispVal}. El constructor \textbf{PrimitiveFunc} guarda una funci\'on que recibe una lista de argumentos y devuelve un \textbf{ThrowsError LispVal}, teniendo el mismo tipo que nuestra lista de primitivas. El constructor \textbf{Func}, sin embargo, usa lo que se conoce en Haskell como \textbf{record syntax}, es decir, que definimos los tipos que compondr\'an nuestro tipo y se crear\'an autom\'aticamente las funciones para acceder a ellos (como vemos, la declaraci\'on de los tipos se parece mucho a una cabecera de funci\'on). \textbf{Func} sirve para guardar funciones definidas por el usuario y se construye con cuatro elementos:
+
+\begin{itemize}
+  \item los nombres de los argumentos, como si estuvieran ligados al cuerpo de la funcion.
+  \item si la funci\'on acepta o no una lista de argumentos de tama\~{n}o variable, y si lo hace, el nombre de la variable que la guarda.
+  \item el cuerpo de la funci\'on, como una lista de expresiones.
+  \item el entorno en el que la funci\'on fue creada.
+\end{itemize}
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+| PrimitiveFunc ([LispVal] -> ThrowsError LispVal)
+| Func { params :: [String], vararg :: (Maybe String),
+         body :: [LispVal], closure :: Env }
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
+
+Lo primero es comprobar el largo de la lista de par\'ametros contra el n\'umero esperado de argumentos. Luego se usa una tuber\'ia mon\'adica que enlaza los argumentos a un nuevo entorno y ejecuta las instrucciones del cuerpo. La primera cosa que hacemos es usar \textbf{zip}, es decir, unir dos listas en una lista de pares del tipo (1er argumento de la primera lista, 1er argumento de la segunda lista).Con esta lista y la clausura creamos el entorno en el cual se ejecutar\'a la funci\'on. Luego se enlazan los argumentos restantes a la variable \textbf{varArgs}, mediante la funci\'on \textbf{bindVarArgs}. Si esta variable vale \textbf{Nothing}, entonces devolvemos el entorno exitente. Si no, creamos una lista que tenga el nombre de la variable como el valor, y se la pasamos a \textbf{bindVars}. Definimos la variable local \textbf{remainingArgs} por limpieza, usando la funci\'on \textbf{drop} para ignorar los argumentos que ya han sido ligados a variables. Lo \'ultimo es evaluar el cuerpo en este nuevo entorno. Usamos para ello la funci\'on \textbf{evalBody}, que mapea la funci\'on mon\'adica \textbf{eval env} sobre cada expresi\'on del cuerpo, y luego devuelve el valor de la \'ultima expresi\'on:
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+apply :: LispVal -> [LispVal] -> IOThrowsError LispVal
+apply (PrimitiveFunc func) args = liftThrows $ func args
+apply (Func params varargs body closure) args =
+      if num params /= num args && varargs == Nothing
+         then throwError $ NumArgs (num params) args
+         else (liftIO $ bindVars closure $ zip params args) >>= bindVarArgs varargs >>= evalBody
+      where remainingArgs = drop (length params) args
+            num = toInteger . length
+            evalBody env = liftM last $ mapM (eval env) body
+            bindVarArgs arg env = case arg of
+                Just argName -> liftIO $ bindVars env [(argName, List $ remainingArgs)]
+                Nothing -> return env
+apply (IOFunc func) args = func args
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Para que nuestro int\'erprete sea m\'as c\'omodo y parecido a uno real, ligamos las primitivas que tenemos hardcodeadas como funciones de Haskell pero con el nombre de las de Scheme al iniciar el programa. Adem\'as queremos que esto se haga siempre, por ello llamamos a esta funci\'on en la ejecuci\'on de \textbf{runOne} y \textbf{runRepl}:\\
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+primitiveBindings :: IO Env
+primitiveBindings = nullEnv >>= (flip bindVars $ map makePrimitiveFunc primitives)
+     where makePrimitiveFunc (var, func) = (var, PrimitiveFunc func)
+
+runOne :: String -> IO ()
+runOne expr = primitiveBindings >>= flip evalAndPrint expr
+
+runRepl :: IO ()
+runRepl = primitiveBindings >>= until_ (== "quit") (readPrompt "Lisp>>> ") . evalAndPrint
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Definimos un helper que nos permita crear funciones en general, y luego creamos dos funciones que son una currificaci\'on de \textbf{makeFunc} (la funci\'on m\'as general) para crear funciones con un n\'umero fijo o variable de argumentos:\\
+
+\begin{minipage}{\linewidth}
+\begin{tiny}
+\begin{lstlisting}[frame=single]
+makeFunc varargs env params body = return $ Func (map showVal params) varargs body env
+makeNormalFunc = makeFunc Nothing
+makeVarArgs = makeFunc . Just . showVal
+\end{lstlisting}
+\end{tiny}
+\end{minipage}
+
+Finalmente a\~{n}adimos a \textbf{eval} nuevas ecuaciones que nos permitan definir funciones y lambdas, y cambiamos el modo en el que se aplican las funciones (\'ultima ecuaci\'on de \textbf{eval}):\\
+
+\begin{minipage}{\linewidth}
+\begin{scriptsize}
+\begin{lstlisting}[frame=single]
+eval env (List (Atom "define" : List (Atom var : params) : body)) =
+     makeNormalFunc env params body >>= defineVar env var
+eval env (List (Atom "define" : DottedList (Atom var : params) varargs : body)) =
+     makeVarArgs varargs env params body >>= defineVar env var
+eval env (List (Atom "lambda" : List params : body)) =
+     makeNormalFunc env params body
+eval env (List (Atom "lambda" : DottedList params varargs : body)) =
+     makeVarArgs varargs env params body
+eval env (List (Atom "lambda" : varargs@(Atom _) : body)) =
+     makeVarArgs varargs env [] body
+eval env (List (function : args)) = do
+     func <- eval env function
+     argVals <- mapM (eval env) args
+     apply func argVals
+\end{lstlisting}
+\end{scriptsize}
+\end{minipage}
