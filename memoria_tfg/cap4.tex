@@ -514,7 +514,7 @@ data Unpacker = forall a. Eq a => AnyUnpacker (LispVal -> ThrowsError a)
 \end{scriptsize}
 \end{minipage}
 
-Aunque parezca muy extra~no y novedoso, indagando un poco en por qu\'e se le llama existencial nos daremos cuenta de que todo cobra sentido; esto es un constructor de tipos como otro cuaquiera, pero estamos obligando a que el tipo \textbf{a} sea instancia de la clase de tipos \textbf{Eq}. Luego, si y s\'olo si existe la instancia para \textbf{Eq} del tipo que queramos instanciar como tipo \textbf{Unpacker}, el compilador nos permitir\'a instanciarlo. Estamos ordenando nuestro c\'odigo y evitando errores en tiempo de ejecuci\'on a costa de generar potenciales errores en tiempo de compilaci\'on, puro Haskell.\\
+Aunque parezca muy extra\~{n}o y novedoso, indagando un poco en por qu\'e se le llama existencial nos daremos cuenta de que todo cobra sentido; esto es un constructor de tipos como otro cuaquiera, pero estamos obligando a que el tipo \textbf{a} sea instancia de la clase de tipos \textbf{Eq}. Luego, si y s\'olo si existe la instancia para \textbf{Eq} del tipo que queramos instanciar como tipo \textbf{Unpacker}, el compilador nos permitir\'a instanciarlo. Estamos ordenando nuestro c\'odigo y evitando errores en tiempo de ejecuci\'on a costa de generar potenciales errores en tiempo de compilaci\'on, puro Haskell.\\
 
 Nuestra intenci\'on es tener tambi\'en un modo "d\'ebil" de comparar, y para ello lo que haremos ser\'a probar uno a uno todos nuestros unpackers, y desde el momento en que uno de ellos devuelva \textbf{True}, eso mismo devolveremos, y si en cambio todos devuelven \textbf{False}, entonces devolveremos \textbf{False}.\\
 
