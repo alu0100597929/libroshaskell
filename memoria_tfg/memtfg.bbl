@@ -1,14 +1,15 @@
 \begin{thebibliography}{1}
 
-\bibitem{Bailey}
-D.~H. Bailey and P.~Swarztrauber.
-\newblock The fractional {F}ourier transform and applications.
-\newblock {\em SIAM Rev.}, 33(3):389--404, 1991.
-
 \bibitem{LYAH}
 Miran Lipovaca.
 \newblock {\em Learn You a Haskell for Great Good!: A Beginner's Guide}.
 \newblock No Starch Press, 2011.
+
+\bibitem{Lambda}
+Greg Michaelson.
+\newblock {\em An Introduction to Functional Programming Through Lambda
+  Calculus}.
+\newblock Dover, 2011.
 
 \bibitem{Ruiz:2004}
 Blas~C. Ruiz.

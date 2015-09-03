@@ -300,13 +300,13 @@ Hay una versión web del proyecto en \url{francisconebrera.com/interpreter}, y ta
 \begin{summary}
 {\em 
 
-The main purpose of this Final Degree Project is create a compiler and interpreter of the Scheme language, using Haskell. For that it was used a monadic parser, Parsec. The program uses key concepts in functional programming like currying, list folding, algebraic data types, functors, monads and monad transformers.\\
+The main purpose of this Final Degree Project is to create a compiler and interpreter for the Scheme language, using Haskell. The parsing phase of the compiler was implemented using Parsec. The program uses key concepts in functional programming like currying, list folding, algebraic data types, functors, monads and monad transformers.\\
 
 The program is based on the tutorial Write Yourself a Scheme in 48 hours \url{https://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours}, including modifications and doing all the exercises proposed in this tutorial.\\
 
-The interpreter performance is pretty good, and the code is nice and understandable, but I have to say that it has obscure parts for making it more parametric and short.\\
+The interpreter performance is good, and the code is well-design and easy to read. However there are a few parts which are more obscure due to its parametric design which makes it shorter.\\
 
-There are two versions of the program: a web version at \url{http://francisconebrera.com/interpreter} and desktop version of this Final Degree Project.
+There is a web version at \url{http://francisconebrera.com/interpreter} and a desktop version of this Final Degree Project.
 
 }
 
@@ -340,14 +340,16 @@ There are two versions of the program: a web version at \url{http://francisconeb
 \tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage{\pagestyle{empty}}
 
-\listoffigures
+% \newpage{\pagestyle{empty}}
+
+% \listoffigures
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage{\pagestyle{empty}}
 
-\listoftables
+% \newpage{\pagestyle{empty}}
+
+% \listoftables
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage{\pagestyle{empty}}
@@ -365,19 +367,26 @@ There are two versions of the program: a web version at \url{http://francisconeb
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\chapter{Estado del arte}
+\label{chapter:estadodelarte}
+
+\input{estadodelarte.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Librería Parsec}
 \label{chapter:dos}
 
 \input{cap2.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage{\pagestyle{empty}}
-\thispagestyle{empty}
+% \newpage{\pagestyle{empty}}
+% \thispagestyle{empty}
 
-\chapter{El lenguaje Scheme}
-\label{chapter:tres}
+% \chapter{El lenguaje Scheme}
+% \label{chapter:tres}
 
-\input{cap3.tex}
+% \input{cap3.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -420,19 +429,20 @@ There are two versions of the program: a web version at \url{http://francisconeb
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage{\pagestyle{empty}}
-\thispagestyle{empty}
-\begin{appendix}
 
-\chapter{Título del Apéndice 1}
-\label{appendix:1}
-\input{apendice1.tex}
+% \newpage{\pagestyle{empty}}
+% \thispagestyle{empty}
+% \begin{appendix}
 
-\chapter{Título del Apéndice 2}
-\label{appendix:2}
-\input{apendice2.tex}
+% \chapter{Título del Apéndice 1}
+% \label{appendix:1}
+% \input{apendice1.tex}
 
-\end{appendix}
+% \chapter{Título del Apéndice 2}
+% \label{appendix:2}
+% \input{apendice2.tex}
+
+% \end{appendix}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addcontentsline{toc}{chapter}{Bibliografía}

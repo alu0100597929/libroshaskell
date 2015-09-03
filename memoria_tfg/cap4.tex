@@ -4,7 +4,7 @@
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-En el cap\'itulo ~\ref{chapter:tres} se describi\'o el lenguaje Scheme, dando una idea general sobre el mismo. En el presente cap\'itulo se tratar\'a de explicar el funcionamiento del programa principal del presente Trabajo Fin de Grado.
+En el presente cap\'itulo se tratar\'a de explicar el funcionamiento del programa principal del presente Trabajo Fin de Grado.
 
 \section{Estructura general del programa}
 \label{3:sec1}
@@ -111,7 +111,8 @@ unwordsList = unwords . map showVal
 \end{footnotesize}
 \end{minipage}
 
-Ahora empezamos con el evaluador propiamente dicho:\\
+\section{Evaluaci\'on de expresiones:}
+\label{3:sec2}
 
 \begin{minipage}{\linewidth}
 \begin{footnotesize}
@@ -208,7 +209,8 @@ Aqu\'i vemos la funci\'on \textbf{primitives}, que devuelve una lista de pares (
 
 Lo que hace es primeramente desempaquetar los n\'umeros, es decir, pasarlos al tipo \textbf{Integer}. Despu\'es les aplica un plegado a la izquierda, es decir, va haciendo la operaci\'on binaria con los enteros de la lista, dos a dos (asonciando a izquierdas), y va acumulando el resultado para usarlo con el siguiente entero de la lista. Esto nos permite que operaciones no conmutativas como la resta den el resultado correcto de manera casi gratuita.\\
 
-Manejo de errores:\\
+\section{Manejo de errores:}
+\label{3:sec3}
 
 En primera instancia crearemos un tipo de dato algebraico que generalice los errores mediante un constructor de tipos, y los concretice mediante constructores de valor:\\
 
@@ -339,18 +341,6 @@ unpackNum notNum     = throwError $ TypeMismatch "number" notNum
 \end{tiny}
 \end{minipage}
 
-\begin{minipage}{\linewidth}
-\begin{footnotesize}
-\begin{lstlisting}[frame=single]
-main :: IO ()
-main = do
-  args <- getArgs
-  evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
-  putStrLn $ extractValue $ trapError evaled
-\end{lstlisting}
-\end{footnotesize}
-\end{minipage}
-
 Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}:
 
 \begin{itemize}
@@ -370,7 +360,20 @@ Aqu\'i lo m\'as complicado es saber el tipo de \textbf{evaled}:
 
 Todas las funciones cuyo primer argumento es \textbf{LispVal} deben usar pattern matching para saber qu\'e constructor de valor se ha usado para crear el mencionado \textbf{LispVal}.\\
 
-Evaluaci\'on, parte 2\\
+\begin{minipage}{\linewidth}
+\begin{footnotesize}
+\begin{lstlisting}[frame=single]
+main :: IO ()
+main = do
+  args <- getArgs
+  evaled <- return $ liftM show $ readExpr (args !! 0) >>= eval
+  putStrLn $ extractValue $ trapError evaled
+\end{lstlisting}
+\end{footnotesize}
+\end{minipage}
+
+\section{Evaluaci\'on: segunda parte:}
+\label{3:sec4}
 
 \textbf{boolBinop} es una funci\'on definida para ser currificada, y por ello es muy vers\'atil:\\
 
@@ -572,7 +575,8 @@ equal badArgList = throwError $ NumArgs 2 badArgList
 
 El tipo de \textbf{unpackEquals arg1 arg2} es \textbf{Unpacker $-\!>$ ThrowsError Bool}, por tanto, \textbf{mapM (unpackEquals arg1 arg2)} sobre la lista \textbf{[AnyUnpacker unpackNum, AnyUnpacker unpackStr, AnyUnpacker unpackBool]} dar\'a una m\'onada \textbf{ThrowsError} conteniendo una lista de \textbf{Bool}, es decir, \textbf{ThrowsError [Bool]}. A dicha lista le aplicaremos la funci\'on \textbf{or} mediante \textbf{liftM}.\\
 
-Construyendo un REPL\\
+\section{Construyendo un REPL:}
+\label{3:sec5}
 
 Un REPL (read-eval-print loop) es un bucle de lectura-evaluaci\'on-impresi\'on, es decir, nos permite usar nuestro programa como si de una consola se tratara, y es as\'i como funcionan la mayor\'ia de int\'erpretes pasados y actuales. Lo primero que haremos ser\'a crear un helper que imprima por pantalla una cadena (la salida que da el int\'erprete al evaluar algo) y limpie despu\'es el flujo:\\
 
@@ -656,9 +660,10 @@ main = do args <- getArgs
 \end{footnotesize}
 \end{minipage}
 
-A\~{n}adiendo variables y asignaci\'on:\\
+\section{A\~{n}adiendo variables y asignaci\'on:}
+\label{3:sec6}
 
-Usaremos el modo de hilos de estado de Haskell, llamado \textbf{IORef}. Este m\'odulo se usa en medio de la m\'onada IO y sirve para usar variables mutables sin esfuerzo en Haskell. Necesitamos una m\'onada que contenga una lista que asocie cadenas con m\'onadas que contengan valores de tipo \textbf{LispVal}. Esto es as\'i porque hay dos maneras de modificar un entorno:\\
+Usaremos el modo de hilos de estado de Haskell, llamado \textbf{IORef}. Este m\'odulo se usa en medio de la m\'onada IO y sirve para usar variables mutables sin esfuerzo en Haskell. Necesitamos una m\'onada que contenga una lista que asocie cadenas con m\'onadas que contengan valores de tipo \textbf{LispVal}. Esto es as\'i porque hay dos maneras de modificar un entorno:
 
 \begin{itemize}
   \item la funci\'on \textbf{set!} cambia el valor de una variable de la lista
@@ -868,7 +873,8 @@ main = do args <- getArgs
 \end{scriptsize}
 \end{minipage}
 
-Definiendo funciones de Scheme:\\
+\section{Definiendo funciones de Scheme:}
+\label{3:sec7}
 
 Lo primero que debemos hacer es a\~{n}adir nuevos constructores de valor al tipo \textbf{LispVal}. El constructor \textbf{PrimitiveFunc} guarda una funci\'on que recibe una lista de argumentos y devuelve un \textbf{ThrowsError LispVal}, teniendo el mismo tipo que nuestra lista de primitivas. El constructor \textbf{Func}, sin embargo, usa lo que se conoce en Haskell como \textbf{record syntax}, es decir, que definimos los tipos que compondr\'an nuestro tipo y se crear\'an autom\'aticamente las funciones para acceder a ellos (como vemos, la declaraci\'on de los tipos se parece mucho a una cabecera de funci\'on). \textbf{Func} sirve para guardar funciones definidas por el usuario y se construye con cuatro elementos:
 
@@ -963,3 +969,5 @@ eval env (List (function : args)) = do
 \end{lstlisting}
 \end{scriptsize}
 \end{minipage}
+
+Ya tenemos listo un compilador e int\'{e}rprete del lenguaje Scheme.
