@@ -4,29 +4,18 @@
 
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-\section{Introducción a Parsec}
+\section{La librería Parsec: descripción y exposición de un parser ilustrativo:}
 \label{:sec1}
 
 En el capítulo anterior se ha realizado una introducción a la programación funcional con Haskell, y ahora se describirá un módulo muy útil en la creación del intérprete, Parsec.\\
 
-Parsec es un módulo de Haskell, un conjunto de funciones exportables que suelen tener una finalidad común y se pueden importar en otros programas. En nuestro intérprete hemos importado Parsec, pues es el módulo utilizado en el tutorial que seguimos, Write Yourself a Scheme in 48 hours.\\
+Parsec es un módulo de Haskell, un conjunto de funciones exportables que suelen tener una finalidad común y se pueden importar en otros programas. En nuestro intérprete hemos utlizado el módulo de Haskell Parsec, que permite crear parsers complejos a partir de otros más sencillos, combinándolos.\\
 
 Parsec se diseñó desde cero como una librería de parsers con capacidades industriales. Es simple, segura, está bien documentada, provee de buenos mensajes de error y es rápida. Se define como un transformador de mónadas que puede ser apilado sobre mónadas arbitrarias, y también es paramétrico en el tipo de flujo de entrada. La documentación de la versión usada en el presente Trabajo Fin de Grado se puede consultar online en \url{https://hackage.haskell.org/package/parsec-3.1.9}\\
 
 Parsec se puede leer en "inglés plano" (siempre que nuestros parsers tengan los nombres adecuados). Se pueden hacer analogías entre las funciones de Parsec y las expresiones regulares, como veremos en el ejemplo de código de este capítulo.\\
 
-La mejor manera de describir el módulo es mediante un ejemplo, un parser del conocido formato JSON.\\
-
-\section{Librerías necesarias}
-\begin{small}
-\begin{lstlisting}[frame=single]
-import Text.ParserCombinators.Parsec hiding ((<|>), many)
-import Text.Parsec.Numbers (parseFloat)
-import Control.Applicative
-import Control.Monad
-import Prelude hiding (Null,null)
-\end{lstlisting}
-\end{small}
+La mejor manera de describir el módulo es mediante un ejemplo, un parser del conocido formato JSON, y que si lo desea puede descargar en \url{https://github.com/freinn/libroshaskell/tree/master/tfg/JSON_parser}.\\
 
 \section{Formato a parsear}
 
@@ -219,7 +208,7 @@ lexeme p = p <* ws
 
 De este modo, con aplicar lexeme a cada uno de los parsers que vayamos a usar, tenemos resuelto el problema de los espacios entre tokens.\\
 
-Bueno, ahora que el problema de los espacios está resuelto...¡sorpresa! no lo está del todo...Como hemos dicho, el combinador \textbf{lexeme} se "come" todos los espacios, tabuladores o newlines que encuentre después del token parseado. Pero, ¿y si esos espacios estuvieran antes del primer token que llegamos a parsear? Probablemente se produciría un error.\\
+Bueno, ahora que el problema de los espacios está resuelto...¡sorpresa! no lo está del todo...Como hemos dicho, el combinador \textbf{lexeme} se ``come'' todos los espacios, tabuladores o newlines que encuentre después del token parseado. Pero, ¿y si esos espacios estuvieran antes del primer token que llegamos a parsear? Probablemente se produciría un error.\\
 
 Solución: añadir el parser {spaces} a nuestro parser principal \textbf{jsonValue}. Esto se hizo mediante el operador monádico $>>$, que en la mónada de Parsec tiene el efecto de ejecutar ese parser, y si tiene éxito no guardar el resultado del parsing, sino pasar al siguiente. Se ha usado $>>$ para ilustrar el uso de esta función, ya que se había introducido antes: $* \! >$, también llamado ``star arrow''.\\ %evitamos los espacios entre símbolos del modo matemático
 

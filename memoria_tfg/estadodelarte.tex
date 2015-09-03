@@ -8,8 +8,12 @@ La programaci\'on funcional es un tema candente a d\'ia de hoy por sus aplicacio
 
 Haskell es muy buen lenguaje de programaci\'on, y es puramente funcional. Cuando empec\'e a programar en Haskell su ecosistema era bastante peor que el actual. La instalaci\'on de cabal (su gestor de paquetes) era algo m\'as tediosa y tendente al temido ``cabal hell'', el momento en el cual toca borrar su carpeta y empezar a instalar las librer\'ias de cero y en otro orden. A eso se le a\~{n}ade el hecho de que en ghc 7.10 se decidi\'o hacer Applicative superclase (de tipos) de Monad, y esto provoc\'o una situaci\'on de code breaking en todo el c\'odigo antiguo que no tuviera instancia de Applicative para sus tipos instancia de Monad.\\
 
+Haskell ha sido elegido por ser id\'oneo para la construcci\'on de compiladores e int\'erpretes, y ha facilitado mucho la labor de dise\~{n}o. Su principal fortaleza radica en su parecido con el lenguaje Scheme, con el cual tiene diferencias importantes pero en esencia ambos se basan en el c\'alculo lambda y es sencillo crear un DSL en Haskell que represente a los tipos de Scheme. Adem\'as, definir funciones en funci\'on de la entrada para que produzcan una salida, cosa que se suele hacer en la cabecera de la misma funci\'on, es casi una gu\'ia autom\'atica para hacer un int\'erprete de Scheme.\\
+
+Scheme es un dialecto de Lisp muy aclamado por aquellos que lo usan, es un lenguaje que usa la notaci\'on prefija, lo cual tambi\'en facilita las labores de parseo e interpretaci\'on.\\
+
 El lenguaje es cada vez m\'as c\'omodo, existen gran cantidad de librer\'ias de parsers (en las que destaca Parsec), librer\'ias matem\'aticas y frameworks para crear p\'aginas web, entre otras muchas utilidades.\\
 
 El paradigma era relativamente nuevo para m\'i, hab\'ia hecho alguna pr\'actica en Prolog, pero no tiene demasiado que ver con Haskell, aunque lo parezca a priori. Cierto es que queda patente desde el primer momento que es un lenguaje id\'oneo para hacer int\'erpretes y compiladores, por las caracter\'isticas ya mencionadas: reconocimiento de patrones, tipos de datos algebraicos, funtores, m\'onadas, plegados de listas, currificaci\'on y lambdas.\\
 
-Considero que la programaci\'on funcional est\'a en auge, y es un buen momento para aprenderla y profundizar en ella para as\'i poder gozar de sus numerosas ventajas en las aplicaciones en las cuales m\'as brilla.
+Considero que la programaci\'on funcional est\'a en auge, y es un buen momento para aprenderla y profundizar en ella para as\'i poder gozar de sus numerosas ventajas en las aplicaciones en las cuales m\'as brilla, como los compiladores.
