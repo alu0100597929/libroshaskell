@@ -8,7 +8,7 @@
 \contentsline {chapter}{\numberline {2}Estado del arte}{9}{chapter.2}
 \contentsline {chapter}{\numberline {3}Una herramienta de Haskell para la construcci\'on de compiladores: el m\'odulo Parsec}{11}{chapter.3}
 \contentsline {section}{\numberline {3.1}La librer\IeC {\'\i }a Parsec: descripci\'on y exposici\'on de un parser ilustrativo:}{11}{section.3.1}
-\contentsline {section}{\numberline {3.2}Formato a parsear}{12}{section.3.2}
+\contentsline {section}{\numberline {3.2}Un ejemplo completo: uso de Parsec para parsear JSON}{12}{section.3.2}
 \contentsline {chapter}{\numberline {4}Funcionamiento del Compilador e Int\'erprete}{22}{chapter.4}
 \contentsline {section}{\numberline {4.1}Estructura general del programa}{22}{section.4.1}
 \contentsline {section}{\numberline {4.2}Evaluaci\'on de expresiones:}{27}{section.4.2}
