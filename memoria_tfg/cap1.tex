@@ -11,6 +11,10 @@ libros sobre el lenguaje y la programación funcional en general, y a crear peque
 Haskell. Haskell es muy interesante debido a que es el lenguaje con mayor nivel de 
 abstracción en el que he programado hasta hoy.\\
 
+%---------------------------------------------------------------------------------
+\section{Idoneidad de Haskell para la creación de compiladores}
+\label{1:sec:1}
+
 Haskell es idóneo para crear lenguajes de dominio específico. En otras palabras, antes de 
 escribir un compilador se captura el lenguaje a compilar (el lenguaje fuente) en un 
 tipo. Las expresiones de ese tipo representarán términos en el lenguaje fuente y normalmente son 
@@ -23,7 +27,7 @@ todo es una función, y además, currificada) que mapean del dominio del lenguaje 
 del lenguaje objetivo.\\
 
 Por ello los lenguajes funcionales con sintaxis ligera y un fuerte sistema de tipos se consideran 
-muy adecuados para crear compiladores y muchas otras cosas cuya finalidad es la traducción.\\
+muy adecuados para crear compiladores y muchas otras cosas cuya finalidad es la traducción. A lo largo de la presente memoria se explica el procedimiento de implementación de un compilador e intérprete del lenguaje Scheme.\\
 
 Además, Haskell cuenta con mecanismos de abstracción muy fuertes que permiten escribir códigos 
 escuetos que se comportan muy bien, como por ejemplo:
@@ -257,12 +261,9 @@ Luego de la aplicación de \textbf{foldl'} vemos un punto, que significa composic
 
 Como vemos, en Haskell con una sóla línea se pueden hacer virguerías, el programa completo que simula un DFA, leyendo desde fichero y pidiendo continuamente entrada tras computar la anterior, ocupa 35 líneas y puede ser consultado en \url{https://github.com/freinn/libroshaskell/blob/master/write48/DFA_propio/DFA.hs}.\\
 
-%------------------------------------------------------------------------------
-%\begin{figure}[!th]
-%\begin{center}
-%\includegraphics[width=0.5\textwidth]{images/arbolbinario.eps}
-%\caption{Ejemplo}
-%\label{fig:ArbolBinario}
-%\end{center}
-%\end{figure}
-%------------------------------------------------------------------------------
+\section{El lenguaje Scheme}
+\label{1:sec:6}
+
+El lenguaje Scheme es un dialecto de Lisp (LISt Processing Language). Es el lenguaje usado en el libro que para mucha gente es el mejor libro sobre ciencias de la computación jamás escrito: ``Structure and Interpretation of Computer Programs''. Es un lenguaje minoritario pero muy aclamado por sus usuarios.\\
+
+El lenguaje es prefijo, y por ello es fácil de parsear, y las funciones son ciudadanos de primera clase. Además, las listas se tratan de manera idéntica a la declaración de funciones (de hecho, todo programa Scheme es una función, en concreto una lista). Si bien no es puramente funcional, ya que cuenta con constructos imperativos, sí permite muchas técnicas de programación funcional. Además, los lenguajes derivados de Lisp, como el más actualmente usado, Clojure, tienen un gran reconocimiento por parte de sus usuarios y son lenguajes bajo mi punto de vista de gran calidad.
