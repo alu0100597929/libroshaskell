@@ -1,7 +1,9 @@
 data Date = Date Int Int Int -- year, month, day
 
-data Anniversary = Birthday String Date       -- name, date
-                 | Wedding String String Date -- spouse name 1, spouse name 2, date
+type Name = String
+
+data Anniversary = Birthday Name Date       -- name, date
+                 | Wedding Name Name Date -- spouse name 1, spouse name 2, date
 
 johnSmith :: Anniversary
 johnSmith = Birthday "John Smith" (Date 1968 7 3)

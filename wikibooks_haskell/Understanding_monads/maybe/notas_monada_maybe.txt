@@ -1,0 +1,3 @@
+Como vemos, en el operador bind dejamos la posibilidad de que el dato que había en un Just, por la razón que sea se nos convierta en un valor Nothing. Este es el poder de las mónadas, el contexto puede cambiar!! La función que recibe bind es la que puede cambiar el valor monádico inicial a otro contexto.
+
+Lo principal que hace el operador bind es permitir usar funciones que reciben valores no monádicos para luego crear monádicos "de otra forma" si hace falta
