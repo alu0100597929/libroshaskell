@@ -1,0 +1,3 @@
+El NFA de ejemplo acepta cuando la cadena de entrada contiene un número par de ceros o unos.
+
+Las cadenas deben empezar con # para que el NFA se vaya al cjto {Q1, Q3} que le permite computar con 0, 1 y blanco (#).

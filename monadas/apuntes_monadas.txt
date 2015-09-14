@@ -18,10 +18,18 @@
 
 -- Reglas de transformación:
 
-"a <- m
-e" en 
-"m >>= \a -> e"
-y 
-"m
-n" en 
+a <- m
+e
+
+en
+
+m >>= \a -> e"
+
+y
+
+m
+n
+
+en
+
 "m >> n"
