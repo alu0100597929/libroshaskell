@@ -1,8 +1,7 @@
 Material traducido desde http://heh.fi/state-monad
 
 En la mónada estado, todas las lambdas reciben como parámetro el "estado inicial",
-es decir, el estado en el que dicha computación empieza. No se refiere al estado inicial de
-lo que podría ser un DFA o algo por el estilo.
+es decir, el estado en el que dicha computación empieza. No se refiere al estado inicial de lo que podría ser un DFA o algo por el estilo.
 
 La mónada estado es simplemente una instancia de la clase de tipos que contiene una función. Dicha función es del tipo s -> (a,s) donde s es el "estado inicial", y (a,s) es un par que contiene, respectivamente, el resultado (a) y el nuevo estado, que también es de tipo s.
 
