@@ -28,7 +28,7 @@ m >>= k = S $ \s -> let (a, s') = runState m s
                         nuevaMonada = k a
                     in runState nuevaMonada s'
 
--- sólo me interesa cambiar la información oculta en la mónada
+-- sólo me interesa cambiar la información oculta (en este caso, estado) en la mónada
 (>>) :: State s a -> State s b -> State s b
 (>>) (S f) (S g) = S $ \s -> let (_, s') = f s
                              in g s'
