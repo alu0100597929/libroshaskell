@@ -68,12 +68,30 @@ randomVecR n (low, high) = do
 -- Exercise 5 -----------------------------------------
 
 shuffle :: Vector a -> Rnd (Vector a)
-shuffle = undefined
+shuffle vec = let iterations = V.length vec - 1
+                  changeBy = [iterations, iterations - 1..1]
+              in do
+                   listOfChanges <- mapM (\i -> getRandomR (0, i)) changeBy
+                   return $ foldl (\vector (i, j) -> case swapV i j vector of
+                                                       Nothing -> V.empty
+                                                       Just v -> v) vec $ zip listOfChanges changeBy
+
+-- Función mía: Imprimir vector en mónada random
+--imprimirVectorEnMonada $ shuffle $ V.fromList([1..10])
+imprimirVectorEnMonada :: (Show a) => Rnd (Vector a) -> IO ()
+imprimirVectorEnMonada vecRand = let vector = evalRand vecRand (mkStdGen 0)
+                                 in do
+                                   putStrLn $ show vector
 
 -- Exercise 6 -----------------------------------------
 
 partitionAt :: Ord a => Vector a -> Int -> (Vector a, a, Vector a)
-partitionAt = undefined
+partitionAt vec pos = let antesDelPivote = V.slice 0 (pos) vec
+                          despuesDelPivote = V.slice (pos + 1) (V.length vec - pos - 1) vec
+                          vectorSinPivote = antesDelPivote V.++ despuesDelPivote
+                          valorEnPosPivote = vec V.! pos
+                      in (V.filter (\x -> (compare x valorEnPosPivote) == LT) vectorSinPivote,
+                          valorEnPosPivote, V.filter (\x -> (compare x valorEnPosPivote) /= LT) vectorSinPivote)
 
 -- Exercise 7 -----------------------------------------
 
