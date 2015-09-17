@@ -77,7 +77,7 @@ shuffle vec = let iterations = V.length vec - 1
                                                        Just v -> v) vec $ zip listOfChanges changeBy
 
 -- Función mía: Imprimir vector en mónada random
---imprimirVectorEnMonada $ shuffle $ V.fromList([1..10])
+-- imprimirVectorEnMonada $ shuffle $ V.fromList([1..10])
 imprimirVectorEnMonada :: (Show a) => Rnd (Vector a) -> IO ()
 imprimirVectorEnMonada vecRand = let vector = evalRand vecRand (mkStdGen 0)
                                  in do
@@ -101,13 +101,34 @@ quicksort [] = []
 quicksort (x:xs) = quicksort [ y | y <- xs, y < x ]
                    <> (x : quicksort [ y | y <- xs, y >= x ])
 
+-- importante!! los vectores también pueden usar list comprehensions!!
+-- imprimirVectorEnMonada $ liftM qsort $ shuffle $ V.fromList([1..10])
 qsort :: Ord a => Vector a -> Vector a
-qsort = undefined
+qsort vec = if V.null vec
+              then V.empty
+              else let pivote = V.head vec
+                       cola = V.tail vec
+                   in qsort [y | y <- cola, y < pivote]
+                      <> (pivote `cons` qsort [y |y <- cola, y >= pivote])
 
 -- Exercise 8 -----------------------------------------
 
-qsortR :: Ord a => Vector a -> Rnd (Vector a)
-qsortR = undefined
+-- shuffle :: Vector a -> Rnd (Vector a)
+-- imprimirVectorEnMonada :: (Show a) => Rnd (Vector a) -> IO ()
+-- La siguiente línea es incorrecta:
+-- imprimirVectorEnMonada $ liftM qsortR $ shuffle $ V.fromList([1..10])
+-- La siguiente línea es correcta, si averiguas por qué, descubrirás el poder del bind
+-- imprimirVectorEnMonada $ (shuffle $ V.fromList([1..10])) >>= qsortR
+qsortR :: (Show a, Ord a) => Vector a -> Rnd (Vector a)
+qsortR vec = if V.null vec
+               then return $ V.empty
+               else let pivoteMaximoPosible = V.length vec - 1
+                    in do
+                      pivote <- getRandomR (0, pivoteMaximoPosible)
+                      (menores, pivote, mayores) <- return $ partitionAt vec pivote
+                      menoresOrdenados <- qsortR menores
+                      mayoresOrdenados <- qsortR mayores
+                      return $ menoresOrdenados <> (pivote `cons` mayoresOrdenados)
 
 -- Exercise 9 -----------------------------------------
 
