@@ -46,3 +46,47 @@ convert6 n
   where (m, h) = (n `div` 1000, n `mod` 1000)
 
 -- EXERCISES
+
+-- Escribir un programa que escriba recursivamente la siguiente canción
+
+{-
+One man went to mow
+Went to mow a meadow
+One man and his dog
+Went to mow a meadow
+
+Two men went to mow
+Went to mow a meadow
+Two men, one man and his dog
+Went to mow a meadow
+
+Three men went to mow
+Went to mow a meadow
+Three men, two men, one man and his dog
+Went to mow a meadow
+-}
+
+-- Código del libro, acordarse de la recursividad hacia atrás típica de los pros de Haskell
+
+song n = if n == 0
+           then ""
+           else song (n-1) ++ "\n" ++ verse n
+
+verse n = capitalizeString (line1 n) ++ line2 n ++ capitalizeString (line3 n) ++ line4 n
+
+-- Fin del código del libro
+
+numbers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+line1 n = numbers !! (n - 1) ++ " man went to mow\n"
+
+line2 _ = "Went to mow a meadow\n"
+
+line3 n = if n == 1
+            then "one man and his dog\n"
+            else numbers !! (n - 1) ++ " men, " ++ line3 (n-1) 
+
+capitalizeString :: String -> String
+capitalizeString (x:xs) = (toUpper x) : xs 
+
+line4 _ = "Went to mow a meadow\n"
