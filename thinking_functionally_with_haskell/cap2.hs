@@ -54,9 +54,9 @@ exp' :: Integer -> Integer -> Integer
 exp' x n
   | n == 0 = 1
   | n == 1 = x
-  | even n = simplificacionPares * simplificacionPares
-  | odd n = x * (x `exp'` (n-1))
-  where simplificacionPares = x `exp'` (n `div` 2)
+  | even n = exp' (x*x) m
+  | odd n = x * exp (x * x) (m - 1)
+  where m = n `div` 2
 
 -- G
 
@@ -85,3 +85,22 @@ showDate (Date (day, month, year)) = show day ++ abreviatura ++ " " ++ mes
         abreviatura = abbreviations segundaCifra
         mes = months !! (month - 1)
 
+-- H
+
+type CIN = String
+
+getDigit :: Char -> Int
+getDigit c = read [c]
+
+valid :: CIN -> Bool
+valid str = sumaPrimeros8Digitos == ultimos2Digitos 
+  where stringAInt str = read str :: Int
+        sumaPrimeros8Digitos = sum . map getDigit $ take 8 str
+        ultimos2Digitos = stringAInt $ drop 8 str
+
+-- I
+
+-- sólo tendremos en cuenta carácteres alfanuméricos, por eso se hace filter isAlpha
+palindrome :: String -> Bool
+palindrome str = cadenaFiltrada == reverse cadenaFiltrada
+  where cadenaFiltrada = map toLower $ filter isAlpha str
