@@ -55,5 +55,33 @@ exp' x n
   | n == 0 = 1
   | n == 1 = x
   | even n = simplificacionPares * simplificacionPares
-  | odd n = x * (x `exp'` ((n-1) `div` 2))
+  | odd n = x * (x `exp'` (n-1))
   where simplificacionPares = x `exp'` (n `div` 2)
+
+-- G
+
+data Date = Date (Int, Int, Int)
+
+-- asumimos entero positivo < 100
+intAParDosCifras :: Int -> (Int, Int)
+intAParDosCifras n = (n `div` 10, n `mod` 10)
+
+-- http://english.stackexchange.com/questions/147364/when-were-st-nd-rd-and-th-first-used
+
+abbreviations :: Int -> String
+abbreviations n = if n < 4
+                    then abreviaturas !! (n - 1)
+                    else "th"
+  where abreviaturas = ["st","nd", "rd"]
+
+months :: [String]
+months = ["January", "February", "March", "April", "May", "June", "July", "August",
+          "September", "October", "November", "December"]
+
+showDate :: Date -> String
+showDate (Date (day, month, year)) = show day ++ abreviatura ++ " " ++ mes
+                                     ++ ", " ++ show year
+  where (_, segundaCifra) = intAParDosCifras day
+        abreviatura = abbreviations segundaCifra
+        mes = months !! (month - 1)
+
