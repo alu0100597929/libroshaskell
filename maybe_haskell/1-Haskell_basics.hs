@@ -88,9 +88,23 @@ franConCorreo = PersonaConCosa "fran" "freinn@gmail.com"
 franSinCorreo :: Persona String
 franSinCorreo = PersonaSinCosa "fran"
 
-dobleEdad :: Persona Int -> Maybe Int
-dobleEdad (PersonaConCosa _ edad) = Just (2 * edad)
-dobleEdad (PersonaSinCosa _)      = Nothing
+-- Cuando usamos el constructor de persona que no usa el parámetro de tipo
+-- a, estamos siempre creando el mismo valor. Por ello, podemos definir una
+-- función que genere un valor "sin cosa" y que funcione para trabajar con
+-- Persona "CualquierTipo":
+
+franSinCosa :: Persona a
+franSinCosa = PersonaSinCosa "fran"
+
+-- dar un valor por defecto es una mala decisión de diseño
+dobleEdad :: Persona Int -> Int
+dobleEdad (PersonaConCosa _ age) = 2 * age
+dobleEdad (PersonaSinCosa _) = 1
+
+-- por suerte, Maybe arregla este problema
+dobleEdad' :: Persona Int -> Maybe Int
+dobleEdad' (PersonaConCosa _ edad) = Just (2 * edad)
+dobleEdad' (PersonaSinCosa _)      = Nothing
 
 -- La gran utilidad de Maybe es pasar de funciones parciales a
 -- funciones totales.

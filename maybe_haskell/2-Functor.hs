@@ -30,7 +30,7 @@ whenJust _ Nothing = Nothing
 
 --instance Functor Maybe where
 --  fmap f (Just x) = Just (f x)
---  fmap _ Nothing = Nothing
+--  fmap _ Nothing  = Nothing
 
 f :: Int -> Int
 f = (+2)
