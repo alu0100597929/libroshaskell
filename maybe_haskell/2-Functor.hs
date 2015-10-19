@@ -44,8 +44,21 @@ h = f . g
 fh :: Maybe Int -> Maybe Int
 fh = fmap f . fmap g
 
+{-
 findUser :: UserId -> Maybe User
 findUser = undefined
+
+userUpperName :: User -> String
+userUpperName u = map toUpper (userName u)
+
+maybeName :: Maybe String
+maybeName = fmap userUpperName (findUser someId)
+
+template :: Maybe String -> String
+template mname = "<span class=\"username\">" ++ name ++ "</span>"
+  where
+    name = fromMaybe "(no name given)" mname
+-}
 
 add :: Int -> (Int -> Int)
 add x = \y -> x + y
