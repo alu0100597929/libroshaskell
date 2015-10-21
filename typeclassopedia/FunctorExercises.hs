@@ -1,5 +1,7 @@
 module FunctorExercises where
 
+import Prelude hiding (Either, Left, Right)
+
 {-
 1.Implement Functor instances for Either e and ((->) e).
 2.Implement Functor instances for ((,) e) and for Pair, defined as
@@ -26,18 +28,17 @@ data Either a b = Left a | Right b
 -- fmap :: (a -> b) -> f a -> f b
 -- fmap :: (a -> b) -> (Either e) a -> (Either e) b
 
-{- la siguiente instancia es correcta, y es la estándar de Prelude, por lo que no 
-puedes redefinirla.
+-- Se puede utilizar un identificador cualificado para referirnos a ella
 
-Puedes utilizar un identificador cualificado para referirte a ella
+instance Functor (Either e) where
+  fmap _ (Left a)  = Left a
+  fmap f (Right b) = Right (f b)
 
--}
+-- instance Functor (FunctorExercises.Either e) where
+--   fmap _ (FunctorExercises.Left a) = FunctorExercises.Left a
+--   fmap f (FunctorExercises.Right a) = FunctorExercises.Right (f a)
 
-instance Functor (FunctorExercises.Either e) where
-  fmap _ (FunctorExercises.Left a) = FunctorExercises.Left a
-  fmap f (FunctorExercises.Right a) = FunctorExercises.Right (f a)
-
--- otra solución es renombrar tu dato Either
+-- otra solución es renombrar el dato Either
 data Either' a b = Left' a | Right' b  deriving Show
 
 instance Functor (Either' e) where
