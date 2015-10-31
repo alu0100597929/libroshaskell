@@ -5,3 +5,5 @@
 -- runMaybeT :: MaybeT m a -> m (Maybe a)
 newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
 --      |________| ->                      |_________|
+
+-- MaybeT :: m (Maybe a) -> MaybeT m a
