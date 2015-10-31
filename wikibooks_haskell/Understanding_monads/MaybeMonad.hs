@@ -22,6 +22,7 @@ instance Functor Maybe where
 instance Applicative Maybe where
   pure = Just
 
+  _ <*> Nothing = Nothing
   Nothing <*> _ = Nothing
   (Just f) <*> v = fmap f v
 
@@ -32,4 +33,4 @@ instance Monad Maybe where
   return a = Just a
 
   (Just x) >>= f = f x
-  Nothing >>= _ = Nothing
+  Nothing >>= _  = Nothing

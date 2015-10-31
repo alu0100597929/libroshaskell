@@ -20,15 +20,15 @@ myFmap f (Just x) = Just (f x)
 instance Functor Maybe where
   fmap = myFmap
 
--- su nombre debe ser cambiado a algo que se parezca a (<*>)
-oper :: Maybe (a -> b) -> Maybe a -> Maybe b
-oper Nothing  _ = Nothing
-oper (Just f) v = fmap f v
+-- apply es el nombre que se le da a (<*>)
+apply :: Maybe (a -> b) -> Maybe a -> Maybe b
+apply Nothing  _ = Nothing
+apply (Just f) v = fmap f v
 
 instance Applicative Maybe where
   pure = Just
 
-  (<*>) = oper
+  (<*>) = apply
 
 myBind :: Maybe a -> (a -> Maybe b) -> Maybe b
 myBind (Just x) f = f x
