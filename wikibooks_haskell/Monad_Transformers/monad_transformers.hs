@@ -21,12 +21,12 @@ isJust :: Maybe a -> Bool
 isJust Nothing = False
 isJust _       = True
 
-askPassphrase :: IO ()
-askPassphrase = do putStrLn "Insert your new passphrase:"
-                   maybe_value <- getPassphrase
-                   if isJust maybe_value
-                     then do putStrLn "Storing in database..." -- do stuff
-                     else putStrLn "Passphrase invalid."
+askPassphrase' :: IO ()
+askPassphrase' = do putStrLn "Insert your new passphrase:"
+                    maybe_value <- getPassphrase
+                    if isJust maybe_value
+                      then do putStrLn "Storing in database..." -- do stuff
+                      else putStrLn "Passphrase invalid."
 
 -- Transformador monádico para Maybe. Es una mónada, que contiene otra mónada
 -- runMaybeT :: MaybeT m a -> m (Maybe a)
@@ -75,4 +75,19 @@ instance Monad m => MonadPlus (MaybeT m) where
                                  Just _     -> return maybe_value
 
 instance MonadTrans MaybeT where
-    lift = MaybeT . (liftM Just)
+    lift = MaybeT . liftM Just
+
+getValidPassphrase :: MaybeT IO String
+getValidPassphrase = do s <- lift getLine
+                        guard (isValid s) -- MonadPlus provides guard.
+                        return s
+
+askPassphrase :: MaybeT IO ()
+askPassphrase = do lift $ putStrLn "Insert your new passphrase:"
+                   value <- getValidPassphrase
+                   lift $ putStrLn "Storing in database..."
+
+askPassword :: MaybeT IO ()
+askPassword = do lift $ putStrLn "Insert your new password:"
+                 value <- msum $ repeat getValidPassphrase
+                 lift $ putStrLn "Storing in database..."
