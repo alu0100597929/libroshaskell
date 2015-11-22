@@ -1,22 +1,20 @@
 import Data.List
 import Data.List.Split -- cabal install split
 import Data.Char
-import Data.Numbers.Primes
-import System.Environment --getArgs
---import Math.NumberTheory.Primes.Factorisation aún no funciona arithmoi
+import Data.Numbers.Primes -- cabal install primes
+import System.Environment (getArgs)
+import Math.NumberTheory.Primes.Factorisation -- ya funciona arithmoi!
 import Control.Monad
 import qualified Data.Matrix as M --para el problema 11
 import qualified Data.Vector as V
 import qualified Data.Array as A
 import Data.Array.IO
+import Data.Set (size)
 
 {-Problema 1-}
 
-divisible :: Int -> Int -> Bool
-divisible n m = n `mod` m == 0
-
 sumaMultiplos :: Int
-sumaMultiplos = sum (filter (\x -> divisible x 3 || divisible x 5) [3..999])
+sumaMultiplos = sum $ filter (\x -> x `mod` 3 == 0 || x `mod` 5 == 0) [3..999]
 
 {-Problema 2-}
 
@@ -26,7 +24,7 @@ fib 1 = 2
 fib n = fib (n-1) + fib (n-2)
 
 sumaFib :: Int
-sumaFib = sum (map (fib) (filter (\x -> divisible (fib x) 2) (takeWhile (\x -> fib x < 4000000) [1..])))
+sumaFib = sum $ map fib $ filter (\x -> x `mod` 2 == 0) $ takeWhile (\x -> fib x < 4000000) [1..]
 
 {-Problema 3-}
 
@@ -49,7 +47,7 @@ mayorFactorPrimo' :: Int -> [Int] -> Int
 mayorFactorPrimo' n lista
   | n == 1 = error "El uno no tiene factores primos"
   | cociente == 1 = n
-  | (divisible n (head lista)) = mayorFactorPrimo' (cociente) (lista)
+  | n `mod` (head lista) == 0 = mayorFactorPrimo' (cociente) (lista)
   | otherwise = mayorFactorPrimo' n (tail lista)
   where
     cociente = n `div` (head lista)
@@ -172,10 +170,6 @@ solucion11 = do
                print (filaALista 1 matriz)
 
 {-problema 12-}
-
---devuelve el número de divisores de un número
-divisores :: Int -> Int
-divisores n = length (filter (\x -> divisible n x) [1..ceiling (sqrt (fromIntegral  n))])
 
 triangular :: Int -> Int
 triangular n = n * (n-1) `div` 2
@@ -324,11 +318,13 @@ test n = or [(abundant A.! a) && (abundant A.! (n-a)) | a <- [1..div n 2]]
 
 abundant = A.listArray (0,max) $ map isAbundant [0..max] where max = 28123
 
-isAbundant n = n < (sum $ divisors n)
+isAbundant n = n < fromIntegral (size $ divisors n)
 
+{-
 divisors n = 1 : (nub $ facs ++ (map (div n) . reverse) facs)
   where
     facs = filter ((== 0) . mod n) [2..sqrt' n]
     sqrt' n = (floor . sqrt . fromIntegral) n
+-}
 
 main = solucion23

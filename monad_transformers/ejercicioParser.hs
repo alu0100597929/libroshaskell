@@ -29,3 +29,11 @@ anyChar2 xs = do
 -- data Parser s m a = Parser (s -> m (s,a))
 -- ¡Y tanto que esto me suena! ¡Es el mismísimo StateT!
 -- data StateT s m a = StateT (s -> m (a,s))
+
+data StateT s m a = StateT (s -> m (a,s))
+
+instance Functor m => Functor (StateT s m) where
+ fmap g (StateT h) = StateT $ \x -> let functorWithResult = h x
+                                    in fmap (applyToFirst g) functorWithResult
+   where
+     applyToFirst f (a,b) = (f a, b)
